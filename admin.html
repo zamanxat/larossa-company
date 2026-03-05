@@ -1666,7 +1666,11 @@ function trigPage(p){
 // ===== WARRANTY =====
 let dbW=[];
 async function loadWarranty(){
-  const{data,error}=await sb.from('warranty_certificates').select('*').order('created_at',{ascending:false});
+  const{data,error}=await sb
+    .from('warranty_certificates')
+    .select('*')
+    .order('created_at',{ascending:false})
+    .limit(500);
   if(!error) dbW=data||[];
   rendWarranty();
 }
