@@ -173,7 +173,16 @@
 
         try {
           // Save to Google Sheets
-          await fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify(currentData) });
+          const sheetsResponse = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(currentData)
+          });
+          if (!sheetsResponse.ok) {
+            throw new Error("Google Sheets save failed");
+          }
           
           // Save to Supabase warranty_certificates
           const sbPayload = {
