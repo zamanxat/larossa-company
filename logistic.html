@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Larossa Logistics | Smart Search</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="shortcut icon" href="https://i.ibb.co.com/hFhh091B/logo.jpg" type="image/x-icon">
+    <style>
+        :root {
+            --bg: #f1f5f9;
+            --white: #ffffff;
+            --primary: #0f172a;
+            --accent: #3b82f6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card-radius: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            margin: 0; padding: 15px;
+            padding-bottom: 100px;
+            color: var(--primary);
+        }
+
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(241, 245, 249, 0.95);
+            backdrop-filter: blur(12px);
+            margin: -15px -15px 15px -15px; padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .search-box {
+            position: relative; margin-bottom: 12px;
+        }
+
+        .search-box input {
+            width: 100%; padding: 14px 14px 14px 45px;
+            border: 2px solid #e2e8f0; border-radius: 15px;
+            font-size: 16px; outline: none; box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--accent); }
+
+        .filter-group { display: flex; flex-direction: column; gap: 8px; }
+        .filters { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; scrollbar-width: none; }
+        .filters::-webkit-scrollbar { display: none; }
+        
+        .chip {
+            white-space: nowrap; padding: 8px 16px; border-radius: 20px;
+            background: var(--white); border: 1px solid #e2e8f0;
+            font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer;
+        }
+        .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .date-range-picker {
+            display: none; gap: 8px; align-items: center; 
+            background: #fff; padding: 10px; border-radius: 12px;
+            margin-top: 5px; border: 1px solid #e2e8f0;
+        }
+        .date-range-picker input { border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px; font-size: 12px; }
+
+        .card {
+            background: var(--white); border-radius: var(--card-radius);
+            padding: 18px; margin-bottom: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; }
+
+        .contact-bar {
+            background: #f8fafc; padding: 10px; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; text-decoration: none; border: 1px solid #f1f5f9;
+        }
+
+        .phone-num { font-size: 16px; font-weight: 700; color: var(--accent); }
+        .call-icon { width: 35px; height: 35px; background: var(--success); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+        .info-item { display: flex; gap: 10px; margin-bottom: 10px; }
+        .info-item i { color: var(--danger); font-size: 16px; width: 18px; text-align: center; }
+        .info-text { font-size: 14px; font-weight: 500; color: #475569; }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .btn-action { padding: 10px; border-radius: 10px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-2gis { background: #eef2ff; color: #4338ca; }
+        .btn-copy { background: #f1f5f9; color: #475569; }
+
+        .cargo-tag { background: #f8fafc; border-radius: 12px; padding: 10px; border-left: 4px solid var(--accent); margin-bottom: 15px; }
+        .cargo-name { font-weight: 700; font-size: 14px; color: var(--primary); }
+
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; background: white; outline: none; }
+
+        .fab { position: fixed; bottom: 25px; right: 20px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .back { width: 100%; max-width: 420px; margin-top: 10px; margin-left: 10px;}
+.back a { text-decoration: none; color: var(--primary); font-weight: 700; font-size: 14px; 
+    display: inline-block; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f1f5f9;
+    transition: 0.3s;
+}
+.back a:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.back a:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <div class="back">
+                <a href="/" style="text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px; border-radius: 10px;">&#8592; Артқа</a>
+        </div>
+        <div class="search-box" style="margin-top: 20px;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="mainSearch" placeholder="Аты, номер (8777...), тауар, адрес..." oninput="filter()">
+        </div>
+
+        <div class="filter-group">
+            <div class="filters" id="timeFilters">
+                <button class="chip active" onclick="applyTimeFilter('Барлығы', this)">Барлығы</button>
+                <button class="chip" onclick="applyTimeFilter('Бүгін', this)">Бүгін</button>
+                <button class="chip" onclick="applyTimeFilter('Апта', this)">Апта</button>
+                <button class="chip" onclick="applyTimeFilter('Ай', this)">Ай</button>
+                <button class="chip" onclick="applyTimeFilter('Аралық', this)">📅 Аралық</button>
+            </div>
+
+            <div class="date-range-picker" id="customDatePanel">
+                <input type="date" id="dateStart" onchange="filter()">
+                <span>-</span>
+                <input type="date" id="dateEnd" onchange="filter()">
+            </div>
+
+            <div class="filters" id="statusFilters">
+                <button class="chip active" onclick="applyStatusFilter('all', this)">Барлығы</button>
+                <button class="chip" onclick="applyStatusFilter('Жаңа', this)">⏳ Жаңа</button>
+                <button class="chip" onclick="applyStatusFilter('Процесте', this)">🔄 Процесте</button>
+                <button class="chip" onclick="applyStatusFilter('Жолда', this)">🚚 Жолда</button>
+                <button class="chip" onclick="applyStatusFilter('Қабылданды', this)">✅ Жетті</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="container"></div>
+
+    <button class="fab" onclick="load()">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+
+    <script>
+        const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
+        const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk'; 
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+        let store = [];
+        let currentStatus = 'all';
+        let currentTimeScope = 'Барлығы';
+
+        async function load() {
+            document.getElementById('container').innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">Жүктелуде...</div>';
+            const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+            if (!error) {
+                store = (data || []).map(o => ({
+                    ...o,
+                    status: (o.status === null || o.status === "" || o.status === "null") ? "Жаңа" : o.status
+                }));
+                filter();
+            }
+        }
+
+        function applyStatusFilter(status, el) {
+            currentStatus = status;
+            document.querySelectorAll('#statusFilters .chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            filter();
+        }
+
+        function applyTimeFilter(scope, el) {
+            currentTimeScope = scope;
+            document.querySelectorAll('#timeFilters .chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('customDatePanel').style.display = (scope === 'Аралық') ? 'flex' : 'none';
+            filter();
+        }
+
+        function filter() {
+            const val = document.getElementById('mainSearch').value.toLowerCase().trim();
+            // Іздеу жолағындағы нөмірден барлық таңбаларды алып тастап, тек сандарды қалдыру (мысалы: 8 (777) 123 -> 8777123)
+            const cleanSearchVal = val.replace(/\D/g, ''); 
+
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const dayOfWeek = now.getDay();
+            const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            const startOfWeek = new Date(startOfToday);
+            startOfWeek.setDate(startOfToday.getDate() - diffToMonday);
+
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+            const filtered = store.filter(o => {
+                const orderDate = new Date(o.created_at);
+                
+                // --- СМАРТ ІЗДЕУ ЛОГИКАСЫ ---
+                // Клиент нөмірін де тазалап аламыз (тек сандар)
+                const cleanPhone = (o.client_phone || '').replace(/\D/g, '');
+                
+                const searchMatch = !val || (
+                    (o.client_name?.toLowerCase().includes(val)) || 
+                    (o.address?.toLowerCase().includes(val)) ||
+                    (o.product?.toLowerCase().includes(val)) ||
+                    (o.gift?.toLowerCase().includes(val)) ||
+                    // Егер тазаланған іздеу мәні нөмірдің ішінде болса
+                    (cleanPhone.includes(cleanSearchVal) && cleanSearchVal !== '') ||
+                    // Немесе жай ғана текст ретінде де іздей береді
+                    (o.client_phone?.includes(val))
+                );
+                
+                // --- УАҚЫТ ЖӘНЕ СТАТУС ---
+                const statusMatch = (currentStatus === 'all') || (o.status === currentStatus);
+                
+                let timeMatch = true;
+                if (currentTimeScope === 'Бүгін') timeMatch = orderDate >= startOfToday;
+                else if (currentTimeScope === 'Апта') timeMatch = orderDate >= startOfWeek;
+                else if (currentTimeScope === 'Ай') timeMatch = orderDate >= startOfMonth;
+                else if (currentTimeScope === 'Аралық') {
+                    const s = document.getElementById('dateStart').value;
+                    const e = document.getElementById('dateEnd').value;
+                    if (s) timeMatch = timeMatch && (orderDate >= new Date(s));
+                    if (e) {
+                        const endLimit = new Date(e);
+                        endLimit.setHours(23, 59, 59);
+                        timeMatch = timeMatch && (orderDate <= endLimit);
+                    }
+                }
+
+                return searchMatch && statusMatch && timeMatch;
+            });
+            render(filtered);
+        }
+
+        function render(list) {
+            const container = document.getElementById('container');
+            if (list.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">Тапсырыс табылмады 🔍</div>';
+                return;
+            }
+
+            container.innerHTML = list.map(o => `
+                <div class="card">
+                    <div class="card-title">
+                        <span style="max-width: 70%;">${o.client_name || 'Аты жоқ'}</span>
+                        <div style="text-align: right;">
+                            <div style="font-size:11px; color:var(--accent); font-weight:800;">#${o.id.toString().slice(-4)}</div>
+                            <small style="font-size:10px; color:#94a3b8">${new Date(o.created_at).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                    <a href="tel:${o.client_phone}" class="contact-bar">
+                        <span class="phone-num">${o.client_phone || '—'}</span>
+                        <div class="call-icon"><i class="fas fa-phone"></i></div>
+                    </a>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="info-text" id="addr_${o.id}">${o.address || '—'}</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-action btn-copy" onclick="copy('addr_${o.id}', this)">Көшіру</button>
+                        <a href="https://2gis.kz/search/${encodeURIComponent(o.address)}" target="_blank" class="btn-action btn-2gis" style="text-decoration:none">2GIS</a>
+                    </div>
+                    <div class="cargo-tag">
+                        <div class="cargo-name">📦 ${o.product || '—'}</div>
+                        ${o.gift ? `<div style="color:var(--danger); font-size:11px; margin-top:5px; font-weight:700;">🎁 ${o.gift}</div>` : ''}
+                    </div>
+                    <div class="status-grid">
+                        <select onchange="update('${o.id}', 'delivery_type', this.value)">
+                            <option value="Курьер" ${o.delivery_type === 'Курьер' ? 'selected' : ''}>🛵 Курьер</option>
+                            <option value="Такси" ${o.delivery_type === 'Такси' ? 'selected' : ''}>🚕 Такси</option>
+                            <option value="Поезд" ${o.delivery_type === 'Поезд' ? 'selected' : ''}>🚂 Поезд</option>
+                            <option value="Почта" ${o.delivery_type === 'Почта' ? 'selected' : ''}>📦 Почта</option>
+                        </select>
+                        <select onchange="update('${o.id}', 'status', this.value)" 
+                                style="background: ${o.status==='Қабылданды'?'#dcfce7':o.status==='Жолда'?'#dbeafe':o.status==='Процесте'?'#fffbeb':'white'};
+                                       color: ${o.status==='Қабылданды'?'#166534':o.status==='Жолда'?'#1e40af':o.status==='Процесте'?'#b45309':'#0f172a'}">
+                            <option value="Жаңа" ${o.status === 'Жаңа' ? 'selected' : ''}>⏳ Жаңа</option>
+                            <option value="Процесте" ${o.status === 'Процесте' ? 'selected' : ''}>🔄 Процесте</option>
+                            <option value="Жолда" ${o.status === 'Жолда' ? 'selected' : ''}>🚚 Жолда</option>
+                            <option value="Қабылданды" ${o.status === 'Қабылданды' ? 'selected' : ''}>✅ Жетті</option>
+                            <option value="Қайтарылды" ${o.status === 'Қайтарылды' ? 'selected' : ''}>❌ Қайтты</option>
+                        </select>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function update(id, field, val) {
+            const { error } = await supabaseClient.from('orders').update({ [field]: val }).eq('id', id);
+            if (!error) {
+                const item = store.find(o => o.id == id);
+                if (item) { item[field] = val; filter(); }
+            }
+        }
+
+        function copy(elementId, btn) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text);
+            const old = btn.innerText;
+            btn.innerText = '✅ Көшірілді';
+            setTimeout(() => btn.innerText = old, 1500);
+        }
+
+        load();
+    </script>
+</body>
+</html>

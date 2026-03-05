@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="kk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Larossa Талоны</title>
+    <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+      :root {
+        --primary: #2c3e50;
+        --accent: #3498db;
+        --success: #27ae60;
+        --pdf-color: #e67e22;
+        --info: #8e44ad;
+        --bg: #f4f7f9;
+      }
+
+      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      body { font-family: "Play", sans-serif; background-color: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px;
+    }
+
+      .container { background: #ffffff; width: 100%; max-width: 420px; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); }
+      h2 { text-align: center; color: var(--primary); margin-bottom: 25px; font-size: 22px; }
+      .form-group { margin-bottom: 18px; }
+      label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 700; }
+      input[type="text"], input[type="date"] { width: 100%; padding: 14px; border: 2px solid #edf2f7; border-radius: 12px; font-size: 16px; outline: none; transition: 0.2s; }
+      input:disabled { background: #f8f9fa; color: #a0aec0; }
+
+      .toggle-box { display: flex; align-items: center; background: #f8f9fa; padding: 12px; border-radius: 12px; margin-bottom: 18px; cursor: pointer; }
+      .toggle-box input { margin-right: 10px; width: 18px; height: 18px; }
+
+      .btn-stack { display: flex; flex-direction: column; gap: 10px; }
+      button { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+      
+      #generateBtn { background: var(--primary); color: white; }
+      #generateBtn:disabled { background: #cbd5e0; }
+      
+      #saveToSheetBtn { background: var(--info); color: white; display: none; }
+      #downloadPngBtn { background: var(--success); color: white; display: none; }
+      #downloadPdfBtn { background: var(--pdf-color); color: white; display: none; }
+
+      #statusMsg { text-align: center; margin-top: 15px; font-size: 14px; min-height: 20px; }
+      canvas { display: none; width: 100%; margin-top: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+      .back { width: 100%; max-width: 420px; margin-top: 10px; margin-left: 10px;}
+.back a { text-decoration: none; color: var(--primary); font-weight: 700; font-size: 14px; 
+    display: inline-block; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f1f5f9;
+    transition: 0.3s;
+}
+.back a:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.back a:active { transform: scale(0.98); }
+    </style>
+  </head>
+  <body>
+    
+    <div class="container">
+      <div class="back">
+      <a href="/" style="text-decoration: none; font-weight: 700; font-size: 14px;">&#8592; Артқа</a>
+    </div>
+      <h2>Кепілдік талоны</h2>
+
+      <div class="form-group">
+        <label>Клиенттің аты-жөні</label>
+        <input id="clientName" type="text" placeholder="Мысалы: Әбдірахман Нұрсұлтан" />
+      </div>
+
+      <label class="toggle-box">
+        <input type="checkbox" id="enableDate" />
+        <span>Өткен күнді таңдау</span>
+      </label>
+
+      <div class="form-group">
+        <label>Сатылған күні</label>
+        <input id="customDate" type="date" disabled />
+      </div>
+
+      <div class="btn-stack">
+        <button id="generateBtn" disabled>Жүктелуде...</button>
+        <button id="saveToSheetBtn">1. Базаға сақтау (Sheets)</button>
+        <button id="downloadPngBtn">2. Сурет ретінде (PNG)</button>
+        <button id="downloadPdfBtn">3. Құжат ретінде (PDF)</button>
+      </div>
+
+      <p id="statusMsg"></p>
+      <canvas id="canvas" width="1200" height="800"></canvas>
+    </div>
+    
+
+    <script>
+      const { jsPDF } = window.jspdf;
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const bg = new Image();
+      bg.src = "certificate.png"; 
+
+      const generateBtn = document.getElementById("generateBtn");
+      const saveToSheetBtn = document.getElementById("saveToSheetBtn");
+      const downloadPngBtn = document.getElementById("downloadPngBtn");
+      const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+      const statusMsg = document.getElementById("statusMsg");
+      const enableDateCb = document.getElementById("enableDate");
+      const customDateInput = document.getElementById("customDate");
+
+      let currentData = null; 
+
+      bg.onload = () => {
+        generateBtn.disabled = false;
+        generateBtn.textContent = "Талонды дайындау";
+      };
+
+      enableDateCb.onchange = () => {
+        customDateInput.disabled = !enableDateCb.checked;
+        if (!enableDateCb.checked) customDateInput.value = "";
+      };
+
+      function formatDate(date) {
+        return String(date.getDate()).padStart(2, "0") + "." + String(date.getMonth() + 1).padStart(2, "0") + "." + date.getFullYear();
+      }
+
+      function generateCertificate() {
+        const name = document.getElementById("clientName").value.trim();
+        if (!name) {
+          statusMsg.textContent = "Клиент атын жазыңыз Нұреке!";
+          statusMsg.style.color = "red";
+          return;
+        }
+
+        const article = "LR" + Math.floor(100000 + Math.random() * 900000);
+        let startDate = enableDateCb.checked && customDateInput.value ? new Date(customDateInput.value) : new Date();
+        let expiry = new Date(startDate);
+        expiry.setFullYear(startDate.getFullYear() + 1);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#000000";
+        ctx.font = "400 26px Play";
+        ctx.fillText(name, 424, 353);
+        ctx.font = "400 24px Play";
+        ctx.fillText("Larossa компаниясы", 385, 390);
+        ctx.fillText(article, 349, 426);
+        ctx.fillText("Төле би 189A", 364, 461);
+        ctx.fillText(formatDate(expiry) + " ж", 260, 628);
+
+        currentData = { client: name, article: article, customDate: customDateInput.value || null };
+
+        statusMsg.textContent = "Талон дайын!";
+        statusMsg.style.color = "blue";
+        
+        canvas.style.display = "block";
+        saveToSheetBtn.style.display = "block";
+        downloadPngBtn.style.display = "block";
+        downloadPdfBtn.style.display = "block";
+        saveToSheetBtn.disabled = false;
+        saveToSheetBtn.textContent = "1. Базаға сақтау (Sheets)";
+      }
+
+      async function saveToSheets() {
+        if (!currentData) return;
+        saveToSheetBtn.disabled = true;
+        saveToSheetBtn.textContent = "Сақталуда...";
+        const url = "https://script.google.com/macros/s/AKfycbw00YL7eeTjY1SVnfbq-_Oe19XFlDAroLO8pTWkcUc2giWOaTmUn-NwKjfGwrikQTnF/exec";
+        try {
+          await fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify(currentData) });
+          statusMsg.textContent = "Мәліметтер базаға түсті Нұреке!";
+          statusMsg.style.color = "green";
+          saveToSheetBtn.textContent = "Сақталды Нұреке ✅";
+        } catch (e) {
+          statusMsg.textContent = "Қате: Базаға сақталмады Нұреке:(";
+          statusMsg.style.color = "red";
+          saveToSheetBtn.disabled = false;
+        }
+      }
+
+      // PNG жүктеу
+      downloadPngBtn.onclick = () => {
+        const fileNamePart = currentData.client.replace(/\s+/g, '_');
+        const link = document.createElement("a");
+        link.download = `Certificate_${fileNamePart}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      };
+
+      // PDF жүктеу
+      downloadPdfBtn.onclick = () => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
+        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+        const fileNamePart = currentData.client.replace(/\s+/g, '_');
+        pdf.save(`Certificate_${fileNamePart}.pdf`);
+      };
+
+      generateBtn.onclick = generateCertificate;
+      saveToSheetBtn.onclick = saveToSheets;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Larossa — Тапсырыс</title>
+<link rel="shortcut icon" href="https://i.ibb.co.com/hFhh091B/logo.jpg" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --gr:#1b4332;--gr2:#2d6a4f;--bg:#f1f3f2;--brd:#dcdde1;--r:#ff4757;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);padding:12px;display:flex;justify-content:center;min-height:100vh}
+.container{width:100%;max-width:640px;background:#fff;border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.07);overflow:hidden;margin-bottom:40px;align-self:flex-start}
+.header{padding:18px 22px;display:flex;align-items:center;border-bottom:1px solid #f0f0f0}
+.logo-img{max-height:42px;width:auto;border-radius:8px}
+.logo-text{margin-left:12px;font-size:21px;font-weight:800;color:#166645}
+form{padding:22px}
+.sec-title{font-size:11px;font-weight:700;color:#a0a0a0;text-transform:uppercase;letter-spacing:1.5px;margin:24px 0 12px;display:flex;align-items:center}
+.sec-title::after{content:"";flex:1;height:1px;background:#f0f0f0;margin-left:10px}
+label{display:block;margin-bottom:6px;font-size:13.5px;font-weight:600;color:var(--gr)}
+input,select{width:100%;padding:13px;border:1.5px solid var(--brd);border-radius:12px;font-size:16px;outline:none;background:#fff;transition:border .25s;font-family:inherit;color:#222}
+input:focus,select:focus{border-color:var(--gr2)}
+.field{margin-bottom:16px}
+.hidden{display:none}
+.item-row{display:grid;grid-template-columns:1fr 80px 44px;gap:8px;margin-bottom:10px;align-items:center}
+.add-btn{background:#f8f9fa;color:var(--gr2);border:2px dashed var(--gr2);padding:11px;width:100%;border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;margin-bottom:8px;font-family:inherit;transition:background .2s}
+.add-btn:hover{background:#ecfdf5}
+.remove-btn{background:#fff0f0;color:var(--r);border:1px solid #ffdada;border-radius:10px;height:46px;cursor:pointer;font-size:18px}
+.file-upload{border:2px dashed var(--brd);padding:18px;border-radius:14px;text-align:center;cursor:pointer;position:relative;transition:border .25s}
+.file-upload:hover{border-color:var(--gr2);background:#f8faf9}
+#receipt-preview{max-width:100%;height:auto;border-radius:10px;margin-top:12px;display:none}
+.remove-file-btn{position:absolute;top:10px;right:10px;background:var(--r);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;display:none;z-index:10;font-weight:700;font-size:15px}
+/* TIME CHECK */
+.time-check-wrap{display:flex;align-items:center;gap:10px;background:#f8faf9;padding:11px 14px;border-radius:12px;border:1px solid #eee;margin-bottom:14px;cursor:pointer}
+.time-check-wrap input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--gr)}
+.time-check-wrap span{font-size:14px;font-weight:500;color:#444}
+/* PAYMENT */
+.pay-type-select{margin-bottom:12px}
+.split-block{background:#f0fdf4;border:1.5px solid #a7f3d0;border-radius:14px;padding:14px;margin-bottom:8px}
+.split-block label{color:#166534;font-size:13px}
+.split-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.split-row:last-child{margin-bottom:0}
+.pay-toggle{display:flex;align-items:center;gap:10px;background:#f0fdf4;padding:11px 14px;border-radius:12px;border:1px solid #a7f3d0;margin-bottom:12px;cursor:pointer}
+.pay-toggle input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#059669}
+.pay-toggle span{font-size:13.5px;font-weight:600;color:#166534}
+/* TOTAL */
+.total-box{background:#f8faf9;padding:18px;border-radius:14px;margin-top:22px;border:1px solid var(--gr)}
+.total-box label{color:var(--gr);font-size:14px;margin-bottom:8px}
+.total-display{font-size:22px;font-weight:800;color:var(--gr);margin-top:6px}
+/* SUBMIT */
+.submit-btn{width:100%;padding:17px;background:var(--gr);color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:700;cursor:pointer;margin-top:18px;transition:background .25s,transform .1s;font-family:inherit}
+.submit-btn:hover{background:var(--gr2)}
+.submit-btn:active{transform:scale(.98)}
+.submit-btn:disabled{background:#a0a0a0;cursor:not-allowed}
+/* POPUP */
+.popup{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1e293b;color:#fff;padding:10px 22px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);opacity:0;max-width:calc(100vw - 24px);text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.popup.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.popup.g{background:#059669}.popup.r{background:#dc2626}
+/* LOGISTICS POPUP */
+.logistics-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gr2);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;margin-left:auto;font-family:inherit}
+.logistics-btn:hover{background:#1b4332}
+.logistics-btn i{font-size:16px}
+.log-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;padding:12px;overflow-y:auto}
+.log-overlay.show{display:block}
+.log-box{max-width:560px;margin:0 auto 24px;background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
+.log-head{padding:16px;background:var(--gr);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.log-head h2{margin:0;font-size:18px}
+.log-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:18px}
+.log-search-wrap{padding:12px 16px;border-bottom:1px solid #eee}
+.log-search-wrap input{width:100%;padding:12px 14px 12px 40px;border:1.5px solid var(--brd);border-radius:12px;font-size:15px}
+.log-search-wrap{position:relative}
+.log-search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#888;font-size:14px}
+.log-list{padding:12px;max-height:70vh;overflow-y:auto}
+.log-card{border:1px solid #eee;border-radius:14px;padding:14px;margin-bottom:10px;background:#fafbfc}
+.log-card:last-child{margin-bottom:0}
+.log-card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.log-card-row:last-child{margin-bottom:0}
+.log-card b{font-size:14px;color:#222}
+.log-card .log-meta{font-size:12px;color:#666}
+.log-card .log-track{background:#e8f5e9;color:#166534;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;margin-top:6px}
+.log-card .log-note{font-size:12px;color:#555;margin-top:4px;font-style:italic}
+.log-card .log-status{font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px}
+.log-status-new{background:#e3f2fd;color:#1565c0}
+.log-status-process{background:#fff3e0;color:#e65100}
+.log-status-ship{background:#e8f5e9;color:#2e7d32}
+.log-status-done{background:#e8f5e9;color:#166534}
+.log-status-return{background:#ffebee;color:#c62828}
+.log-empty{padding:24px;text-align:center;color:#888;font-size:14px}
+@media(max-width:480px){
+  .split-row{grid-template-columns:1fr}
+  .item-row{grid-template-columns:1fr 70px 40px}
+  form{padding:16px}
+  .header{flex-wrap:wrap}
+  .logistics-btn span{display:none}
+  .logistics-btn{padding:10px 12px}
+}
+
+.back { width: 100%; max-width: 420px; margin-top: 10px; margin-left: 10px;}
+.back a { text-decoration: none; color: #0f172a; font-weight: 700; font-size: 14px; 
+    display: inline-block; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f1f5f9;
+    transition: 0.3s;
+}
+.back a:hover { background: #0f172a; color: white; border-color: #0f172a; }
+.back a:active { transform: scale(0.98); }
+</style>
+</head>
+<body>
+  
+<div class="container">
+  <div class="back">
+        <a href="/" style="text-decoration: none;  font-weight: 700; font-size: 14px;;">&#8592; Артқа</a>
+  </div>
+  <div class="header">
+    <img src="https://i.ibb.co.com/hFhh091B/logo.jpg" alt="Larossa" class="logo-img">
+    <span class="logo-text">LAROSSA</span>
+    <button type="button" class="logistics-btn" onclick="openLogisticsPopup()" title="Жеткізулер"><i class="fas fa-truck"></i><span>Жеткізулер</span></button>
+  </div>
+  <form id="orderForm">
+
+    <!-- MANAGER -->
+    <div class="sec-title">Жауапты тұлға</div>
+    <div class="field">
+      <select id="manager_id" required oninvalid="this.setCustomValidity('Менеджерді таңдаңыз')" oninput="this.setCustomValidity('')">
+        <option value="" disabled selected>Менеджерді таңдаңыз...</option>
+      </select>
+    </div>
+
+    <!-- TIME -->
+    <div class="sec-title">Тапсырыс уақыты</div>
+    <label class="time-check-wrap" for="manualTimeCheck">
+      <input type="checkbox" id="manualTimeCheck" onchange="toggleTime()">
+      <span>Уақытты қолмен таңдау</span>
+    </label>
+    <div id="manualTimeFields" class="hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div><label>Күні:</label><input type="date" id="orderDate"></div>
+        <div><label>Уақыты:</label><input type="time" id="orderTime"></div>
+      </div>
+    </div>
+
+    <!-- CLIENT -->
+    <div class="sec-title">Клиент мәліметі</div>
+    <div class="field"><input type="text" id="client_name" placeholder="Клиент аты-жөні" required oninvalid="this.setCustomValidity('Клиент атын жазыңыз')" oninput="this.setCustomValidity('')"></div>
+    <div class="field"><input type="tel" id="client_phone" inputmode="numeric" placeholder="+7 (___) ___-____" required oninvalid="this.setCustomValidity('Телефонды жазыңыз')" oninput="this.setCustomValidity('')"></div>
+    <div class="field"><input type="text" id="address" placeholder="Адрес (Қала, көше, үй)" required oninvalid="this.setCustomValidity('Мекен-жайды жазыңыз')" oninput="this.setCustomValidity('')"></div>
+
+    <!-- PRODUCTS -->
+    <div class="sec-title">Тауарлар</div>
+    <div id="tabletsContainer"></div>
+    <button type="button" class="add-btn" onclick="addItem('tabletsContainer','tablet')">+ Планшет / Тауар қосу</button>
+
+    <div id="giftsContainer"></div>
+    <button type="button" class="add-btn" onclick="addItem('giftsContainer','gift')">+ Сыйлық қосу</button>
+
+    <!-- DELIVERY & PAYMENT -->
+    <div class="sec-title">Жеткізу және Төлем</div>
+    <div class="field">
+      <label>Жеткізу түрі:</label>
+      <select id="delivery_type">
+        <option value="Такси">Такси</option>
+        <option value="Курьер">Курьер</option>
+        <option value="Почта">Почта</option>
+        <option value="Поезд">Поезд</option>
+      </select>
+    </div>
+
+    <!-- SINGLE PAYMENT -->
+    <div id="singlePayBlock">
+      <div class="field">
+        <label>Төлем түрі:</label>
+        <select id="payment_type" required oninvalid="this.setCustomValidity('Төлем түрін таңдаңыз')" oninput="this.setCustomValidity('')">
+          <option value="" disabled selected>— таңдаңыз —</option>
+          <option>Kaspi Transfer</option><option>Halyk Transfer</option>
+          <option>Kaspi рассрочка</option><option>Halyk рассрочка</option>
+          <option>Kaspi Red</option><option>Наличка</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SPLIT TOGGLE -->
+    <label class="pay-toggle" for="splitCheck">
+      <input type="checkbox" id="splitCheck" onchange="toggleSplit()">
+      <span>Пополам (екі төлем түрі)</span>
+    </label>
+
+    <!-- SPLIT PAYMENT -->
+    <div id="splitPayBlock" class="hidden">
+      <div class="split-block">
+        <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px">Бірінші төлем</div>
+        <div class="split-row">
+          <div>
+            <label>Төлем түрі:</label>
+            <select id="pay1_type">
+              <option>Kaspi Transfer</option><option>Halyk Transfer</option>
+              <option>Kaspi рассрочка</option><option>Halyk рассрочка</option>
+              <option>Kaspi Red</option><option>Наличка</option>
+            </select>
+          </div>
+          <div>
+            <label>Сомасы (₸):</label>
+            <input type="number" id="pay1_amount" inputmode="numeric" placeholder="0" min="0" oninput="calcSplitTotal()">
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:12px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px">Екінші төлем</div>
+        <div class="split-row">
+          <div>
+            <label>Төлем түрі:</label>
+            <select id="pay2_type">
+              <option>Наличка</option><option>Kaspi Transfer</option><option>Halyk Transfer</option>
+              <option>Kaspi рассрочка</option><option>Halyk рассрочка</option>
+              <option>Kaspi Red</option>
+            </select>
+          </div>
+          <div>
+            <label>Сомасы (₸):</label>
+            <input type="number" id="pay2_amount" inputmode="numeric" placeholder="0" min="0" oninput="calcSplitTotal()">
+          </div>
+        </div>
+        <div style="font-size:13px;color:#166534;font-weight:600;padding:10px 12px;background:#d1fae5;border-radius:8px;margin-top:4px">
+          Жалпы: <span id="splitTotalDisp" style="font-size:16px;font-weight:800">0 ₸</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECEIPT -->
+    <div class="sec-title">Төлем чегі</div>
+    <div class="field">
+      <div class="file-upload" id="fileUploadBox">
+        <button type="button" class="remove-file-btn" id="removeFileBtn" onclick="clearImg(event)">×</button>
+        <div onclick="document.getElementById('receiptFile').click()">
+          <div id="uploadText" style="color:#666;font-size:14px">📷 Чек суретін таңдау</div>
+          <input type="file" id="receiptFile" accept="image/*" class="hidden" onchange="previewImg(this)">
+          <img id="receipt-preview" src="" alt="Чек">
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICE (single payment only) -->
+    <div id="singlePriceBox" class="total-box">
+      <label>Жалпы сатылған бағасы (₸):</label>
+      <input type="number" id="price" inputmode="numeric" placeholder="0" required oninvalid="this.setCustomValidity('Бағасын жазыңыз')" oninput="this.setCustomValidity('')">
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">ТАПСЫРЫСТЫ ЖІБЕРУ</button>
+  </form>
+</div>
+<div class="popup" id="popup"></div>
+
+<!-- Логистика попап: жеткізу номері, трек, заметка, іздеу -->
+<div id="logisticsOverlay" class="log-overlay" onclick="if(event.target===this) closeLogisticsPopup()">
+  <div class="log-box">
+    <div class="log-head">
+      <h2><i class="fas fa-truck"></i> Жеткізулер (Жолда / Күтілуде)</h2>
+      <button type="button" class="log-close" onclick="closeLogisticsPopup()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="log-search-wrap">
+      <i class="fas fa-search"></i>
+      <input type="text" id="logSearchInp" placeholder="Телефон, аты, тауар, баға, күні, трек..." oninput="filterLogisticsList()">
+    </div>
+    <div id="logisticsList" class="log-list"></div>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://jnuokhhqojlurvadcduv.supabase.co';
+const SB_KEY='sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const DPCT=9; // default bonus percent if manager-specific жоқ болса
+
+// ⬇️ МҰНДА GOOGLE APPS SCRIPT URL-ДІ ҚОЙЫҢЫЗ
+const GSHEET_URL = 'https://script.google.com/macros/s/AKfycbxJbkVjqkFyeTYstJABPxsVRgya5SdYtptA09XCKcWUmve3njkl51thYyKRW40LLyw/exec';
+
+let tabletOptions=[];
+let giftOptions=[];
+let mgrBonusDefaults={};
+
+// Google Sheets-ке жіберу функциясы
+async function sendToGoogleSheets(data) {
+  try {
+    await fetch(GSHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    console.log('Google Sheets-ке сақталды');
+  } catch (err) {
+    console.warn('Google Sheets қатесі (заказ базаға сақталды):', err);
+  }
+}
+
+// init
+$(document).ready(async function(){
+  $('#client_phone').inputmask('+7 (999) 999-9999');
+  await loadSiteData();
+});
+
+async function loadSiteData(){
+  const[mR,pR,bR]=await Promise.all([
+    sb.from('site_managers').select('*').eq('is_active',true).order('sort_order').order('id'),
+    sb.from('site_products').select('*').eq('is_active',true).order('category').order('sort_order'),
+    sb.from('manager_bonus_settings').select('*')
+  ]);
+  // managers
+  const mgrSel=document.getElementById('manager_id');
+  mgrSel.innerHTML='<option value="" disabled selected>Менеджерді таңдаңыз...</option>';
+  (mR.data||[]).forEach(m=>mgrSel.add(new Option(m.name,m.id)));
+  // bonus defaults (manager -> percent)
+  mgrBonusDefaults={};
+  (bR.data||[]).forEach(b=>{mgrBonusDefaults[b.manager_id]=b.default_bonus_percent;});
+
+  // products
+  tabletOptions=(pR.data||[]).filter(p=>p.category==='tablet').map(p=>p.name);
+  giftOptions=(pR.data||[]).filter(p=>p.category==='gift').map(p=>p.name);
+  // fallback
+  if(!tabletOptions.length) tabletOptions=['G2000','17 Pro Max','17 Pad Pro'];
+  if(!giftOptions.length) giftOptions=['Смарт набор','Массажер','Смарт сағат','Переходник'];
+}
+
+function buildOptions(arr){return arr.map(n=>`<option value="${n}">${n}</option>`).join('');}
+
+function addItem(containerId,type){
+  const container=document.getElementById(containerId);
+  const div=document.createElement('div');div.className='item-row';
+  const opts=type==='tablet'?buildOptions(tabletOptions):buildOptions(giftOptions);
+  div.innerHTML=`<select class="${type}-select">${opts}</select><input type="number" inputmode="numeric" class="item-count" value="1" min="1" style="padding:13px"><button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>`;
+  container.appendChild(div);
+}
+
+function toggleTime(){
+  const on=document.getElementById('manualTimeCheck').checked;
+  document.getElementById('manualTimeFields').classList.toggle('hidden',!on);
+  if(on){const now=new Date();document.getElementById('orderDate').value=now.toISOString().slice(0,10);document.getElementById('orderTime').value=now.toTimeString().slice(0,5);}
+}
+
+function toggleSplit(){
+  const on=document.getElementById('splitCheck').checked;
+  document.getElementById('splitPayBlock').classList.toggle('hidden',!on);
+  document.getElementById('singlePayBlock').classList.toggle('hidden',on);
+  document.getElementById('singlePriceBox').classList.toggle('hidden',on);
+  const pt=document.getElementById('payment_type');
+  pt.required=!on;
+  const pv=document.getElementById('price');
+  if(on){
+    pv.required=false;
+    pv.removeAttribute('required');
+  } else {
+    pv.required=true;
+  }
+  calcSplitTotal();
+}
+
+function calcSplitTotal(){
+  const a1=parseFloat(document.getElementById('pay1_amount').value)||0;
+  const a2=parseFloat(document.getElementById('pay2_amount').value)||0;
+  document.getElementById('splitTotalDisp').textContent=(a1+a2).toLocaleString()+' ₸';
+}
+
+function previewImg(input){
+  if(input.files&&input.files[0]){
+    const r=new FileReader();
+    r.onload=e=>{
+      document.getElementById('receipt-preview').src=e.target.result;
+      document.getElementById('receipt-preview').style.display='block';
+      document.getElementById('removeFileBtn').style.display='block';
+      document.getElementById('uploadText').style.display='none';
+    };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+function clearImg(e){
+  e.stopPropagation();
+  document.getElementById('receiptFile').value='';
+  document.getElementById('receipt-preview').src='';
+  document.getElementById('receipt-preview').style.display='none';
+  document.getElementById('removeFileBtn').style.display='none';
+  document.getElementById('uploadText').style.display='block';
+}
+
+document.getElementById('orderForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=document.getElementById('submitBtn');
+  btn.textContent='Жіберілуде...';btn.disabled=true;
+
+  const isSplit=document.getElementById('splitCheck').checked;
+
+  // products
+  let products='';
+  document.querySelectorAll('.tablet-select').forEach((s,i)=>{
+    products+=s.value+' ('+document.querySelectorAll('#tabletsContainer .item-count')[i].value+' шт); ';
+  });
+  let gifts='';
+  document.querySelectorAll('.gift-select').forEach((s,i)=>{
+    gifts+=s.value+' ('+document.querySelectorAll('#giftsContainer .item-count')[i].value+' шт); ';
+  });
+
+  // time
+  let finalTime;
+  if(document.getElementById('manualTimeCheck').checked){
+    const d=document.getElementById('orderDate').value,t=document.getElementById('orderTime').value;
+    const local=new Date(`${d}T${t}`);
+    finalTime=new Date(local.getTime()-local.getTimezoneOffset()*60000).toISOString();
+  } else {
+    const now=new Date();
+    finalTime=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString();
+  }
+
+  try{
+    // upload receipt
+    let receiptUrl='';
+    const file=document.getElementById('receiptFile').files[0];
+    if(file){
+      const fname=Date.now()+'_receipt.jpg';
+      const{error:ue}=await sb.storage.from('receipts').upload(fname,file);
+      if(ue) throw new Error('Сурет жүктелмеді: '+ue.message);
+      const{data:ud}=sb.storage.from('receipts').getPublicUrl(fname);
+      receiptUrl=ud.publicUrl;
+    }
+
+    // order payload
+    const payload={
+      created_at:finalTime,
+      client_name:document.getElementById('client_name').value.trim(),
+      client_phone:document.getElementById('client_phone').value.trim(),
+      address:document.getElementById('address').value.trim(),
+      product:products||'Таңдалмады',
+      gift:gifts||'Жоқ',
+      delivery_type:document.getElementById('delivery_type').value,
+      receipt_url:receiptUrl
+    };
+
+    // bonus %: менеджердің ағымдағы дефолт пайызы бойынша
+    const mgrId=parseInt(document.getElementById('manager_id').value)||null;
+    payload.manager_id=mgrId;
+    if(mgrId){
+      const defPct=typeof mgrBonusDefaults[mgrId]==='number'?mgrBonusDefaults[mgrId]:DPCT;
+      payload.bonus_percent=defPct;
+    }
+
+    if(isSplit){
+      payload.payment_type=document.getElementById('pay1_type').value;
+      payload.price=parseFloat(document.getElementById('pay1_amount').value)||0;
+      payload.payment_type2=document.getElementById('pay2_type').value;
+      payload.price2=parseFloat(document.getElementById('pay2_amount').value)||0;
+    } else {
+      payload.payment_type=document.getElementById('payment_type').value;
+      payload.price=parseFloat(document.getElementById('price').value)||0;
+      payload.price2=0;
+      payload.payment_type2=null;
+    }
+
+    // 1️⃣ Supabase-ке сақтау
+    const{error:dbErr}=await sb.from('orders').insert([payload]);
+    if(dbErr) throw dbErr;
+
+    // 2️⃣ Google Sheets-ке де жіберу (параллель, қатесі болса да заказ сақталған)
+    sendToGoogleSheets(payload);
+
+    btn.textContent='✅ ЖІБЕРІЛДІ!';
+    btn.style.background='#059669';
+    showPopup('Тапсырыс сәтті жіберілді!','g');
+    setTimeout(()=>location.reload(),2200);
+
+  } catch(err){
+    console.error(err);
+    showPopup('Қате: '+(err.message||'Белгісіз'),'r');
+    btn.disabled=false;
+    btn.textContent='Қайта жіберу';
+    btn.style.background='';
+  }
+});
+
+let pt;
+function showPopup(msg,type='g'){
+  const el=document.getElementById('popup');
+  el.textContent=msg;el.className='popup show '+(type||'g');
+  clearTimeout(pt);pt=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// Логистика попап: тек жетпеген/жолда заказдар, іздеу, номер/трек, заметка
+let logisticsOrders=[];
+function openLogisticsPopup(){
+  document.getElementById('logisticsOverlay').classList.add('show');
+  document.getElementById('logSearchInp').value='';
+  loadLogisticsOrders();
+}
+function closeLogisticsPopup(){
+  document.getElementById('logisticsOverlay').classList.remove('show');
+}
+async function loadLogisticsOrders(){
+  const listEl=document.getElementById('logisticsList');
+  listEl.innerHTML='<div class="log-empty"><i class="fas fa-spinner fa-spin"></i> Жүктелуде...</div>';
+  const { data, error } = await sb.from('orders').select('*').order('created_at',{ascending:false});
+  if(error){ listEl.innerHTML='<div class="log-empty">Жүктеу қатесі</div>'; return; }
+  logisticsOrders=(data||[]).filter(o=>(o.status||'Жаңа')!=='Қабылданды');
+  filterLogisticsList();
+}
+function filterLogisticsList(){
+  const q=(document.getElementById('logSearchInp').value||'').toLowerCase().trim();
+  const list=!q ? logisticsOrders : logisticsOrders.filter(o=>{
+    const name=(o.client_name||'').toLowerCase();
+    const phone=(o.client_phone||'').replace(/\D/g,'');
+    const product=(o.product||'').toLowerCase();
+    const gift=(o.gift||'').toLowerCase();
+    const priceStr=String(Number(o.price||0)+Number(o.price2||0));
+    const dateStr=o.created_at ? o.created_at.slice(0,10) : '';
+    const track=(o.delivery_contact||'').toLowerCase();
+    const note=(o.logistics_note||'').toLowerCase();
+    const qNum=q.replace(/\D/g,'');
+    return name.includes(q)||product.includes(q)||gift.includes(q)||track.includes(q)||note.includes(q)||dateStr.includes(q)||priceStr.includes(q)||(qNum&&phone.includes(qNum));
+  });
+  const listEl=document.getElementById('logisticsList');
+  if(!list.length){ listEl.innerHTML='<div class="log-empty">Тапсырыс табылмады</div>'; return; }
+  const stCls={Жаңа:'log-status-new',Процесте:'log-status-process',Жолда:'log-status-ship',Қабылданды:'log-status-done',Қайтарылды:'log-status-return'};
+  listEl.innerHTML=list.map(o=>{
+    const total=Number(o.price||0)+Number(o.price2||0);
+    const date=o.created_at ? new Date(o.created_at).toLocaleDateString('kk-KZ') : '';
+    const st=o.status||'Жаңа';
+    const trackHtml=o.delivery_contact ? '<div class="log-track"><i class="fas fa-truck"></i> '+o.delivery_contact+'</div>' : '';
+    const noteEsc=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const noteHtml=o.logistics_note ? '<div class="log-note">'+noteEsc(o.logistics_note)+'</div>' : '';
+    return '<div class="log-card">'+
+      '<div class="log-card-row"><b>'+ (o.client_name||'—') +'</b><span class="log-meta">'+date+'</span></div>'+
+      '<div class="log-card-row"><span class="log-meta">'+ (o.client_phone||'') +'</span><span class="log-status '+ (stCls[st]||'log-status-new') +'">'+st+'</span></div>'+
+      '<div class="log-card-row"><span class="log-meta">'+ (o.address||'') +'</span></div>'+
+      '<div class="log-card-row"><span class="log-meta">'+ (o.product||'') + (o.gift?' + '+o.gift:'') +'</span><b>'+total.toLocaleString()+' ₸</b></div>'+
+      '<div class="log-card-row"><span class="log-meta">'+ (o.delivery_type||'') +'</span></div>'+
+      trackHtml+noteHtml+
+      '</div>';
+  }).join('');
+}
+</script>
+</body>
+</html>
