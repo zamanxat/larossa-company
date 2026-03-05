@@ -28,7 +28,8 @@
   --sw:252px;--bnh:60px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden; padding: 20px; padding-bottom: 60px;}
+html{min-height:100%;overflow-y:scroll;overflow-x:hidden}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding:20px;padding-bottom:60px;min-height:100vh}
 
 /* AUTH */
 #authWrap{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a,#1e293b);padding:20px}
@@ -63,8 +64,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .ndiv{height:1px;background:rgba(255,255,255,.08);margin:6px 0}
 
 /* MAIN */
-.main{margin-left:var(--sw);padding:18px 22px;min-height:100vh}
-.page{display:none;animation:fadeIn .18s ease}.page.active{display:block}
+.main{margin-left:var(--sw);padding:18px 22px;min-height:100vh;overflow-x:auto;overflow-y:visible}
+.page{display:none;animation:fadeIn .18s ease;min-height:0;overflow:visible;width:100%}.page.active{display:block}
 @keyframes fadeIn{from{opacity:.5}to{opacity:1}}
 
 /* TOPBAR */
@@ -86,7 +87,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .sc.sg{border-left:3px solid var(--g)}.sc.sb2{border-left:3px solid var(--b)}.sc.so{border-left:3px solid var(--o)}.sc.sp{border-left:3px solid var(--p)}.sc.sr{border-left:3px solid var(--r)}
 
 /* CARD */
-.card{background:var(--card);border-radius:var(--rad);border:1px solid var(--brd);box-shadow:var(--sh);overflow:hidden;margin-bottom:14px}
+.card{background:var(--card);border-radius:var(--rad);border:1px solid var(--brd);box-shadow:var(--sh);margin-bottom:14px}
+.card .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.card .cb,#lrsMob{overflow:visible}
 .ch{padding:12px 16px;background:#fafbfc;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .ch h3{font-size:13.5px;font-weight:600;margin:0}
 .cb{padding:16px}
@@ -95,6 +98,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 input,select,textarea{font-family:inherit;font-size:13px;color:var(--txt);border:1px solid var(--brd);border-radius:7px;outline:none;transition:border .15s;background:#fff}
 input:focus,select:focus,textarea:focus{border-color:var(--ac)}
 input[type=text],input[type=number],input[type=date],input[type=password],input[type=url]{padding:8px 11px}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 select{padding:7px 11px}
 textarea{padding:8px 11px;resize:vertical;min-height:60px}
 
@@ -122,10 +127,22 @@ tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:#fafbff}
 
 /* MOBILE CARDS */
-.mob-card{display:none;padding:13px 14px;border-bottom:1px solid #f1f5f9}
-.mob-card:last-child{border-bottom:none}
-.mc-r{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.mob-card{display:none;padding:14px 16px;margin-bottom:10px;background:var(--card);border-radius:var(--rad);border:1px solid var(--brd);box-shadow:0 2px 8px rgba(15,23,42,.06);transition:box-shadow .2s}
+.mob-card:last-child{margin-bottom:0}
+.mob-card:active{box-shadow:0 4px 12px rgba(15,23,42,.1)}
+#talonMob,#lrsMob,#salTblMob,#dWkTblMob,#dTop5Mob,#rankTblMob,#mgrTblMob,#payTblMob,#dailyTblMob,#cliTblMob,#salHistMob,#bsDefTMob,#bsOrdTMob,#smMgrTblMob,#smProdTblMob{display:none}
+.mc-r{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:13px;min-height:22px}
 .mc-r:last-child{margin-bottom:0}
+.mc-r span:first-child{color:var(--mu);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;min-width:0}
+.mc-r b{color:var(--txt);word-break:break-word}
+.talon-mob-card{display:flex;flex-direction:column;gap:10px;padding:16px;margin-bottom:12px;background:var(--card);border-radius:12px;border:1px solid var(--brd);box-shadow:0 4px 14px rgba(15,23,42,.08);transition:box-shadow .2s}
+.talon-mob-card:last-child{margin-bottom:0}
+.talon-mob-card .tmc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.talon-mob-card .tmc-head b{font-size:15px;color:var(--pr)}
+.talon-mob-card .tmc-art{display:inline-block;padding:4px 10px;border-radius:8px;background:var(--pl);color:var(--pt);font-weight:700;font-size:12px;width:fit-content}
+.talon-mob-card .tmc-row{display:flex;justify-content:space-between;font-size:13px;color:var(--mu)}
+.talon-mob-card .tmc-row span:first-child{font-weight:600;color:var(--ac)}
+.talon-mob-card .tmc-acts{display:flex;gap:8px;margin-top:6px;padding-top:10px;border-top:1px solid #f1f5f9}
 
 /* FBAR */
 .fbar{padding:10px 14px;background:#fafbfc;border-bottom:1px solid var(--brd);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -174,7 +191,8 @@ tbody tr:hover td{background:#fafbff}
 .drop-menu button:hover{background:#f8fafc}
 
 /* BPCT */
-.bpct{width:52px;padding:4px 6px;border:1.5px solid var(--brd);border-radius:6px;font-size:12px;font-weight:700;text-align:center;color:var(--pt);background:var(--pl);font-family:inherit;outline:none}
+.bpct{width:52px;padding:4px 6px;border:1.5px solid var(--brd);border-radius:6px;font-size:12px;font-weight:700;text-align:center;color:var(--pt);background:var(--pl);font-family:inherit;outline:none;-moz-appearance:textfield;appearance:textfield}
+.bpct::-webkit-outer-spin-button,.bpct::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .bpct:focus{border-color:var(--p)}
 
 /* PPC */
@@ -187,7 +205,7 @@ tbody tr:hover td{background:#fafbff}
 
 /* BNAV */
 .bnav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bnh);background:var(--pr);z-index:300;align-items:stretch;border-top:1px solid rgba(255,255,255,.09);box-shadow:0 -4px 20px rgba(0,0,0,.2)}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:#64748b;font-size:9px;font-weight:600;transition:color .13s;padding:6px 2px;user-select:none}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:#64748b;font-size:9px;font-weight:600;transition:color .13s;padding:6px 2px;user-select:none;min-width:0}
 .bni i{font-size:18px}.bni.active{color:#f59e0b}
 .bni span{white-space:nowrap}
 .more-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:350}
@@ -243,18 +261,45 @@ tbody tr:hover td{background:#fafbff}
   .g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}
   .sc .vl{font-size:17px}
   .dtbl{display:none!important}.mob-card{display:block}
+  #talonMob,#lrsMob,#salTblMob,#dWkTblMob,#dTop5Mob,#rankTblMob,#mgrTblMob,#payTblMob,#dailyTblMob,#cliTblMob,#salHistMob,#bsDefTMob,#bsOrdTMob,#smMgrTblMob,#smProdTblMob{display:block!important}
   .lrs-desk{display:none!important}.lrs-mob{display:block!important}
   .c2col,.pay-ch,.sal-ch,.bs-ch{grid-template-columns:1fr!important}
-  .ch260,.ch200,.ch300{height:190px}
+  .ch260,.ch200,.ch300{height:220px;padding:12px;min-height:180px}
+  #bonussettingsPage .ch260{height:200px;min-height:160px}
+  #bonussettingsPage .bs-ch .card{min-width:0;overflow:hidden}
+  #salaryPage .sal-ch .card{min-width:0;overflow:hidden}
+  #salaryPage .sal-ch .ch260{height:240px;min-height:200px;padding:10px;width:100%}
   .fg2{grid-template-columns:1fr}
   .topbar{flex-wrap:wrap}
   #lrsTbar{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:768px){
+  .main{padding:14px 14px calc(var(--bnh)+14px)}
+  .card .ch,.card .cb{padding:12px 14px}
+  .mbox{max-width:96vw;margin:12px auto}
+  #salaryPage .sal-ch .ch260{height:220px;min-height:180px}
 }
 @media(max-width:480px){
   .g4,.g3,.g2{grid-template-columns:repeat(2,1fr)}
   .sc .vl{font-size:15px}
   .main{padding:10px 10px calc(var(--bnh)+10px)}
   #lrsTbar{grid-template-columns:1fr!important}
+  .ppc-name{flex-wrap:wrap}.ppc-nums{flex-direction:column;gap:6px}
+}
+@media(min-width:901px){
+  .bnav{display:none!important}
+  .main{margin-left:var(--sw);margin-right:auto;max-width:min(1400px,calc(100vw - var(--sw) - 24px));padding-left:22px;padding-right:22px}
+  #logisticsPage .card{max-width:100%;overflow:visible;border-radius:14px;box-shadow:0 4px 20px rgba(15,23,42,.08)}
+  #logisticsPage .card .ch{background:linear-gradient(180deg,#fafbfc 0%,#f8fafc 100%);border-radius:14px 14px 0 0}
+  #logisticsPage .card .fbar{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:end;padding:18px 20px;flex-wrap:nowrap;background:#fafbfc;border-bottom:1px solid var(--brd)}
+  #logisticsPage .card .tw{margin:0 20px 20px;border-radius:12px;border:1px solid var(--brd);overflow-x:auto;-webkit-overflow-scrolling:touch;background:#fff}
+  #logisticsPage .lrs-table{min-width:900px}
+  #logisticsPage .lrs-table th{background:#f8fafc;font-weight:600}
+  #logisticsPage .lrs-table th,#logisticsPage .lrs-table td{padding:12px 14px;white-space:nowrap}
+  #logisticsPage .lrs-table td:nth-child(3){max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #logisticsPage .lrs-table td:nth-child(7){max-width:160px;overflow:hidden;text-overflow:ellipsis}
+  #logisticsPage .lrs-delivery-input{min-width:130px}#logisticsPage .lrs-note-input{min-width:120px;max-width:180px}
+  #logisticsPage .lrs-mob-card{border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid var(--brd);box-shadow:0 2px 10px rgba(15,23,42,.06);background:var(--card)}
 }
 </style>
 
@@ -594,16 +639,23 @@ tbody tr:hover td{background:#fafbff}
     </style>
 
 
-    <!-- Target page style -->
+    <!-- Target page style (сайт негізгі түсі) -->
      <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --panel-bg:#f3f5fa;--card-bg:#ffffff;--edge:#e2e6f0;
-  --ink:#171b2d;--dust:#8a8fa3;--royal:#4f46e5;--royal-soft:#eef0ff;
-  --mint:#0d9668;--mint-soft:#ecfdf5;--flame:#dc2626;--flame-soft:#fef2f2;
-  --amber:#d97706;--amber-soft:#fffbeb;--sky:#0891b2;--sky-soft:#ecfeff;
-  --radius:13px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.04)
+#targetPage{width:100%;overflow-x:hidden;overflow-y:visible}
+#targetPage *{box-sizing:border-box}
+#targetPage>div,#targetPage>h1{margin-left:0;margin-right:0}
+#targetPage{
+  --panel-bg:#f1f5f9;--card-bg:#fff;--edge:#e2e8f0;
+  --ink:#0f172a;--dust:#64748b;--royal:#0f172a;--royal-soft:#f1f5f9;
+  --mint:#059669;--mint-soft:#d1fae5;--flame:#dc2626;--flame-soft:#fee2e2;
+  --amber:#d97706;--amber-soft:#fffbeb;--sky:#0369a1;--sky-soft:#dbeafe;
+  --radius:10px;--shadow:0 1px 4px rgba(15,23,42,.08)
 }
+#targetPage .bar-logo,#targetPage .act-royal{background:#0f172a!important;color:#fff!important}
+#targetPage .bar h1 em{color:#0f172a!important}
+#targetPage .panel-ico.ico-royal{background:#d1fae5;color:#059669}
+#targetPage .panel-ico.ico-mint{background:#d1fae5;color:#059669}
+#targetPage .act-royal:hover{background:#1e293b!important}
 
 /* ══ NOTIFICATION STACK ══ */
 .ntf-stack{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:9px;pointer-events:none;width:300px}
@@ -720,6 +772,7 @@ tbody tr:hover td{background:#f8f9fd}
 
 /* ══ TEAM CARDS (mobile) ══ */
 .team-feed{display:none;flex-direction:column;gap:10px}
+.log-feed{display:none;flex-direction:column;gap:10px}
 .team-item{background:var(--panel-bg);border:1px solid var(--edge);border-radius:12px;padding:14px}
 .ti-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .ti-who{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -751,8 +804,12 @@ tbody tr:hover td{background:#f8f9fd}
   .kpi-grid{grid-template-columns:repeat(2,1fr);gap:9px}
   .panel{padding:15px}
   .scroll-x{display:none}
-  .scroll-x.keep{display:block}
+  .scroll-x.keep{display:none}
   .team-feed{display:flex}
+  .log-feed{display:flex!important;flex-direction:column;gap:10px;width:100%;max-width:100%;overflow:visible}
+  .log-feed .log-card{width:100%;max-width:100%;padding:14px 16px;background:var(--card-bg);border:1px solid var(--edge);border-radius:var(--radius);box-shadow:var(--shadow);box-sizing:border-box}
+  .log-feed .log-card .log-card-r{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+  .log-feed .log-card .log-card-r:last-child{margin-bottom:0}
   .kpi-num{font-size:21px}.bar h1{font-size:16px}
   .bar-logo{width:37px;height:37px;border-radius:11px}.bar-logo i{width:18px;height:18px}
   .ntf-stack{width:calc(100% - 24px);right:12px;top:12px}
@@ -799,6 +856,7 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="nitem" onclick="goPage('managers',this)"><i class="fas fa-user-tie"></i>Менеджерлер</div>
   <div class="nsect">Жүйе</div>
   <div class="nitem" onclick="goPage('logistics',this)"><i class="fas fa-truck"></i>Логистика</div>
+  <div class="nitem" onclick="goPage('talon',this)"><i class="fas fa-file-contract"></i>Гарантия талон</div>
   <div class="nitem" onclick="goPage('target',this)"><i class="fas fa-bullseye"></i>Таргет</div>
   <div class="nitem" onclick="goPage('bonussettings',this)"><i class="fas fa-percent"></i>Бонус баптау</div>
   <div class="nitem" onclick="goPage('sitemanage',this)"><i class="fas fa-sliders-h"></i>Сайт баптау</div>
@@ -903,8 +961,8 @@ tbody tr:hover td{background:#f8f9fd}
     <div class="card"><div class="ch"><h3>Түсім динамикасы</h3></div><div class="ch260"><canvas id="cTrend"></canvas></div></div>
     <div class="card"><div class="ch"><h3>Төлем түрлері</h3></div><div class="ch260"><canvas id="cPayD"></canvas></div></div>
   </div>
-  <div class="card"><div class="ch"><h3>Соңғы апта</h3></div><div class="tw"><table><thead><tr><th>Күн</th><th>Тапсырыс</th><th>Түсім</th><th>Бонус</th></tr></thead><tbody id="dWkTbl"></tbody></table></div></div>
-  <div class="card" style="margin-top:14px"><div class="ch"><h3>Топ-5 менеджер</h3></div><div class="tw"><table><thead><tr><th>#</th><th>Менеджер</th><th>Тапсырыс</th><th>Түсім</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th></tr></thead><tbody id="dTop5"></tbody></table></div></div>
+  <div class="card"><div class="ch"><h3>Соңғы апта</h3></div><div class="tw dtbl"><table><thead><tr><th>Күн</th><th>Тапсырыс</th><th>Түсім</th><th>Бонус</th></tr></thead><tbody id="dWkTbl"></tbody></table></div><div id="dWkTblMob"></div></div>
+  <div class="card" style="margin-top:14px"><div class="ch"><h3>Топ-5 менеджер</h3></div><div class="tw dtbl"><table><thead><tr><th>#</th><th>Менеджер</th><th>Тапсырыс</th><th>Түсім</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th></tr></thead><tbody id="dTop5"></tbody></table></div><div id="dTop5Mob"></div></div>
 </div>
 
 <!-- SALARY PAGE -->
@@ -918,9 +976,11 @@ tbody tr:hover td{background:#f8f9fd}
   </div>
   <div class="g g4">
     <div class="sc sg"><div class="lb">Бонус қоры</div><div class="vl" id="salTB">0 ₸</div></div>
-    <div class="sc sb2"><div class="lb">Берілген зп</div><div class="vl" id="salPd">0 ₸</div><div class="sb" id="salPdC">0 транзакция</div></div>
+    <div class="sc sb2"><div class="lb">Берілген ЗП</div><div class="vl" id="salPd">0 ₸</div><div class="sb" id="salPdC">0 транзакция</div></div>
+    <div class="sc sp"><div class="lb">Берілген бонус</div><div class="vl" id="salBonus">0 ₸</div></div>
     <div class="sc so"><div class="lb">Берілмеген</div><div class="vl" id="salUp">0 ₸</div></div>
-    <div class="sc sp"><div class="lb">Орт. бонус %</div><div class="vl" id="salAvP">9%</div></div>
+    <div class="sc" style="grid-column:span 2;border-left:3px solid var(--pr)"><div class="lb">Жалпы итог (ЗП + Бонус)</div><div class="vl" id="salTotal">0 ₸</div></div>
+    <div class="sc" style="grid-column:span 2"><div class="lb">Орт. бонус %</div><div class="vl" id="salAvP">9%</div></div>
   </div>
   <div class="sal-ch" style="display:grid;grid-template-columns:300px 1fr;gap:14px;margin-bottom:14px">
     <div class="card"><div class="ch"><h3>Менеджер бойынша</h3></div><div class="ch260"><canvas id="cSPie"></canvas></div></div>
@@ -939,11 +999,13 @@ tbody tr:hover td{background:#f8f9fd}
         <select id="salHPeriod" onchange="rendSalHist()" style="width:140px"><option value="all">Барлық кезең</option><option value="thisMonth">Осы ай</option><option value="lastMonth">Өткен ай</option></select>
       </div>
     </div>
-    <div class="tw"><table><thead><tr><th>Күн</th><th>Менеджер</th><th>Түрі</th><th>Сома</th><th>Кезең</th><th>Статус</th><th>Ескертпе</th><th></th></tr></thead><tbody id="salHist"></tbody></table></div>
+    <div class="tw dtbl"><table><thead><tr><th>Күн</th><th>Менеджер</th><th>Түрі</th><th>Сома</th><th>Кезең</th><th>Статус</th><th>Ескертпе</th><th></th></tr></thead><tbody id="salHist"></tbody></table></div>
+    <div id="salHistMob"></div>
   </div>
   <div class="card">
     <div class="ch"><h3>Толық есеп</h3></div>
-    <div class="tw"><table><thead><tr><th>Менеджер</th><th>Заказ</th><th>Сауда</th><th>Орт.%</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th><th></th></tr></thead><tbody id="salTbl"></tbody></table></div>
+    <div class="tw dtbl"><table><thead><tr><th>Менеджер</th><th>Заказ</th><th>Сауда</th><th>Орт.%</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th><th></th></tr></thead><tbody id="salTbl"></tbody></table></div>
+    <div id="salTblMob"></div>
   </div>
 </div>
 
@@ -952,7 +1014,7 @@ tbody tr:hover td{background:#f8f9fd}
   <h1 style="font-size:19px;font-weight:700;margin-bottom:14px">Төлем түрлері</h1>
   <div class="pay-ch" style="display:grid;grid-template-columns:300px 1fr;gap:14px">
     <div class="card"><div class="ch"><h3>Үлес</h3></div><div class="ch260"><canvas id="cPay"></canvas></div></div>
-    <div class="card"><div class="ch"><h3>Кесте</h3></div><div class="tw"><table><thead><tr><th>Төлем түрі</th><th>Тапсырыс</th><th>Сома</th><th>%</th></tr></thead><tbody id="payTbl"></tbody></table></div></div>
+    <div class="card"><div class="ch"><h3>Кесте</h3></div><div class="tw dtbl"><table><thead><tr><th>Төлем түрі</th><th>Тапсырыс</th><th>Сома</th><th>%</th></tr></thead><tbody id="payTbl"></tbody></table></div><div id="payTblMob"></div></div>
   </div>
 </div>
 
@@ -960,14 +1022,14 @@ tbody tr:hover td{background:#f8f9fd}
 <div id="dailyPage" class="page">
   <h1 style="font-size:19px;font-weight:700;margin-bottom:14px">Күнделікті есеп</h1>
   <div class="card"><div class="ch"><h3>Соңғы 30 күн</h3></div><div class="ch300"><canvas id="cDaily"></canvas></div></div>
-  <div class="card"><div class="ch"><h3>Кесте</h3></div><div class="tw"><table><thead><tr><th>Күн</th><th>Тапсырыс</th><th>Түсім</th><th>Орт.чек</th><th>Бонус</th></tr></thead><tbody id="dailyTbl"></tbody></table></div></div>
+  <div class="card"><div class="ch"><h3>Кесте</h3></div><div class="tw dtbl"><table><thead><tr><th>Күн</th><th>Тапсырыс</th><th>Түсім</th><th>Орт.чек</th><th>Бонус</th></tr></thead><tbody id="dailyTbl"></tbody></table></div><div id="dailyTblMob"></div></div>
 </div>
 
 <!-- RANKING PAGE -->
 <div id="rankingPage" class="page">
   <h1 style="font-size:19px;font-weight:700;margin-bottom:14px">Рейтинг</h1>
   <div class="g g2"><div class="sc sg"><div class="lb">Жалпы сауда</div><div class="vl" id="rTS">0 ₸</div></div><div class="sc sp"><div class="lb">Жалпы бонус</div><div class="vl" id="rTB">0 ₸</div></div></div>
-  <div class="card"><div class="ch"><h3>Рейтинг</h3></div><div class="tw"><table><thead><tr><th>Орын</th><th>Менеджер</th><th>Заказ</th><th>Түсім</th><th>Орт.%</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th><th>Үлес</th></tr></thead><tbody id="rankTbl"></tbody></table></div></div>
+  <div class="card"><div class="ch"><h3>Рейтинг</h3></div><div class="tw dtbl"><table><thead><tr><th>Орын</th><th>Менеджер</th><th>Заказ</th><th>Түсім</th><th>Орт.%</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th><th>Үлес</th></tr></thead><tbody id="rankTbl"></tbody></table></div><div id="rankTblMob"></div></div>
 </div>
 
 <!-- CLIENTS PAGE -->
@@ -978,7 +1040,7 @@ tbody tr:hover td{background:#f8f9fd}
     <div class="sc"><div class="lb">Жалпы заказ</div><div class="vl" id="cliO">0</div></div>
     <div class="sc"><div class="lb">Орт./клиент</div><div class="vl" id="cliA">0</div></div>
   </div>
-  <div class="card"><div class="ch"><h3>Тізім</h3><div class="srch"><i class="fas fa-search"></i><input type="text" id="cliSrch" placeholder="Іздеу..." oninput="rendCli()" style="width:150px"></div></div><div class="tw"><table><thead><tr><th>Клиент</th><th>Телефон</th><th>Заказ</th><th>Жалпы</th><th>Орт.чек</th><th>Соңғы</th></tr></thead><tbody id="cliTbl"></tbody></table></div></div>
+  <div class="card"><div class="ch"><h3>Тізім</h3><div class="srch"><i class="fas fa-search"></i><input type="text" id="cliSrch" placeholder="Іздеу..." oninput="rendCli()" style="width:150px"></div></div><div class="tw dtbl"><table><thead><tr><th>Клиент</th><th>Телефон</th><th>Заказ</th><th>Жалпы</th><th>Орт.чек</th><th>Соңғы</th></tr></thead><tbody id="cliTbl"></tbody></table></div><div id="cliTblMob"></div></div>
 </div>
 
 <!-- MANAGERS PAGE -->
@@ -990,7 +1052,7 @@ tbody tr:hover td{background:#f8f9fd}
     <div class="sc sp"><div class="lb">Жалпы бонус</div><div class="vl" id="mgrTB">0 ₸</div></div>
     <div class="sc so"><div class="lb">Жетекші</div><div class="vl" id="mgrL">—</div></div>
   </div>
-  <div class="card"><div class="ch"><h3>Команда</h3></div><div class="tw"><table><thead><tr><th>Менеджер</th><th>Заказ</th><th>Түсім</th><th>Орт.%</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th></tr></thead><tbody id="mgrTbl"></tbody></table></div></div>
+  <div class="card"><div class="ch"><h3>Команда</h3></div><div class="tw dtbl"><table><thead><tr><th>Менеджер</th><th>Заказ</th><th>Түсім</th><th>Орт.%</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th></tr></thead><tbody id="mgrTbl"></tbody></table></div><div id="mgrTblMob"></div></div>
   <div class="card"><div class="ch"><h3>Заметкалар</h3></div><div class="cb" id="mgrNotes" style="display:grid;gap:12px"></div></div>
 </div>
 
@@ -1012,61 +1074,39 @@ tbody tr:hover td{background:#f8f9fd}
   <div id="lrsMob" class="card lrs-mob" style="display:none"></div> -->
 
 
-  <div class="lrs-header">
-        <div class="lrs-toolbar" >
-            <div class="lrs-input-group">
-                <label class="lrs-label">Ақылды іздеу</label>
-                <div class="lrs-search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="lrs-search" class="lrs-control lrs-search-input" placeholder="Клиент, телефон немесе тауар..." oninput="lrsFilter()">
-                </div>
-            </div>
-
-            <button class="lrs-refresh-btn" onclick="lrsLoad()">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
-
-        <div class="lrs-filters-row">
-            <button class="lrs-chip active" onclick="lrsHandleTime('all', this)">Барлығы</button>
-            <button class="lrs-chip" onclick="lrsHandleTime('today', this)">Бүгін</button>
-            <button class="lrs-chip" onclick="lrsHandleTime('week', this)">Апта</button>
-            <button class="lrs-chip" onclick="lrsHandleStatus('all', this)">Статус</button>
-            <button class="lrs-chip" onclick="lrsHandleStatus('Жаңа', this)">Жаңа</button>
-            <button class="lrs-chip" onclick="lrsHandleStatus('Процесте', this)">Процесте</button>
-            <button class="lrs-chip" onclick="lrsHandleStatus('Жолда', this)">Жолда</button>
-            <button class="lrs-chip" onclick="lrsHandleStatus('Қабылданды', this)">Жетті</button>
-        </div>
+  <div class="card">
+    <div class="ch"><h3>Логистика</h3><button class="btn bp sm" onclick="lrsLoad()"><i class="fas fa-sync-alt"></i>Жаңарту</button></div>
+    <div class="fbar">
+      <div class="srch" style="flex:1;min-width:180px">
+        <i class="fas fa-search"></i>
+        <input type="text" id="lrs-search" placeholder="Клиент, телефон, тауар, жеткізуші..." oninput="lrsFilter()" style="width:100%;padding-left:30px">
+      </div>
+      <select id="lrsT" onchange="lrsFilter()" style="height:38px;min-width:100px"><option value="all">Уақыт</option><option value="today">Бүгін</option><option value="week">Апта</option></select>
+      <select id="lrsSt" onchange="lrsFilter()" style="height:38px;min-width:110px"><option value="all">Статус</option><option value="Жаңа">Жаңа</option><option value="Процесте">Процесте</option><option value="Жолда">Жолда</option><option value="Қабылданды">Жетті</option><option value="Қайтарылды">Қайтарылды</option></select>
     </div>
-
-    <div class="lrs-table-card">
-        <table class="lrs-table">
-            <thead>
-                <tr>
-                    <th>ID / Күні</th>
-                    <th>Клиент</th>
-                    <th>Мекен-жай</th>
-                    <th>Тауар</th>
-                    <th>Бағасы</th>
-                    <th>Жеткізуші / трек</th>
-                    <th>Заметка</th>
-                    <th>Жеткізу</th>
-                    <th>Статус</th>
-                    <th>Чек</th>
-                </tr>
-            </thead>
-            <tbody id="lrs-tbody">
-                <tr>
-                    <td colspan="10" class="lrs-loading">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 20px; margin-bottom: 10px;"></i>
-                        <div>Жүктелуде...</div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="tw dtbl" style="overflow-x:auto">
+      <table class="lrs-table" style="min-width:800px">
+        <thead>
+          <tr>
+            <th>ID / Күні</th>
+            <th>Клиент</th>
+            <th>Мекен-жай</th>
+            <th>Тауар</th>
+            <th>Бағасы</th>
+            <th>Жеткізуші / трек</th>
+            <th>Ескертпе</th>
+            <th>Жеткізу</th>
+            <th>Статус</th>
+            <th>Чек</th>
+          </tr>
+        </thead>
+        <tbody id="lrs-tbody"></tbody>
+      </table>
     </div>
+    <div id="lrsMob"></div>
+  </div>
 
-    <div id="lrs-modal" class="lrs-modal" onclick="lrsCloseModal()">
+  <div id="lrs-modal" class="lrs-modal" onclick="lrsCloseModal()">
         <div class="lrs-modal-content" onclick="event.stopPropagation()">
             <button class="lrs-modal-close" onclick="lrsCloseModal()">
                 <i class="fas fa-times"></i>
@@ -1191,6 +1231,7 @@ tbody tr:hover td{background:#f8f9fd}
         <tbody id="tblLog"></tbody>
       </table>
     </div>
+    <div class="log-feed" id="feedLog" style="display:none"></div>
     <div class="blank" id="blankLog" style="display:none"><div class="blank-ico"><i data-lucide="inbox"></i></div><p>Лидтер жоқ.</p></div>
   </div>
 </div>
@@ -1201,6 +1242,37 @@ tbody tr:hover td{background:#f8f9fd}
 
 
 
+
+<!-- GUARANTEE TALON PAGE -->
+<div id="talonPage" class="page">
+  <h1 style="font-size:19px;font-weight:700;margin-bottom:14px">Гарантия талон</h1>
+  <div class="card">
+    <div class="ch" style="flex-wrap:wrap;gap:10px">
+      <h3>Сақталған талондар (база)</h3>
+      <div class="srch" style="margin:0;flex:1;min-width:160px">
+        <i class="fas fa-search"></i>
+        <input type="text" id="talonSrch" placeholder="Артикул бойынша іздеу..." oninput="rendTalons()" style="width:100%;padding-left:30px">
+      </div>
+      <button class="btn bp sm" onclick="loadTalons()"><i class="fas fa-sync-alt"></i>Жаңарту</button>
+    </div>
+    <div class="tw dtbl"><table><thead><tr><th>Күні</th><th>Клиент</th><th>Артикул</th><th>Сату күні</th><th>Аяқталуы</th><th></th></tr></thead><tbody id="talonTbl"></tbody></table></div>
+    <div id="talonMob"></div>
+  </div>
+</div>
+<!-- Edit talon modal -->
+<div class="modal" id="editTalonMdl">
+  <div class="mbox sm">
+    <div class="mhead"><h3><i class="fas fa-edit" style="color:var(--b)"></i>Талонды өзгерту</h3><button class="mclose" onclick="closeMdl('editTalonMdl')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="etId">
+    <div class="fg"><label>Клиент аты</label><input type="text" id="etClient" placeholder="Аты-жөні"></div>
+    <div class="fg"><label>Артикул</label><input type="text" id="etArticle" placeholder="LR123456"></div>
+    <div class="fg2">
+      <div class="fg"><label>Сату күні</label><input type="date" id="etSaleDate" onchange="updTalonExpiry()"></div>
+      <div class="fg"><label>Аяқталу күні</label><input type="text" id="etExpiry" placeholder="01.01.2026 ж" readonly style="background:#f1f5f9"></div>
+    </div>
+    <div class="mfoot"><button class="btn bo" onclick="closeMdl('editTalonMdl')">Болдырмау</button><button class="btn bp" onclick="submitEditTalon()"><i class="fas fa-check"></i>Сақтау</button></div>
+  </div>
+</div>
 
 <!-- BONUS SETTINGS PAGE -->
 <div id="bonussettingsPage" class="page">
@@ -1217,7 +1289,8 @@ tbody tr:hover td{background:#f8f9fd}
   </div>
   <div class="card" style="margin-bottom:14px">
     <div class="ch"><h3>Дефолт пайыз (менеджер бойынша)</h3></div>
-    <div class="tw"><table><thead><tr><th>Менеджер</th><th>Дефолт %</th><th>Заказ</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th><th></th></tr></thead><tbody id="bsDefT"></tbody></table></div>
+    <div class="tw dtbl"><table><thead><tr><th>Менеджер</th><th>Дефолт %</th><th>Заказ</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th><th></th></tr></thead><tbody id="bsDefT"></tbody></table></div>
+    <div id="bsDefTMob"></div>
   </div>
   <div class="card">
     <div class="ch">
@@ -1227,7 +1300,8 @@ tbody tr:hover td{background:#f8f9fd}
         <select id="bsOP" onchange="rendBsOrd()"><option value="all">Барлық бонус</option><option value="unpaid">Берілмеген</option><option value="paid">Берілген</option></select>
       </div>
     </div>
-    <div class="tw"><table><thead><tr><th>Күні</th><th>Клиент</th><th>Менеджер</th><th>Сома</th><th>Бонус %</th><th>Бонус</th><th>Статус</th></tr></thead><tbody id="bsOrdT"></tbody></table></div>
+    <div class="tw dtbl"><table><thead><tr><th>Күні</th><th>Клиент</th><th>Менеджер</th><th>Сома</th><th>Бонус %</th><th>Бонус</th><th>Статус</th></tr></thead><tbody id="bsOrdT"></tbody></table></div>
+    <div id="bsOrdTMob"></div>
   </div>
 </div>
 
@@ -1240,11 +1314,13 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="c2col" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
     <div class="card">
       <div class="ch"><h3>Менеджерлер тізімі</h3><button class="btn bg2 sm" onclick="openAddMgr()"><i class="fas fa-plus"></i>Қосу</button></div>
-      <div class="tw"><table><thead><tr><th>ID</th><th>Аты</th><th>Белсенді</th><th></th></tr></thead><tbody id="smMgrTbl"></tbody></table></div>
+      <div class="tw dtbl"><table><thead><tr><th>ID</th><th>Аты</th><th>Белсенді</th><th></th></tr></thead><tbody id="smMgrTbl"></tbody></table></div>
+      <div id="smMgrTblMob"></div>
     </div>
     <div class="card">
       <div class="ch"><h3>Тауарлар / Сыйлықтар</h3><button class="btn bbl sm" onclick="openAddProd()"><i class="fas fa-plus"></i>Қосу</button></div>
-      <div class="tw"><table><thead><tr><th>Атауы</th><th>Түрі</th><th>Белсенді</th><th></th></tr></thead><tbody id="smProdTbl"></tbody></table></div>
+      <div class="tw dtbl"><table><thead><tr><th>Атауы</th><th>Түрі</th><th>Белсенді</th><th></th></tr></thead><tbody id="smProdTbl"></tbody></table></div>
+      <div id="smProdTblMob"></div>
     </div>
   </div>
   <div class="danger-card">
@@ -1338,6 +1414,7 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="bni" id="bnD" onclick="goPage('dashboard',null);setBA('bnD')"><i class="fas fa-chart-pie"></i><span>Панель</span></div>
   <div class="bni" id="bnS" onclick="goPage('salary',null);setBA('bnS')"><i class="fas fa-wallet"></i><span>Жалақы</span></div>
   <div class="bni" id="bnL" onclick="goPage('logistics',null);setBA('bnL')"><i class="fas fa-truck"></i><span>Логистик</span></div>
+  <div class="bni" id="bnT" onclick="goPage('talon',null);setBA('bnT')"><i class="fas fa-file-contract"></i><span>Талон</span></div>
   <div class="bni" id="bnMore" onclick="togMore()"><i class="fas fa-ellipsis-h"></i><span>Тағы</span></div>
 </nav>
 <div class="more-ov" id="moreOv" onclick="closeMore()"></div>
@@ -1364,7 +1441,7 @@ tbody tr:hover td{background:#f8f9fd}
       <div class="fg"><label>Менеджер</label><select id="pmMgr" style="height:38px" onchange="calcSug()"><option value="">— таңдаңыз —</option></select></div>
     </div>
     <div class="fg2">
-      <div class="fg"><label>Сома (₸)</label><input type="number" id="pmAmt" min="0" step="100" placeholder="0"></div>
+      <div class="fg"><label>Сома (₸)</label><input type="number" id="pmAmt" min="0" step="100" inputmode="numeric" placeholder="0"></div>
       <div class="fg" id="pmPeriodWrap"><label>Кезең басы / соңы</label><span style="font-size:12px;color:var(--mu)">Төменде толтырыңыз</span></div>
     </div>
     <div class="fg2" id="pmDatesRow">
@@ -1413,7 +1490,7 @@ tbody tr:hover td{background:#f8f9fd}
       <div class="fg"><label>Сома 2 (₸)</label><input type="number" id="eoPrice2" min="0" placeholder="0"></div>
     </div>
     <div class="fg2">
-      <div class="fg"><label>Бонус %</label><input type="number" id="eoBonusPct" min="0" max="100" step="0.1" placeholder="9"></div>
+      <div class="fg"><label>Бонус %</label><input type="number" id="eoBonusPct" class="bpct" min="0" max="100" step="0.1" inputmode="decimal" placeholder="9"></div>
       <div class="fg"><label>Статус</label><select id="eoStatus" style="height:38px"><option value="Жаңа">Жаңа</option><option value="Процесте">Процесте</option><option value="Жолда">Жолда</option><option value="Қабылданды">Жетті</option><option value="Қайтарылды">Қайтарылды</option></select></div>
     </div>
     <div class="mfoot"><button class="btn bo" onclick="closeMdl('editOrdMdl')">Болдырмау</button><button class="btn bbl" onclick="submitEditOrd()"><i class="fas fa-save"></i>Сақтау</button></div>
@@ -1430,7 +1507,7 @@ tbody tr:hover td{background:#f8f9fd}
       <div class="fg"><label>Менеджер</label><select id="epMgr" style="height:38px"></select></div>
     </div>
     <div class="fg2">
-      <div class="fg"><label>Сома (₸)</label><input type="number" id="epAmt" min="0"></div>
+      <div class="fg"><label>Сома (₸)</label><input type="number" id="epAmt" min="0" inputmode="numeric"></div>
       <div class="fg"><label>Статус</label><select id="epStatus" style="height:38px"><option value="true">✅ Берілді</option><option value="false">⏳ Берілмеді</option></select></div>
     </div>
     <div class="fg2">
@@ -1630,7 +1707,11 @@ function trigPage(p){
   else if(p==='bonussettings') rendBS()
   else if(p==='sitemanage') rendSiteManage();
   else if(p==='logistics') lrsLoad();
+  else if(p==='talon') loadTalons();
+  else if(p==='target'){ if(typeof fetchAll==='function'){ fetchAll(); targetRefreshId=setInterval(fetchAll,25000); } }
+  else { if(targetRefreshId){ clearInterval(targetRefreshId); targetRefreshId=null; } }
 }
+let targetRefreshId=null;
 
 // ===== PERIOD =====
 function p2(n){return String(n).padStart(2,'0')}
@@ -1706,7 +1787,7 @@ function rendOrdTbl(data){
       <td><span class="badge bgr">${getMgrName(o.manager_id)}</span></td>
       <td>${payHTML(o)}</td>
       <td><b>${totalP.toLocaleString()} ₸</b></td>
-      <td><div style="display:flex;align-items:center;gap:4px"><input type="number" class="bpct" value="${pct}" min="0" max="100" step="0.1" onchange="updOBon('${o.id}',this.value)"><span style="font-size:10px;color:var(--mu)">%</span></div></td>
+      <td><div style="display:flex;align-items:center;gap:4px"><input type="number" class="bpct" value="${pct}" min="0" max="100" step="0.1" inputmode="decimal" onchange="updOBon('${o.id}',this.value)"><span style="font-size:10px;color:var(--mu)">%</span></div></td>
       <td><b style="color:var(--p)">${ba.toLocaleString()} ₸</b></td>
       <td>${st==='Қабылданды'?'<span class="badge bg">Жетті</span>':'<span class="badge br">Жетпеді</span>'}</td>
       <td><div style="display:flex;gap:4px">
@@ -1726,7 +1807,7 @@ function rendOrdTbl(data){
       <div class="mc-r"><span class="badge bgr" style="font-size:10px">${getMgrName(o.manager_id)}</span><span style="font-size:11px;color:var(--mu)">${fDate(o.created_at)}</span></div>
       ${payHTML(o,true)}
       <div class="mc-r" style="flex-wrap:wrap;gap:6px;margin-top:6px">
-        <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--mu)">Бонус:</span><input type="number" class="bpct" value="${pct}" min="0" max="100" step="0.1" onchange="updOBon('${o.id}',this.value)" style="width:48px"><span style="font-size:11px;color:var(--mu)">% → <b style="color:var(--p)">${ba.toLocaleString()} ₸</b></span></div>
+        <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--mu)">Бонус:</span><input type="number" class="bpct" value="${pct}" min="0" max="100" step="0.1" inputmode="decimal" onchange="updOBon('${o.id}',this.value)" style="width:48px"><span style="font-size:11px;color:var(--mu)">% → <b style="color:var(--p)">${ba.toLocaleString()} ₸</b></span></div>
         ${st==='Қабылданды'?'<span class="badge bg" style="font-size:10px">Жетті</span>':'<span class="badge br" style="font-size:10px">Жетпеді</span>'}
       </div>
       <div class="mc-r" style="margin-top:6px;margin-bottom:0">
@@ -1830,45 +1911,60 @@ function rendDash(){
   // last week table
   const tm=monS(new Date()),lm=new Date(tm);lm.setDate(lm.getDate()-7);const le=new Date(tm);le.setMilliseconds(-1);
   const lw=dbO.filter(o=>o.created_at&&inR(o,lm,le));
-  document.getElementById('dWkTbl').innerHTML=Array.from({length:7},(_,i)=>{
+  const wkRows=Array.from({length:7},(_,i)=>{
     const dt=new Date(lm);dt.setDate(dt.getDate()+i);const iso=toISO(dt);
     const dO=lw.filter(o=>o.created_at?.startsWith(iso));
     const sum=dO.reduce((s,o)=>s+Number(o.price||0)+Number(o.price2||0),0);
     const bn=dO.reduce((s,o)=>s+oBon(o),0);
-    return`<tr><td>${dt.toLocaleDateString('kk-KZ',{weekday:'short',day:'numeric',month:'short'})}</td><td>${dO.length}</td><td>${sum.toLocaleString()} ₸</td><td>${bn.toLocaleString()} ₸</td></tr>`;
-  }).join('');
-  // top 5
+    return{lb:dt.toLocaleDateString('kk-KZ',{weekday:'short',day:'numeric',month:'short'}),cnt:dO.length,sum,bn};
+  });
+  document.getElementById('dWkTbl').innerHTML=wkRows.map(r=>`<tr><td>${r.lb}</td><td>${r.cnt}</td><td>${r.sum.toLocaleString()} ₸</td><td>${r.bn.toLocaleString()} ₸</td></tr>`).join('');
+  const dWkMob=document.getElementById('dWkTblMob');if(dWkMob)dWkMob.innerHTML=wkRows.map(r=>`<div class="mob-card"><div class="mc-r"><span>Күн</span><b>${r.lb}</b></div><div class="mc-r"><span>Тапсырыс</span>${r.cnt}</div><div class="mc-r"><span>Түсім</span><b>${r.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Бонус</span><b>${r.bn.toLocaleString()} ₸</b></div></div>`).join('');
   const byM={};d.forEach(o=>{const id=o.manager_id;if(!byM[id])byM[id]={cnt:0,sum:0,bon:0};byM[id].cnt++;byM[id].sum+=Number(o.price||0)+Number(o.price2||0);byM[id].bon+=oBon(o);});
-  document.getElementById('dTop5').innerHTML=Object.entries(byM).map(([id,v])=>({id,...v,name:getMgrName(id)})).sort((a,b)=>b.sum-a.sum).slice(0,5).map((r,i)=>{const paid=mPaid(r.id);return`<tr><td><b>${i+1}</b></td><td><b>${r.name}</b></td><td>${r.cnt}</td><td>${r.sum.toLocaleString()} ₸</td><td>${r.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${paid.toLocaleString()} ₸</td><td style="color:var(--o)">${Math.max(0,r.bon-paid).toLocaleString()} ₸</td></tr>`;}).join('');
+  const top5=Object.entries(byM).map(([id,v])=>({id,...v,name:getMgrName(id)})).sort((a,b)=>b.sum-a.sum).slice(0,5);
+  document.getElementById('dTop5').innerHTML=top5.map((r,i)=>{const paid=mPaid(r.id);return`<tr><td><b>${i+1}</b></td><td><b>${r.name}</b></td><td>${r.cnt}</td><td>${r.sum.toLocaleString()} ₸</td><td>${r.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${paid.toLocaleString()} ₸</td><td style="color:var(--o)">${Math.max(0,r.bon-paid).toLocaleString()} ₸</td></tr>`;}).join('');
+  const d5Mob=document.getElementById('dTop5Mob');if(d5Mob)d5Mob.innerHTML=top5.map((r,i)=>{const paid=mPaid(r.id);return`<div class="mob-card"><div class="mc-r"><b>#${i+1} ${r.name}</b></div><div class="mc-r"><span>Заказ</span>${r.cnt}</div><div class="mc-r"><span>Түсім</span><b>${r.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Берілген</span><span style="color:var(--g)">${paid.toLocaleString()} ₸</span></div></div>`;}).join('');
 }
 
 // ===== SALARY =====
+function mSalaryPaid(mId){return dbP.filter(p=>p.manager_id==mId&&(p.payment_kind||'salary')==='salary'&&p.is_paid!==false).reduce((s,p)=>s+Number(p.amount),0);}
+function mBonusPaid(mId){return dbP.filter(p=>p.manager_id==mId&&p.payment_kind==='bonus'&&p.is_paid!==false).reduce((s,p)=>s+Number(p.amount),0);}
 function getMgrList(){
   const d=getFilt();
   return dbMgrs.map(m=>{
     const mO=d.filter(o=>o.manager_id==m.id);
     const sum=mO.reduce((s,o)=>s+Number(o.price||0)+Number(o.price2||0),0);
     const bon=mO.reduce((s,o)=>s+oBon(o),0),paid=mPaid(m.id),up=Math.max(0,bon-paid);
+    const salaryPaid=mSalaryPaid(m.id),bonusPaid=mBonusPaid(m.id);
     const avgP=mO.length?mO.reduce((s,o)=>s+parseFloat(o.bonus_percent??DPCT),0)/mO.length:DPCT;
-    return{...m,cnt:mO.length,sum,bon,paid,up,avgP};
+    return{...m,cnt:mO.length,sum,bon,paid,up,avgP,salaryPaid,bonusPaid};
   }).filter(m=>m.cnt>0||m.paid>0);
 }
 
 function rendSal(){
   const mList=getMgrList();
-  const totB=mList.reduce((s,m)=>s+m.bon,0),totP=mList.reduce((s,m)=>s+m.paid,0),totU=mList.reduce((s,m)=>s+m.up,0);
+  const totB=mList.reduce((s,m)=>s+m.bon,0),totU=mList.reduce((s,m)=>s+m.up,0);
+  const paidSalary=dbP.filter(p=>(p.payment_kind||'salary')==='salary'&&p.is_paid!==false).reduce((s,p)=>s+Number(p.amount),0);
+  const paidBonus=dbP.filter(p=>p.payment_kind==='bonus'&&p.is_paid!==false).reduce((s,p)=>s+Number(p.amount),0);
+  const totP=paidSalary+paidBonus;
   const avgP=mList.length?mList.reduce((s,m)=>s+m.avgP,0)/mList.length:DPCT;
-  setEl('salTB',totB.toLocaleString()+' ₸');setEl('salPd',totP.toLocaleString()+' ₸');
-  setEl('salPdC',dbP.length+' транзакция');setEl('salUp',totU.toLocaleString()+' ₸');setEl('salAvP',avgP.toFixed(1)+'%');
+  setEl('salTB',totB.toLocaleString()+' ₸');
+  setEl('salPd',paidSalary.toLocaleString()+' ₸');
+  setEl('salBonus',paidBonus.toLocaleString()+' ₸');
+  setEl('salPdC',dbP.length+' транзакция');
+  setEl('salUp',totU.toLocaleString()+' ₸');
+  setEl('salTotal',(paidSalary+paidBonus).toLocaleString()+' ₸');
+  setEl('salAvP',avgP.toFixed(1)+'%');
   // charts
   if(mList.length){
     mkCh('cSPie',ctx=>{charts.cSPie=new Chart(ctx,{type:'doughnut',data:{labels:mList.map(m=>m.name),datasets:[{data:mList.map(m=>m.bon),backgroundColor:COLS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:6,boxWidth:10}}}}});});
     mkCh('cSBar',ctx=>{charts.cSBar=new Chart(ctx,{type:'bar',data:{labels:mList.map(m=>m.name.split(' ')[0]),datasets:[{label:'Берілген',data:mList.map(m=>m.paid),backgroundColor:'#059669',borderRadius:4},{label:'Берілмеген',data:mList.map(m=>m.up),backgroundColor:'#f59e0b',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000?Math.round(v/1000)+'к':v}}}}});});
   }
-  // progress
+  // progress: ЗП сызығы, бонус сызығы, итог
   document.getElementById('salProgGrid').innerHTML=mList.map(m=>{
     const pct=m.bon>0?Math.min(100,m.paid/m.bon*100):0;
     const col=pct>75?'#059669':pct>40?'#f59e0b':'#dc2626';
+    const totalGiven=(m.salaryPaid||0)+(m.bonusPaid||0);
     return`<div class="ppc">
       <div class="ppc-name"><span>${m.name}</span>
         <div style="display:flex;gap:6px;align-items:center">
@@ -1878,15 +1974,20 @@ function rendSal(){
       </div>
       <div class="ppc-nums">
         <div class="ppc-n"><span>Бонус қоры</span><b>${m.bon.toLocaleString()} ₸</b></div>
-        <div class="ppc-n gn"><span>Берілген</span><b>${m.paid.toLocaleString()} ₸</b></div>
+        <div class="ppc-n gn"><span>Берілген ЗП</span><b>${(m.salaryPaid||0).toLocaleString()} ₸</b></div>
+        <div class="ppc-n bpp" style="color:var(--pt)"><span>Берілген бонус</span><b>${(m.bonusPaid||0).toLocaleString()} ₸</b></div>
         <div class="ppc-n on"><span>Берілмеген</span><b>${m.up.toLocaleString()} ₸</b></div>
       </div>
-      <div class="prog" style="margin-top:10px"><div class="prog-f" style="width:${pct}%;background:${col}"></div></div>
+      <div style="margin-top:8px"><div style="font-size:10px;color:var(--mu);margin-bottom:2px">ЗП</div><div class="prog"><div class="prog-f" style="width:${m.salaryPaid&&m.bon>0?Math.min(100,m.salaryPaid/m.bon*100):0}%;background:#059669"></div></div></div>
+      <div style="margin-top:6px"><div style="font-size:10px;color:var(--mu);margin-bottom:2px">Бонус</div><div class="prog"><div class="prog-f" style="width:${m.bonusPaid&&m.bon>0?Math.min(100,m.bonusPaid/m.bon*100):0}%;background:var(--p)"></div></div></div>
+      <div style="font-size:11px;font-weight:700;color:var(--pr);margin-top:8px;padding-top:6px;border-top:1px solid var(--brd)">Итог (ЗП + Бонус): ${totalGiven.toLocaleString()} ₸</div>
       <div style="font-size:11px;color:var(--mu);margin-top:3px">${pct.toFixed(0)}% берілді</div>
     </div>`;
   }).join('');
   // table
   document.getElementById('salTbl').innerHTML=mList.map(m=>`<tr><td><b>${m.name}</b></td><td>${m.cnt}</td><td>${m.sum.toLocaleString()} ₸</td><td><span class="badge bpp">${m.avgP.toFixed(1)}%</span></td><td>${m.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${m.paid.toLocaleString()} ₸</td><td style="color:var(--o)">${m.up.toLocaleString()} ₸</td><td><button class="btn sm bpu ic" onclick="openPayFor(${m.id})" title="Зп беру"><i class="fas fa-plus"></i></button></td></tr>`).join('');
+  const salMob=document.getElementById('salTblMob');
+  if(salMob) salMob.innerHTML=mList.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b><button class="btn sm bpu ic" onclick="openPayFor(${m.id})"><i class="fas fa-plus"></i></button></div><div class="mc-r"><span>Заказ</span>${m.cnt}</div><div class="mc-r"><span>Сауда</span><b>${m.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Бонус</span><b>${m.bon.toLocaleString()} ₸</b></div><div class="mc-r"><span>Берілген</span><span style="color:var(--g)">${m.paid.toLocaleString()} ₸</span></div><div class="mc-r"><span>Берілмеген</span><span style="color:var(--o)">${m.up.toLocaleString()} ₸</span></div></div>`).join('');
   rendSalHist();
 }
 
@@ -1923,6 +2024,7 @@ function rendSalHist(){
       </div></td>
     </tr>`;
   }).join(''):`<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--mu)">Жазба жоқ</td></tr>`;
+  const salHistMob=document.getElementById('salHistMob');if(salHistMob)salHistMob.innerHTML=pays.length?pays.map(p=>{const isPaid=p.is_paid!==false;const period=p.period_start&&p.period_end?`${p.period_start} — ${p.period_end}`:'—';const kind=(p.payment_kind||'salary')==='bonus'?'bonus':'salary';const kindBadge=kind==='bonus'?'<span class="badge bbl">Бонус</span>':'<span class="badge bpp">Жалақы</span>';const delLabel=(getMgrName(p.manager_id)+': '+Number(p.amount).toLocaleString()+' ₸').replace(/'/g,"\\'");return`<div class="mob-card"><div class="mc-r"><b>${getMgrName(p.manager_id)}</b>${kindBadge}</div><div class="mc-r"><span>Күні</span>${fDate(p.paid_at)}</div><div class="mc-r"><span>Сома</span><b style="color:var(--g)">${Number(p.amount).toLocaleString()} ₸</b></div><div class="mc-r"><span>Кезең</span><span style="font-size:12px;color:var(--mu)">${period}</span></div><div class="mc-r"><button onclick="togPayStat('${p.id}',${!isPaid})" class="btn sm ${isPaid?'bg2':'bo'}">${isPaid?'Берілді':'Берілмеді'}</button><button class="btn sm bbl ic" onclick="openEditPay('${p.id}')"><i class="fas fa-edit"></i></button><button class="btn sm br2 ic" onclick="openDel('${p.id}','salary_payments','${delLabel}')"><i class="fas fa-trash"></i></button></div></div>`;}).join(''):'<div class="mob-card"><div class="mc-r" style="color:var(--mu)">Жазба жоқ</div></div>';
 }
 
 async function togPayStat(id,newVal){
@@ -2017,6 +2119,7 @@ function rendPay(){
   const tot=Object.values(pG).reduce((s,v)=>s+v.sum,0);
   const rows=Object.entries(pG).map(([n,v])=>({n,...v,pct:tot?(v.sum/tot*100).toFixed(1):0})).sort((a,b)=>b.sum-a.sum);
   document.getElementById('payTbl').innerHTML=rows.map(r=>`<tr><td><b>${r.n}</b></td><td>${r.cnt}</td><td>${r.sum.toLocaleString()} ₸</td><td>${r.pct}%</td></tr>`).join('');
+  const payMob=document.getElementById('payTblMob');if(payMob)payMob.innerHTML=rows.map(r=>`<div class="mob-card"><div class="mc-r"><span>Төлем түрі</span><b>${r.n}</b></div><div class="mc-r"><span>Тапсырыс</span>${r.cnt}</div><div class="mc-r"><span>Сома</span><b>${r.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>%</span><b>${r.pct}%</b></div></div>`).join('');
   mkCh('cPay',ctx=>{charts.cPay=new Chart(ctx,{type:'doughnut',data:{labels:rows.map(r=>r.n),datasets:[{data:rows.map(r=>r.sum),backgroundColor:COLS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:6,boxWidth:10}}}}});});
 }
 
@@ -2027,6 +2130,7 @@ function rendDaily(){
   d.forEach(o=>{if(!o.created_at) return;const s=o.created_at.slice(0,10);if(dm[s]){dm[s].cnt++;dm[s].sum+=Number(o.price||0)+Number(o.price2||0);dm[s].bon+=oBon(o);}});
   const rows=Object.values(dm).sort((a,b)=>a.iso.localeCompare(b.iso));
   document.getElementById('dailyTbl').innerHTML=rows.map(r=>`<tr><td>${r.lb}</td><td>${r.cnt}</td><td>${r.sum.toLocaleString()} ₸</td><td>${r.cnt?Math.round(r.sum/r.cnt).toLocaleString():0} ₸</td><td>${r.bon.toLocaleString()} ₸</td></tr>`).join('');
+  const dailyMob=document.getElementById('dailyTblMob');if(dailyMob)dailyMob.innerHTML=rows.map(r=>`<div class="mob-card"><div class="mc-r"><span>Күн</span><b>${r.lb}</b></div><div class="mc-r"><span>Тапсырыс</span>${r.cnt}</div><div class="mc-r"><span>Түсім</span><b>${r.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Бонус</span><b>${r.bon.toLocaleString()} ₸</b></div></div>`).join('');
   mkCh('cDaily',ctx=>{charts.cDaily=new Chart(ctx,{type:'bar',data:{labels:rows.map(r=>r.lb),datasets:[{label:'Тапсырыс',data:rows.map(r=>r.cnt),backgroundColor:'#334155',borderRadius:3,yAxisID:'y2'},{label:'Түсім (мың)',data:rows.map(r=>Math.round(r.sum/1000)),backgroundColor:'#0369a1',borderRadius:3,yAxisID:'y'},{label:'Бонус (мың)',data:rows.map(r=>Math.round(r.bon/1000)),backgroundColor:'#7c3aed',borderRadius:3,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{beginAtZero:true,position:'left'},y2:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false}}}}});});
 }
 
@@ -2043,6 +2147,7 @@ function rendRank(){
     const pct=tot?(r.sum/tot*100).toFixed(1):0,up=Math.max(0,r.bon-r.paid);
     return`<tr><td><b>${med[i]||i+1}</b></td><td><b>${r.name}</b></td><td>${r.cnt}</td><td>${r.sum.toLocaleString()} ₸</td><td><span class="badge bpp" style="font-size:10px">${r.avgP.toFixed(1)}%</span></td><td>${r.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${r.paid.toLocaleString()} ₸</td><td style="color:var(--o)">${up.toLocaleString()} ₸</td><td>${pct}%</td></tr>`;
   }).join('');
+  const rMob=document.getElementById('rankTblMob');if(rMob)rMob.innerHTML=list.map((r,i)=>{const up=Math.max(0,r.bon-r.paid);return`<div class="mob-card"><div class="mc-r"><b>${med[i]||i+1} ${r.name}</b></div><div class="mc-r"><span>Заказ</span>${r.cnt}</div><div class="mc-r"><span>Түсім</span><b>${r.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Берілген</span><span style="color:var(--g)">${r.paid.toLocaleString()} ₸</span></div><div class="mc-r"><span>Берілмеген</span><span style="color:var(--o)">${up.toLocaleString()} ₸</span></div></div>`;}).join('');
 }
 
 // ===== CLIENTS =====
@@ -2053,6 +2158,7 @@ function rendCli(){
   const rows=Object.entries(byC).map(([n,v])=>({n,...v,avg:v.cnt?Math.round(v.sum/v.cnt):0})).filter(r=>!q||r.n.toLowerCase().includes(q)).sort((a,b)=>b.sum-a.sum);
   setEl('cliT',rows.length);setEl('cliO',d.length);setEl('cliA',rows.length?(d.length/rows.length).toFixed(1):0);
   document.getElementById('cliTbl').innerHTML=rows.map(r=>`<tr><td><b>${eH(r.n)}</b></td><td style="font-size:12px;color:var(--b)">${r.phone}</td><td>${r.cnt}</td><td>${r.sum.toLocaleString()} ₸</td><td>${r.avg.toLocaleString()} ₸</td><td style="font-size:12px">${r.last?fDate(r.last):'—'}</td></tr>`).join('');
+  const cliMob=document.getElementById('cliTblMob');if(cliMob)cliMob.innerHTML=rows.map(r=>`<div class="mob-card"><div class="mc-r"><b>${eH(r.n)}</b></div><div class="mc-r"><span>Телефон</span><span style="font-size:12px;color:var(--b)">${r.phone}</span></div><div class="mc-r"><span>Заказ</span>${r.cnt}</div><div class="mc-r"><span>Жалпы</span><b>${r.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Соңғы</span>${r.last?fDate(r.last):'—'}</div></div>`).join('');
 }
 
 // ===== MANAGERS =====
@@ -2068,6 +2174,7 @@ function rendMgr(){
   const best=list.reduce((a,m)=>m.sum>a.sum?m:a,list[0]||{name:'—'});
   setEl('mgrC',list.length);setEl('mgrTS',ts.toLocaleString()+' ₸');setEl('mgrTB',tb.toLocaleString()+' ₸');setEl('mgrL',best.name||'—');
   document.getElementById('mgrTbl').innerHTML=list.map(m=>`<tr><td><b>${m.name}</b></td><td>${m.cnt}</td><td>${m.sum.toLocaleString()} ₸</td><td><span class="badge bpp" style="font-size:10px">${m.avgP.toFixed(1)}%</span></td><td>${m.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${m.paid.toLocaleString()} ₸</td><td style="color:var(--o)">${m.up.toLocaleString()} ₸</td></tr>`).join('');
+  const mMob=document.getElementById('mgrTblMob');if(mMob)mMob.innerHTML=list.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b></div><div class="mc-r"><span>Заказ</span>${m.cnt}</div><div class="mc-r"><span>Түсім</span><b>${m.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Берілген</span><span style="color:var(--g)">${m.paid.toLocaleString()} ₸</span></div><div class="mc-r"><span>Берілмеген</span><span style="color:var(--o)">${m.up.toLocaleString()} ₸</span></div></div>`).join('');
   // notes
   document.getElementById('mgrNotes').innerHTML=dbMgrs.filter(m=>m.is_active).map(m=>{
     const note=dbNotes[m.id]?.note||'';
@@ -2188,14 +2295,13 @@ function rendBS(){
     mkCh('cBsLn',ctx=>{charts.cBsLn=new Chart(ctx,{type:'line',data:{labels:rc.map(o=>fDate(o.created_at)),datasets:[{label:'Бонус %',data:rc.map(o=>parseFloat(o.bonus_percent??DPCT)),borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.1)',fill:true,tension:.3,pointRadius:2,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:20,ticks:{callback:v=>v+'%'}}}}});});
   }
   // default % table
-  document.getElementById('bsDefT').innerHTML=dbMgrs.filter(m=>m.is_active).map(m=>{
-    const mO=d.filter(o=>o.manager_id==m.id),bon=mO.reduce((s,o)=>s+oBon(o),0),paid=mPaid(m.id),defP=dbBS[m.id]??DPCT;
-    return`<tr><td><b>${m.name}</b></td>
-      <td><div style="display:flex;align-items:center;gap:6px"><input type="number" id="bsDef_${m.id}" class="bpct" value="${defP}" min="0" max="100" step="0.1"><span style="font-size:10px;color:var(--mu)">%</span><button class="btn sm bpu" onclick="saveDefP(${m.id})"><i class="fas fa-save"></i></button></div></td>
-      <td>${mO.length}</td><td>${bon.toLocaleString()} ₸</td>
-      <td style="color:var(--g)">${paid.toLocaleString()} ₸</td><td style="color:var(--o)">${Math.max(0,bon-paid).toLocaleString()} ₸</td>
-      <td></td></tr>`;
-  }).join('');
+  const bsDefRows=dbMgrs.filter(m=>m.is_active).map(m=>{const mO=d.filter(o=>o.manager_id==m.id),bon=mO.reduce((s,o)=>s+oBon(o),0),paid=mPaid(m.id),defP=dbBS[m.id]??DPCT;return{mgrId:m.id,name:m.name,defP,mO,bon,paid,up:Math.max(0,bon-paid)};});
+  document.getElementById('bsDefT').innerHTML=bsDefRows.map(r=>`<tr><td><b>${r.name}</b></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><input type="number" id="bsDef_${r.mgrId}" class="bpct" value="${r.defP}" min="0" max="100" step="0.1" inputmode="decimal"><span style="font-size:10px;color:var(--mu)">%</span><button class="btn sm bpu" onclick="saveDefP(${r.mgrId})"><i class="fas fa-save"></i></button></div></td>
+      <td>${r.mO.length}</td><td>${r.bon.toLocaleString()} ₸</td>
+      <td style="color:var(--g)">${r.paid.toLocaleString()} ₸</td><td style="color:var(--o)">${r.up.toLocaleString()} ₸</td>
+      <td></td></tr>`).join('');
+  const bsDefMob=document.getElementById('bsDefTMob');if(bsDefMob)bsDefMob.innerHTML=bsDefRows.map(r=>`<div class="mob-card"><div class="mc-r"><b>${r.name}</b></div><div class="mc-r"><span>Заказ</span>${r.mO.length}</div><div class="mc-r"><span>Бонус</span><b>${r.bon.toLocaleString()} ₸</b></div><div class="mc-r"><span>Берілген</span><span style="color:var(--g)">${r.paid.toLocaleString()} ₸</span></div><div class="mc-r"><span>Берілмеген</span><span style="color:var(--o)">${r.up.toLocaleString()} ₸</span></div><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="number" id="bsDef_mob_${r.mgrId}" class="bpct" value="${r.defP}" min="0" max="100" step="0.1" style="width:52px"><span style="font-size:10px;color:var(--mu)">%</span><button class="btn sm bpu" onclick="document.getElementById('bsDef_${r.mgrId}').value=document.getElementById('bsDef_mob_${r.mgrId}').value;saveDefP(${r.mgrId})"><i class="fas fa-save"></i></button></div></div>`).join('');
   rendBsOrd();
 }
 
@@ -2214,14 +2320,16 @@ function rendBsOrd(){
   if(mgr!=='all') d=d.filter(o=>o.manager_id==mgr);
   if(paid==='paid') d=d.filter(o=>o.bonus_paid);
   if(paid==='unpaid') d=d.filter(o=>!o.bonus_paid);
-  document.getElementById('bsOrdT').innerHTML=d.slice(0,80).map(o=>{
+  const bsOrdList=d.slice(0,80);
+  document.getElementById('bsOrdT').innerHTML=bsOrdList.map(o=>{
     const pct=parseFloat(o.bonus_percent??DPCT),ba=oBon(o);
     return`<tr><td style="font-size:12px;white-space:nowrap">${fDate(o.created_at)}</td><td>${eH(o.client_name)}</td><td><span class="badge bgr">${getMgrName(o.manager_id)}</span></td>
       <td><b>${(Number(o.price||0)+Number(o.price2||0)).toLocaleString()} ₸</b></td>
-      <td><div style="display:flex;align-items:center;gap:4px"><input type="number" class="bpct" value="${pct}" min="0" max="100" step="0.1" onchange="updOBon('${o.id}',this.value)" style="width:50px"><span style="font-size:10px;color:var(--mu)">%</span></div></td>
+      <td><div style="display:flex;align-items:center;gap:4px"><input type="number" class="bpct" value="${pct}" min="0" max="100" step="0.1" inputmode="decimal" onchange="updOBon('${o.id}',this.value)" style="width:50px"><span style="font-size:10px;color:var(--mu)">%</span></div></td>
       <td><b style="color:var(--p)">${ba.toLocaleString()} ₸</b></td>
       <td>${o.bonus_paid?'<span class="badge bg">Берілді</span>':'<span class="badge bo2">Күтілуде</span>'}</td></tr>`;
   }).join('');
+  const bsOrdMob=document.getElementById('bsOrdTMob');if(bsOrdMob)bsOrdMob.innerHTML=bsOrdList.map(o=>{const pct=parseFloat(o.bonus_percent??DPCT),ba=oBon(o);return`<div class="mob-card"><div class="mc-r"><b>${eH(o.client_name)}</b><span class="badge bgr" style="font-size:10px">${getMgrName(o.manager_id)}</span></div><div class="mc-r"><span>Күні</span>${fDate(o.created_at)}</div><div class="mc-r"><span>Сома</span><b>${(Number(o.price||0)+Number(o.price2||0)).toLocaleString()} ₸</b></div><div class="mc-r"><span>Бонус</span><b style="color:var(--p)">${ba.toLocaleString()} ₸</b></div><div class="mc-r">${o.bonus_paid?'<span class="badge bg">Берілді</span>':'<span class="badge bo2">Күтілуде</span>'}</div></div>`;}).join('');
 }
 
 function rendTs(){
@@ -2249,6 +2357,8 @@ async function rendSiteManage(){
       <button class="btn sm br2 ic" onclick="openDel('${p.id}','site_products','${eA(p.name)}')"><i class="fas fa-trash"></i></button>
     </div></td>
   </tr>`).join('');
+  const smMgrMob=document.getElementById('smMgrTblMob');if(smMgrMob)smMgrMob.innerHTML=dbMgrs.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b>${m.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}</div><div class="mc-r"><button class="btn sm ${m.is_active?'bo':'bg2'} ic" onclick="togMgr(${m.id},${!m.is_active})"><i class="fas fa-${m.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${m.id}','site_managers','${eA(m.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
+  const smProdMob=document.getElementById('smProdTblMob');if(smProdMob)smProdMob.innerHTML=dbProds.map(p=>`<div class="mob-card"><div class="mc-r"><b>${eH(p.name)}</b><span class="badge ${p.category==='gift'?'bpp':'bb'}" style="font-size:10px">${p.category==='gift'?'Сыйлық':'Тауар'}</span></div><div class="mc-r">${p.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}<button class="btn sm ${p.is_active?'bo':'bg2'} ic" onclick="togProd(${p.id},${!p.is_active})"><i class="fas fa-${p.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${p.id}','site_products','${eA(p.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
 }
 
 async function togMgr(id,active){const{error}=await sb.from('site_managers').update({is_active:active}).eq('id',id);if(error){popup('Қате','r');return;}popup(active?'Белсендірілді':'Жабылды',active?'g':'o');rendSiteManage();}
@@ -2358,10 +2468,11 @@ document.getElementById('delCfm').onclick=async()=>{
   if(error){popup('Қате','r');return;}
   popup('Өшірілді','g');closeMdl('delMdl');loadAll();
   if(delTbl==='site_managers'||delTbl==='site_products') rendSiteManage();
+  if(delTbl==='warranty_talons') loadTalons();
 };
 
 // ===== NAV =====
-const PTITLES={orders:'Тапсырыстар',dashboard:'Басты панель',salary:'Жалақы & Бонус',payments:'Төлем түрлері',daily:'Күнделікті есеп',ranking:'Рейтинг',clients:'Клиенттер',managers:'Менеджерлер',logistics:'Логистика',target:'Таргет',bonussettings:'Бонус баптау',sitemanage:'Сайт баптау',settings:'Баптау',help:'Көмек'};
+const PTITLES={orders:'Тапсырыстар',dashboard:'Басты панель',salary:'Жалақы & Бонус',payments:'Төлем түрлері',daily:'Күнделікті есеп',ranking:'Рейтинг',clients:'Клиенттер',managers:'Менеджерлер',logistics:'Логистика',talon:'Гарантия талон',target:'Таргет',bonussettings:'Бонус баптау',sitemanage:'Сайт баптау',settings:'Баптау',help:'Көмек'};
 function goPage(p,el){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nitem').forEach(x=>x.classList.remove('active'));
@@ -2371,6 +2482,8 @@ function goPage(p,el){
   document.getElementById('ordSrchW').style.display=p==='orders'?'block':'none';
   ['expDrop','umenu'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   closeSib();closeMore();
+  const bnavId={orders:'bnO',dashboard:'bnD',salary:'bnS',logistics:'bnL',talon:'bnT'}[p];
+  setBA(bnavId||'');
   trigPage(p);
   fixLay();
 }
@@ -2422,8 +2535,6 @@ checkAuth();
         const lrsSB = supabase.createClient(SB_URL, SB_KEY);
 
         let masterData = [];
-        let currentStatus = 'all';
-        let currentTime = 'all';
 
         async function lrsLoad() {
             const tbody = document.getElementById('lrs-tbody');
@@ -2439,64 +2550,32 @@ checkAuth();
             }
         }
 
-        function lrsHandleStatus(status, el) {
-            currentStatus = status;
-            document.querySelectorAll('.lrs-chip').forEach(c => {
-                if (c.textContent === 'Статус' || 
-                    c.textContent === 'Жаңа' || 
-                    c.textContent === 'Процесте' || 
-                    c.textContent === 'Жолда' || 
-                    c.textContent === 'Жетті') {
-                    c.classList.remove('active');
-                }
-            });
-            el.classList.add('active');
-            lrsFilter();
-        }
-
-        function lrsHandleTime(time, el) {
-            currentTime = time;
-            document.querySelectorAll('.lrs-chip').forEach(c => {
-                if (c.textContent === 'Барлығы' || 
-                    c.textContent === 'Бүгін' || 
-                    c.textContent === 'Апта') {
-                    c.classList.remove('active');
-                }
-            });
-            el.classList.add('active');
-            lrsFilter();
-        }
 
         function lrsFilter() {
-            const q = document.getElementById('lrs-search').value.toLowerCase();
-            
+            const q = (document.getElementById('lrs-search')?.value || '').toLowerCase();
+            const currentStatus = document.getElementById('lrsSt')?.value || 'all';
+            const currentTime = document.getElementById('lrsT')?.value || 'all';
             let filtered = [...masterData];
 
-            // Status filter
-            if (currentStatus !== 'all') {
-                filtered = filtered.filter(o => (o.status || "Жаңа") === currentStatus);
-            }
-            
-            // Search
+            if (currentStatus !== 'all') filtered = filtered.filter(o => (o.status || "Жаңа") === currentStatus);
             if (q) {
                 filtered = filtered.filter(o => 
                     o.client_name?.toLowerCase().includes(q) || 
                     o.client_phone?.includes(q) || 
                     o.product?.toLowerCase().includes(q) ||
+                    (o.address || '').toLowerCase().includes(q) ||
+                    (o.delivery_contact || '').toLowerCase().includes(q) ||
+                    (o.logistics_note || '').toLowerCase().includes(q) ||
                     (o.gifts || o.gift || o.comment)?.toLowerCase().includes(q)
                 );
             }
-
-            // Time filter
             if (currentTime === 'today') {
-                const today = new Date().setHours(0,0,0,0);
+                const today = new Date(); today.setHours(0,0,0,0);
                 filtered = filtered.filter(o => new Date(o.created_at) >= today);
             } else if (currentTime === 'week') {
-                const now = new Date();
-                const weekAgo = new Date(now.setDate(now.getDate() - 7));
+                const now = new Date(); const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
                 filtered = filtered.filter(o => new Date(o.created_at) >= weekAgo);
             }
-
             lrsRender(filtered);
         }
 
@@ -2512,10 +2591,19 @@ checkAuth();
         function lrsRender(items) {
             const tbody = document.getElementById('lrs-tbody');
             
+            const mobEl = document.getElementById('lrsMob');
             if (items.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="10" class="lrs-loading"><i class="fas fa-search"></i><div>Тапсырыс табылмады</div></td></tr>';
+                if (mobEl) mobEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mu)">Тапсырыс табылмады</div>';
                 return;
             }
+
+            const stCls = s => { if(s==='Жаңа') return 'st-new'; if(s==='Процесте') return 'st-process'; if(s==='Жолда') return 'st-shipping'; if(s==='Қабылданды') return 'st-done'; if(s==='Қайтарылды') return 'st-return'; return 'st-new'; };
+            if (mobEl) mobEl.innerHTML = items.map(o => {
+                const total = Number(o.price||0) + Number(o.price2||0);
+                const st = o.status || 'Жаңа';
+                return `<div class="mob-card"><div class="mc-r"><b>${(o.client_name||'—').replace(/</g,'&lt;')}</b><span class="badge ${stCls(st)}" style="font-size:10px">${st==='Қабылданды'?'Жетті':st}</span></div><div class="mc-r"><span style="font-size:11px;color:var(--mu)">${(o.client_phone||'—')}</span><b>${total.toLocaleString()} ₸</b></div><div class="mc-r" style="font-size:12px">${(o.address||'—').replace(/</g,'&lt;')}</div><div class="mc-r" style="font-size:12px"><b>${(o.product||'—').replace(/</g,'&lt;')}</b>${o.gift?' + '+(o.gift||'').replace(/</g,'&lt;'):''}</div><div class="mc-r"><input type="text" class="lrs-delivery-input" placeholder="Номер/трек" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" onchange="lrsUpdate('${o.id}','delivery_contact',this.value)" style="max-width:140px"><textarea class="lrs-note-input" rows="1" placeholder="Ескертпе" onchange="lrsUpdate('${o.id}','logistics_note',this.value)" style="min-height:28px;max-width:160px">${(o.logistics_note||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></div><div class="mc-r"><select class="lrs-delivery-select" onchange="lrsUpdate('${o.id}','delivery_type',this.value)"><option value="Курьер" ${o.delivery_type==='Курьер'?'selected':''}>Курьер</option><option value="Такси" ${o.delivery_type==='Такси'?'selected':''}>Такси</option><option value="Поезд" ${o.delivery_type==='Поезд'?'selected':''}>Поезд</option><option value="Почта" ${o.delivery_type==='Почта'?'selected':''}>Почта</option></select><select class="lrs-delivery-select st-badge ${stCls(st)}" onchange="lrsUpdate('${o.id}','status',this.value)"><option value="Жаңа" ${st==='Жаңа'?'selected':''}>Жаңа</option><option value="Процесте" ${st==='Процесте'?'selected':''}>Процесте</option><option value="Жолда" ${st==='Жолда'?'selected':''}>Жолда</option><option value="Қабылданды" ${st==='Қабылданды'?'selected':''}>Жетті</option><option value="Қайтарылды" ${st==='Қайтарылды'?'selected':''}>Қайтарылды</option></select>${o.receipt_url ? `<button class="btn sm bo ic" onclick="lrsOpenModal('${o.receipt_url}')"><i class="fas fa-image"></i></button>` : ''}</div></div>`;
+            }).join('');
 
             tbody.innerHTML = items.map(o => {
                 const giftData = o.gifts || o.gift || o.comment || "";
@@ -2601,6 +2689,76 @@ checkAuth();
         lrsLoad();
     </script>
 
+    <!-- GUARANTEE TALONS -->
+    <script>
+    let talonList=[];
+    function rendTalons(){
+      const q=(document.getElementById('talonSrch')?.value||'').trim().toLowerCase();
+      const list=q?talonList.filter(t=>(t.article||'').toLowerCase().includes(q)):talonList;
+      const tbody=document.getElementById('talonTbl');
+      const mob=document.getElementById('talonMob');
+      if(!tbody) return;
+      tbody.innerHTML=list.length?list.map(t=>`<tr>
+        <td>${fDate(t.created_at)}</td>
+        <td><b>${eH(t.client_name)}</b></td>
+        <td><span class="badge bpp">${eH(t.article)}</span></td>
+        <td>${t.sale_date||'—'}</td>
+        <td>${t.expiry_date||'—'}</td>
+        <td><div style="display:flex;gap:4px"><button class="btn sm bbl ic" onclick="openEditTalon('${t.id}')" title="Өзгерту"><i class="fas fa-edit"></i></button><button class="btn sm br2 ic" onclick="openDel('${t.id}','warranty_talons','${eA(t.client_name)} ${eA(t.article)}')" title="Өшіру"><i class="fas fa-trash"></i></button></div></td>
+      </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--mu)">Талон жоқ</td></tr>';
+      if(mob) mob.innerHTML=list.length?list.map(t=>{
+        const delLab=((t.client_name||'')+' '+(t.article||'')).trim().replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        return`<div class="talon-mob-card"><div class="tmc-head"><b>${eH(t.client_name)}</b><span class="tmc-art">${eH(t.article)}</span></div><div class="tmc-row"><span>Сату күні</span>${t.sale_date||'—'}</div><div class="tmc-row"><span>Аяқталу</span>${t.expiry_date||'—'}</div><div class="tmc-row"><span>Күні</span>${fDate(t.created_at)}</div><div class="tmc-acts"><button class="btn sm bbl" onclick="openEditTalon('${t.id}')"><i class="fas fa-edit"></i> Өзгерту</button><button class="btn sm br2" onclick="openDel('${t.id}','warranty_talons','${delLab}')"><i class="fas fa-trash"></i> Өшіру</button></div></div>`;
+      }).join(''):'';
+    }
+    function updTalonExpiry(){
+      const sd=document.getElementById('etSaleDate').value;
+      if(!sd){setVal('etExpiry','');return;}
+      const d=new Date(sd);d.setFullYear(d.getFullYear()+1);
+      setVal('etExpiry',String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' ж');
+    }
+    function openEditTalon(id){
+      const t=talonList.find(x=>x.id===id);if(!t) return;
+      document.getElementById('etId').value=t.id;
+      setVal('etClient',t.client_name||'');
+      setVal('etArticle',t.article||'');
+      setVal('etSaleDate',t.sale_date||'');
+      setVal('etExpiry',t.expiry_date||'');
+      updTalonExpiry();
+      document.getElementById('editTalonMdl').classList.add('show');
+    }
+    async function submitEditTalon(){
+      const id=document.getElementById('etId').value;
+      const client_name=document.getElementById('etClient').value.trim();
+      const article=document.getElementById('etArticle').value.trim();
+      const sale_date=document.getElementById('etSaleDate').value||null;
+      if(!client_name||!article){popup('Клиент аты мен артикулды толтырыңыз','o');return;}
+      let expiry_date=null;
+      if(sale_date){const d=new Date(sale_date);d.setFullYear(d.getFullYear()+1);expiry_date=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' ж';}
+      const { error } = await sb.from('warranty_talons').update({ client_name, article, sale_date, expiry_date }).eq('id',id);
+      if(error){popup('Қате: '+error.message,'r');return;}
+      popup('Сақталды','g');closeMdl('editTalonMdl');
+      const idx=talonList.findIndex(x=>x.id===id);if(idx>=0){talonList[idx].client_name=client_name;talonList[idx].article=article;talonList[idx].sale_date=sale_date;talonList[idx].expiry_date=expiry_date;}
+      setVal('etExpiry',expiry_date||'');
+      rendTalons();
+    }
+    async function loadTalons(){
+      const tbody=document.getElementById('talonTbl');
+      const mob=document.getElementById('talonMob');
+      if(!tbody) return;
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--mu)"><i class="fas fa-spinner fa-spin"></i> Жүктелуде...</td></tr>';
+      const { data, error } = await sb.from('warranty_talons').select('*').order('created_at',{ascending:false});
+      if(error){
+        tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--r)">Кесте жоқ немесе қате: warranty_talons</td></tr>';
+        if(mob) mob.innerHTML='';
+        talonList=[];
+        return;
+      }
+      talonList=data||[];
+      setVal('talonSrch','');
+      rendTalons();
+    }
+    </script>
 
     <!-- TARGET SCRIPT -->
      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2787,11 +2945,12 @@ async function fetchLeads(){
   if(error){notify('Лид қатесі','fail');return;}
   const rows=data||[];
   const tbl=$('tblLog'),empty=$('blankLog');
-  if(!rows.length){tbl.innerHTML='';empty.style.display='block';return;}
+  if(!rows.length){tbl.innerHTML='';const fl=$('feedLog');if(fl){fl.innerHTML='';fl.style.display='none';}empty.style.display='block';return;}
   empty.style.display='none';
   tbl.innerHTML=rows.map((r,i)=>{
     const d=new Date(r.created_at);
     const ts=d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    const refSafe=(r.referrer||'—').replace(/'/g,"\\'");
     return`<tr>
       <td class="cell-muted">${i+1}</td>
       <td><strong>${safe(r.manager_name||'—')}</strong></td>
@@ -2800,6 +2959,22 @@ async function fetchLeads(){
       <td><button class="act act-flame act-sq" title="Жою" onclick="purgeLead('${r.id}','${safe(r.manager_name||'')}')"><i data-lucide="trash-2"></i></button></td>
     </tr>`;
   }).join('');
+  const feedLog=$('feedLog');
+  if(feedLog){
+    const isMob=window.innerWidth<=620;
+    if(isMob){
+      document.querySelector('.scroll-x.keep').style.display='none';
+      feedLog.style.display='flex';
+      feedLog.innerHTML=rows.map((r,i)=>{
+        const d=new Date(r.created_at);
+        const ts=d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+        const refSafe=safe(r.referrer||'—');
+        const whoEsc=(r.manager_name||'—').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        return`<div class="log-card"><div class="log-card-r"><strong>#${i+1} ${safe(r.manager_name||'—')}</strong><button class="act act-flame act-sq" title="Жою" onclick="purgeLead('${r.id}','${whoEsc}')"><i data-lucide="trash-2"></i></button></div><div class="log-card-r"><span style="color:var(--dust);font-size:12px">${ts}</span></div><div class="log-card-r" style="font-size:12px;color:var(--dust);word-break:break-all">${refSafe}</div></div>`;
+      }).join('');
+      lucide.createIcons();
+    }else{ feedLog.style.display='none'; feedLog.innerHTML=''; document.querySelector('.scroll-x.keep').style.display='block'; }
+  }
   lucide.createIcons();
 }
 
@@ -2890,7 +3065,9 @@ function safe(s){if(!s)return'';const d=document.createElement('div');d.textCont
 
 lucide.createIcons();
 fetchAll();
-setInterval(fetchAll,30000);
+setInterval(fetchAll,12000);
+function startTargetRefresh(){if(document.getElementById('targetPage')&&document.getElementById('targetPage').classList.contains('active'))fetchAll();}
+setInterval(startTargetRefresh,12000);
 </script>
 
 
