@@ -141,11 +141,27 @@
             </div>
 
             <div class="filters" id="statusFilters">
-                <button class="chip active" onclick="applyStatusFilter('all', this)">Барлығы</button>
-                <button class="chip" onclick="applyStatusFilter('Жаңа', this)">⏳ Жаңа</button>
+                <button class="chip" onclick="applyStatusFilter('all', this)">Барлығы</button>
+                <button class="chip active" onclick="applyStatusFilter('Жаңа', this)">⏳ Жаңа</button>
                 <button class="chip" onclick="applyStatusFilter('Процесте', this)">🔄 Процесте</button>
                 <button class="chip" onclick="applyStatusFilter('Жолда', this)">🚚 Жолда</button>
                 <button class="chip" onclick="applyStatusFilter('Қабылданды', this)">✅ Жетті</button>
+            </div>
+
+            <div class="filters" id="deliveryFilters">
+                <button class="chip active" onclick="applyDeliveryFilter('all', this)">🚚 Барлық жеткізу</button>
+                <button class="chip" onclick="applyDeliveryFilter('Курьер', this)">🛵 Курьер</button>
+                <button class="chip" onclick="applyDeliveryFilter('Такси', this)">🚕 Такси</button>
+                <button class="chip" onclick="applyDeliveryFilter('Поезд', this)">🚂 Поезд</button>
+                <button class="chip" onclick="applyDeliveryFilter('Почта', this)">📦 Почта</button>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;padding:4px 0;">
+                <span style="font-size:12px;font-weight:600;color:#64748b;white-space:nowrap;">👤 Менеджер:</span>
+                <select id="managerFilter" onchange="applyManagerFilter(this)"
+                    style="flex:1;padding:8px 12px;border-radius:20px;border:1px solid #e2e8f0;font-size:12px;font-weight:600;background:white;outline:none;">
+                    <option value="all">Барлығы</option>
+                </select>
             </div>
         </div>
     </div>
@@ -162,8 +178,10 @@
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         let store = [];
-        let currentStatus = 'all';
+        let currentStatus = 'Жаңа';
         let currentTimeScope = 'Барлығы';
+        let currentDelivery = 'all';
+        let currentManager = 'all';
 
         async function load() {
             document.getElementById('container').innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">Жүктелуде...</div>';
@@ -173,6 +191,11 @@
                     ...o,
                     status: (o.status === null || o.status === "" || o.status === "null") ? "Жаңа" : o.status
                 }));
+                // Populate manager filter
+                const mgrSel = document.getElementById('managerFilter');
+                const mgrSet = [...new Set(store.map(o => o.manager_name).filter(Boolean))].sort();
+                while (mgrSel.options.length > 1) mgrSel.remove(1);
+                mgrSet.forEach(name => mgrSel.add(new Option(name, name)));
                 filter();
             }
         }
@@ -181,6 +204,18 @@
             currentStatus = status;
             document.querySelectorAll('#statusFilters .chip').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
+            filter();
+        }
+
+        function applyDeliveryFilter(delivery, el) {
+            currentDelivery = delivery;
+            document.querySelectorAll('#deliveryFilters .chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            filter();
+        }
+
+        function applyManagerFilter(el) {
+            currentManager = el.value;
             filter();
         }
 
@@ -194,7 +229,6 @@
 
         function filter() {
             const val = document.getElementById('mainSearch').value.toLowerCase().trim();
-            // Іздеу жолағындағы нөмірден барлық таңбаларды алып тастап, тек сандарды қалдыру (мысалы: 8 (777) 123 -> 8777123)
             const cleanSearchVal = val.replace(/\D/g, ''); 
 
             const now = new Date();
@@ -209,9 +243,6 @@
 
             const filtered = store.filter(o => {
                 const orderDate = new Date(o.created_at);
-                
-                // --- СМАРТ ІЗДЕУ ЛОГИКАСЫ ---
-                // Клиент нөмірін де тазалап аламыз (тек сандар)
                 const cleanPhone = (o.client_phone || '').replace(/\D/g, '');
                 
                 const searchMatch = !val || (
@@ -219,14 +250,14 @@
                     (o.address?.toLowerCase().includes(val)) ||
                     (o.product?.toLowerCase().includes(val)) ||
                     (o.gift?.toLowerCase().includes(val)) ||
-                    // Егер тазаланған іздеу мәні нөмірдің ішінде болса
                     (cleanPhone.includes(cleanSearchVal) && cleanSearchVal !== '') ||
-                    // Немесе жай ғана текст ретінде де іздей береді
                     (o.client_phone?.includes(val))
                 );
                 
-                // --- УАҚЫТ ЖӘНЕ СТАТУС ---
                 const statusMatch = (currentStatus === 'all') || (o.status === currentStatus);
+                const deliveryMatch = (currentDelivery === 'all') || (o.delivery_type === currentDelivery);
+                const mgrName = (o.manager_name || '').toLowerCase();
+                const managerMatch = (currentManager === 'all') || mgrName.includes(currentManager.toLowerCase());
                 
                 let timeMatch = true;
                 if (currentTimeScope === 'Бүгін') timeMatch = orderDate >= startOfToday;
@@ -243,7 +274,7 @@
                     }
                 }
 
-                return searchMatch && statusMatch && timeMatch;
+                return searchMatch && statusMatch && deliveryMatch && managerMatch && timeMatch;
             });
             render(filtered);
         }
@@ -264,10 +295,13 @@
                             <small style="font-size:10px; color:#94a3b8">${new Date(o.created_at).toLocaleDateString()}</small>
                         </div>
                     </div>
-                    <a href="tel:${o.client_phone}" class="contact-bar">
-                        <span class="phone-num">${o.client_phone || '—'}</span>
-                        <div class="call-icon"><i class="fas fa-phone"></i></div>
-                    </a>
+                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+                        <a href="tel:${o.client_phone}" class="contact-bar" style="flex:1;margin-bottom:0;">
+                            <span class="phone-num">${o.client_phone || '—'}</span>
+                            <div class="call-icon"><i class="fas fa-phone"></i></div>
+                        </a>
+                        <button class="btn-action btn-copy" style="flex-shrink:0;padding:10px 14px;border-radius:10px;" onclick="copyPhone('${(o.client_phone||'').replace(/'/g,"\\'")}', this)">📋</button>
+                    </div>
                     <div class="info-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <div class="info-text" id="addr_${o.id}">${o.address || '—'}</div>
@@ -280,14 +314,28 @@
                         <div class="cargo-name">📦 ${o.product || '—'}</div>
                         ${o.gift ? `<div style="color:var(--danger); font-size:11px; margin-top:5px; font-weight:700;">🎁 ${o.gift}</div>` : ''}
                     </div>
+                    <div style="margin-bottom:12px;">
+                        <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:5px;">🚚 Жеткізуші номері</div>
+                        <input type="text" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" placeholder="Такси/курьер номері немесе трек..."
+                            style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:13px;outline:none;"
+                            onblur="updateField('${o.id}','delivery_contact',this.value)"
+                            onfocus="this.style.borderColor='var(--accent)'" onblur2="this.style.borderColor='#e2e8f0'">
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:5px;">📝 Ескертпе</div>
+                        <textarea placeholder="Логистика ескертпесі..."
+                            style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:13px;outline:none;resize:vertical;min-height:60px;"
+                            onblur="updateField('${o.id}','logistics_note',this.value)"
+                            onfocus="this.style.borderColor='var(--accent)'">${(o.logistics_note||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+                    </div>
                     <div class="status-grid">
-                        <select onchange="update('${o.id}', 'delivery_type', this.value)">
+                        <select onchange="updateField('${o.id}', 'delivery_type', this.value)">
                             <option value="Курьер" ${o.delivery_type === 'Курьер' ? 'selected' : ''}>🛵 Курьер</option>
                             <option value="Такси" ${o.delivery_type === 'Такси' ? 'selected' : ''}>🚕 Такси</option>
                             <option value="Поезд" ${o.delivery_type === 'Поезд' ? 'selected' : ''}>🚂 Поезд</option>
                             <option value="Почта" ${o.delivery_type === 'Почта' ? 'selected' : ''}>📦 Почта</option>
                         </select>
-                        <select onchange="update('${o.id}', 'status', this.value)" 
+                        <select onchange="updateField('${o.id}', 'status', this.value)" 
                                 style="background: ${o.status==='Қабылданды'?'#dcfce7':o.status==='Жолда'?'#dbeafe':o.status==='Процесте'?'#fffbeb':'white'};
                                        color: ${o.status==='Қабылданды'?'#166534':o.status==='Жолда'?'#1e40af':o.status==='Процесте'?'#b45309':'#0f172a'}">
                             <option value="Жаңа" ${o.status === 'Жаңа' ? 'selected' : ''}>⏳ Жаңа</option>
@@ -307,6 +355,20 @@
                 const item = store.find(o => o.id == id);
                 if (item) { item[field] = val; filter(); }
             }
+        }
+
+        async function updateField(id, field, val) {
+            await supabaseClient.from('orders').update({ [field]: val }).eq('id', id);
+            const item = store.find(o => o.id == id);
+            if (item) item[field] = val;
+        }
+
+        function copyPhone(phone, btn) {
+            if (!phone) return;
+            navigator.clipboard.writeText(phone);
+            const old = btn.textContent;
+            btn.textContent = '✅';
+            setTimeout(() => btn.textContent = old, 1500);
         }
 
         function copy(elementId, btn) {
