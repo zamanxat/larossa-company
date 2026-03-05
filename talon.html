@@ -182,11 +182,17 @@
             custom_date: currentData.customDate || null,
             expiry_date: expiryDate.toISOString().split('T')[0]
           };
-          await sbClient.from('warranty_certificates').insert(sbPayload);
-
-          statusMsg.textContent = "Мәліметтер базаға түсті Нұреке!";
-          statusMsg.style.color = "green";
-          saveToSheetBtn.textContent = "Сақталды Нұреке ✅";
+          const { error: sbError } = await sbClient.from('warranty_certificates').insert(sbPayload);
+          if (sbError) {
+            statusMsg.textContent = "Sheets-ке сақталды, бірақ Supabase-ке сақталмады.";
+            statusMsg.style.color = "orange";
+            saveToSheetBtn.textContent = "Сақталды (тек Sheets) ⚠️";
+            saveToSheetBtn.disabled = false;
+          } else {
+            statusMsg.textContent = "Мәліметтер базаға түсті Нұреке!";
+            statusMsg.style.color = "green";
+            saveToSheetBtn.textContent = "Сақталды Нұреке ✅";
+          }
         } catch (e) {
           statusMsg.textContent = "Қате: Базаға сақталмады Нұреке:(";
           statusMsg.style.color = "red";

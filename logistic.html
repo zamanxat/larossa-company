@@ -300,7 +300,7 @@
                             <span class="phone-num">${o.client_phone || '—'}</span>
                             <div class="call-icon"><i class="fas fa-phone"></i></div>
                         </a>
-                        <button class="btn-action btn-copy" style="flex-shrink:0;padding:10px 14px;border-radius:10px;" onclick="copyPhone('${(o.client_phone||'').replace(/'/g,"\\'")}', this)">📋</button>
+                        <button class="btn-action btn-copy" style="flex-shrink:0;padding:10px 14px;border-radius:10px;" data-phone="${(o.client_phone||'').replace(/"/g,'&quot;')}" onclick="copyPhone(this.dataset.phone, this)">📋</button>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-map-marker-alt"></i>
@@ -318,24 +318,26 @@
                         <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:5px;">🚚 Жеткізуші номері</div>
                         <input type="text" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" placeholder="Такси/курьер номері немесе трек..."
                             style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:13px;outline:none;"
-                            onblur="updateField('${o.id}','delivery_contact',this.value)"
-                            onfocus="this.style.borderColor='var(--accent)'" onblur2="this.style.borderColor='#e2e8f0'">
+                            data-id="${o.id}" data-field="delivery_contact"
+                            onblur="updateField(this.dataset.id,this.dataset.field,this.value);this.style.borderColor='#e2e8f0'"
+                            onfocus="this.style.borderColor='var(--accent)'">
                     </div>
                     <div style="margin-bottom:12px;">
                         <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:5px;">📝 Ескертпе</div>
                         <textarea placeholder="Логистика ескертпесі..."
                             style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:13px;outline:none;resize:vertical;min-height:60px;"
-                            onblur="updateField('${o.id}','logistics_note',this.value)"
+                            data-id="${o.id}" data-field="logistics_note"
+                            onblur="updateField(this.dataset.id,this.dataset.field,this.value);this.style.borderColor='#e2e8f0'"
                             onfocus="this.style.borderColor='var(--accent)'">${(o.logistics_note||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
                     </div>
                     <div class="status-grid">
-                        <select onchange="updateField('${o.id}', 'delivery_type', this.value)">
+                        <select data-id="${o.id}" onchange="updateField(this.dataset.id,'delivery_type',this.value)">
                             <option value="Курьер" ${o.delivery_type === 'Курьер' ? 'selected' : ''}>🛵 Курьер</option>
                             <option value="Такси" ${o.delivery_type === 'Такси' ? 'selected' : ''}>🚕 Такси</option>
                             <option value="Поезд" ${o.delivery_type === 'Поезд' ? 'selected' : ''}>🚂 Поезд</option>
                             <option value="Почта" ${o.delivery_type === 'Почта' ? 'selected' : ''}>📦 Почта</option>
                         </select>
-                        <select onchange="updateField('${o.id}', 'status', this.value)" 
+                        <select data-id="${o.id}" onchange="updateField(this.dataset.id,'status',this.value)" 
                                 style="background: ${o.status==='Қабылданды'?'#dcfce7':o.status==='Жолда'?'#dbeafe':o.status==='Процесте'?'#fffbeb':'white'};
                                        color: ${o.status==='Қабылданды'?'#166534':o.status==='Жолда'?'#1e40af':o.status==='Процесте'?'#b45309':'#0f172a'}">
                             <option value="Жаңа" ${o.status === 'Жаңа' ? 'selected' : ''}>⏳ Жаңа</option>
@@ -358,6 +360,8 @@
         }
 
         async function updateField(id, field, val) {
+            const ALLOWED_FIELDS = ['delivery_contact', 'logistics_note', 'delivery_type', 'status'];
+            if (!ALLOWED_FIELDS.includes(field)) return;
             await supabaseClient.from('orders').update({ [field]: val }).eq('id', id);
             const item = store.find(o => o.id == id);
             if (item) item[field] = val;
