@@ -10,9 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  --gr:#1b4332;--gr2:#2d6a4f;--bg:#f1f3f2;--brd:#dcdde1;--r:#ff4757;
-}
+:root{--gr:#1b4332;--gr2:#2d6a4f;--bg:#f1f3f2;--brd:#dcdde1;--r:#ff4757}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);padding:12px;display:flex;justify-content:center;min-height:100vh}
 .container{width:100%;max-width:640px;background:#fff;border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.07);overflow:hidden;margin-bottom:40px;align-self:flex-start}
@@ -35,12 +33,9 @@ input:focus,select:focus{border-color:var(--gr2)}
 .file-upload:hover{border-color:var(--gr2);background:#f8faf9}
 #receipt-preview{max-width:100%;height:auto;border-radius:10px;margin-top:12px;display:none}
 .remove-file-btn{position:absolute;top:10px;right:10px;background:var(--r);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;display:none;z-index:10;font-weight:700;font-size:15px}
-/* TIME CHECK */
 .time-check-wrap{display:flex;align-items:center;gap:10px;background:#f8faf9;padding:11px 14px;border-radius:12px;border:1px solid #eee;margin-bottom:14px;cursor:pointer}
 .time-check-wrap input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--gr)}
 .time-check-wrap span{font-size:14px;font-weight:500;color:#444}
-/* PAYMENT */
-.pay-type-select{margin-bottom:12px}
 .split-block{background:#f0fdf4;border:1.5px solid #a7f3d0;border-radius:14px;padding:14px;margin-bottom:8px}
 .split-block label{color:#166534;font-size:13px}
 .split-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -48,81 +43,74 @@ input:focus,select:focus{border-color:var(--gr2)}
 .pay-toggle{display:flex;align-items:center;gap:10px;background:#f0fdf4;padding:11px 14px;border-radius:12px;border:1px solid #a7f3d0;margin-bottom:12px;cursor:pointer}
 .pay-toggle input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#059669}
 .pay-toggle span{font-size:13.5px;font-weight:600;color:#166534}
-/* TOTAL */
 .total-box{background:#f8faf9;padding:18px;border-radius:14px;margin-top:22px;border:1px solid var(--gr)}
 .total-box label{color:var(--gr);font-size:14px;margin-bottom:8px}
-.total-display{font-size:22px;font-weight:800;color:var(--gr);margin-top:6px}
-/* SUBMIT */
 .submit-btn{width:100%;padding:17px;background:var(--gr);color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:700;cursor:pointer;margin-top:18px;transition:background .25s,transform .1s;font-family:inherit}
-.submit-btn:hover{background:var(--gr2)}
-.submit-btn:active{transform:scale(.98)}
-.submit-btn:disabled{background:#a0a0a0;cursor:not-allowed}
-/* POPUP */
+.submit-btn:hover{background:var(--gr2)}.submit-btn:active{transform:scale(.98)}.submit-btn:disabled{background:#a0a0a0;cursor:not-allowed}
 .popup{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1e293b;color:#fff;padding:10px 22px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);opacity:0;max-width:calc(100vw - 24px);text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.2)}
 .popup.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .popup.g{background:#059669}.popup.r{background:#dc2626}
-/* LOGISTICS POPUP */
 .logistics-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gr2);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;margin-left:auto;font-family:inherit}
 .logistics-btn:hover{background:#1b4332}
-.logistics-btn i{font-size:16px}
+/* LOGISTICS MODAL */
 .log-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;padding:12px;overflow-y:auto}
 .log-overlay.show{display:block}
 .log-box{max-width:560px;margin:0 auto 24px;background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
 .log-head{padding:16px;background:var(--gr);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.log-head h2{margin:0;font-size:18px}
-.log-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:18px}
-.log-search-wrap{padding:12px 16px;border-bottom:1px solid #eee}
-.log-search-wrap input{width:100%;padding:12px 14px 12px 40px;border:1.5px solid var(--brd);border-radius:12px;font-size:15px}
-.log-search-wrap{position:relative}
-.log-search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#888;font-size:14px}
-.log-list{padding:12px;max-height:70vh;overflow-y:auto}
+.log-head h2{margin:0;font-size:16px;display:flex;align-items:center;gap:8px}
+.log-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:16px;flex-shrink:0}
+/* SEARCH + FILTER ROW */
+.log-filters{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid #eee;flex-wrap:wrap}
+.log-search{position:relative;flex:1;min-width:180px}
+.log-search i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;pointer-events:none;z-index:1}
+.log-search input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid var(--brd);border-radius:10px;font-size:14px;outline:none;font-family:inherit}
+.log-search input:focus{border-color:var(--gr2)}
+.log-mgr-filter{padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;color:#222;min-width:140px;cursor:pointer}
+.log-mgr-filter:focus{border-color:var(--gr2)}
+.log-list{padding:12px;max-height:68vh;overflow-y:auto}
 .log-card{border:1px solid #eee;border-radius:14px;padding:14px;margin-bottom:10px;background:#fafbfc}
 .log-card:last-child{margin-bottom:0}
-.log-card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.log-card-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px}
 .log-card-row:last-child{margin-bottom:0}
 .log-card b{font-size:14px;color:#222}
-.log-card .log-meta{font-size:12px;color:#666}
-.log-card .log-track{background:#e8f5e9;color:#166534;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;margin-top:6px}
-.log-card .log-note{font-size:12px;color:#555;margin-top:4px;font-style:italic}
-.log-card .log-status{font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px}
+.log-meta{font-size:12px;color:#777}
+.log-track{display:flex;align-items:center;gap:8px;background:#e8f5e9;color:#166534;padding:7px 10px;border-radius:9px;font-size:12.5px;font-weight:600;margin-top:7px;justify-content:space-between}
+.log-track-text{display:flex;align-items:center;gap:6px;overflow:hidden}
+.log-track-text span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-btn{background:#166534;color:#fff;border:none;border-radius:7px;padding:4px 9px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;flex-shrink:0;font-family:inherit;transition:background .15s}
+.copy-btn:hover{background:#1b4332}
+.copy-btn i{font-size:10px}
+.log-note{font-size:12px;color:#666;margin-top:5px;font-style:italic;padding:6px 10px;background:#fafafa;border-radius:8px;border-left:3px solid #ddd}
+.log-status{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
 .log-status-new{background:#e3f2fd;color:#1565c0}
 .log-status-process{background:#fff3e0;color:#e65100}
 .log-status-ship{background:#e8f5e9;color:#2e7d32}
 .log-status-done{background:#e8f5e9;color:#166534}
 .log-status-return{background:#ffebee;color:#c62828}
-.log-empty{padding:24px;text-align:center;color:#888;font-size:14px}
+.log-status-arrived{background:#fef9c3;color:#854d0e}
+.log-empty{padding:28px;text-align:center;color:#888;font-size:14px}
+.back{width:100%;max-width:420px;margin-top:10px;margin-left:10px}
+.back a{text-decoration:none;color:#0f172a;font-weight:700;font-size:14px;display:inline-block;padding:10px 15px;border:1px solid #e2e8f0;border-radius:10px;background:#f1f5f9;transition:.3s}
+.back a:hover{background:#0f172a;color:#fff;border-color:#0f172a}
 @media(max-width:480px){
   .split-row{grid-template-columns:1fr}
   .item-row{grid-template-columns:1fr 70px 40px}
   form{padding:16px}
-  .header{flex-wrap:wrap}
   .logistics-btn span{display:none}
   .logistics-btn{padding:10px 12px}
+  .log-mgr-filter{width:100%;min-width:unset}
 }
-
-.back { width: 100%; max-width: 420px; margin-top: 10px; margin-left: 10px;}
-.back a { text-decoration: none; color: #0f172a; font-weight: 700; font-size: 14px; 
-    display: inline-block; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f1f5f9;
-    transition: 0.3s;
-}
-.back a:hover { background: #0f172a; color: white; border-color: #0f172a; }
-.back a:active { transform: scale(0.98); }
 </style>
 </head>
 <body>
-  
 <div class="container">
-  <div class="back">
-        <a href="/" style="text-decoration: none;  font-weight: 700; font-size: 14px;;">&#8592; Артқа</a>
-  </div>
+  <div class="back"><a href="/">&#8592; Артқа</a></div>
   <div class="header">
     <img src="https://i.ibb.co.com/hFhh091B/logo.jpg" alt="Larossa" class="logo-img">
     <span class="logo-text">LAROSSA</span>
-    <button type="button" class="logistics-btn" onclick="openLogisticsPopup()" title="Жеткізулер"><i class="fas fa-truck"></i><span>Жеткізулер</span></button>
+    <button type="button" class="logistics-btn" onclick="openLogisticsPopup()"><i class="fas fa-truck"></i><span>Жеткізулер</span></button>
   </div>
   <form id="orderForm">
-
-    <!-- MANAGER -->
     <div class="sec-title">Жауапты тұлға</div>
     <div class="field">
       <select id="manager_id" required oninvalid="this.setCustomValidity('Менеджерді таңдаңыз')" oninput="this.setCustomValidity('')">
@@ -130,7 +118,6 @@ input:focus,select:focus{border-color:var(--gr2)}
       </select>
     </div>
 
-    <!-- TIME -->
     <div class="sec-title">Тапсырыс уақыты</div>
     <label class="time-check-wrap" for="manualTimeCheck">
       <input type="checkbox" id="manualTimeCheck" onchange="toggleTime()">
@@ -143,33 +130,24 @@ input:focus,select:focus{border-color:var(--gr2)}
       </div>
     </div>
 
-    <!-- CLIENT -->
     <div class="sec-title">Клиент мәліметі</div>
     <div class="field"><input type="text" id="client_name" placeholder="Клиент аты-жөні" required oninvalid="this.setCustomValidity('Клиент атын жазыңыз')" oninput="this.setCustomValidity('')"></div>
     <div class="field"><input type="tel" id="client_phone" inputmode="numeric" placeholder="+7 (___) ___-____" required oninvalid="this.setCustomValidity('Телефонды жазыңыз')" oninput="this.setCustomValidity('')"></div>
     <div class="field"><input type="text" id="address" placeholder="Адрес (Қала, көше, үй)" required oninvalid="this.setCustomValidity('Мекен-жайды жазыңыз')" oninput="this.setCustomValidity('')"></div>
 
-    <!-- PRODUCTS -->
     <div class="sec-title">Тауарлар</div>
     <div id="tabletsContainer"></div>
     <button type="button" class="add-btn" onclick="addItem('tabletsContainer','tablet')">+ Планшет / Тауар қосу</button>
-
     <div id="giftsContainer"></div>
     <button type="button" class="add-btn" onclick="addItem('giftsContainer','gift')">+ Сыйлық қосу</button>
 
-    <!-- DELIVERY & PAYMENT -->
     <div class="sec-title">Жеткізу және Төлем</div>
     <div class="field">
       <label>Жеткізу түрі:</label>
       <select id="delivery_type">
-        <option value="Такси">Такси</option>
-        <option value="Курьер">Курьер</option>
-        <option value="Почта">Почта</option>
-        <option value="Поезд">Поезд</option>
+        <option>Такси</option><option>Курьер</option><option>Почта</option><option>Поезд</option>
       </select>
     </div>
-
-    <!-- SINGLE PAYMENT -->
     <div id="singlePayBlock">
       <div class="field">
         <label>Төлем түрі:</label>
@@ -181,45 +159,25 @@ input:focus,select:focus{border-color:var(--gr2)}
         </select>
       </div>
     </div>
-
-    <!-- SPLIT TOGGLE -->
     <label class="pay-toggle" for="splitCheck">
       <input type="checkbox" id="splitCheck" onchange="toggleSplit()">
       <span>Пополам (екі төлем түрі)</span>
     </label>
-
-    <!-- SPLIT PAYMENT -->
     <div id="splitPayBlock" class="hidden">
       <div class="split-block">
         <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px">Бірінші төлем</div>
         <div class="split-row">
-          <div>
-            <label>Төлем түрі:</label>
-            <select id="pay1_type">
-              <option>Kaspi Transfer</option><option>Halyk Transfer</option>
-              <option>Kaspi рассрочка</option><option>Halyk рассрочка</option>
-              <option>Kaspi Red</option><option>Наличка</option>
-            </select>
+          <div><label>Төлем түрі:</label>
+            <select id="pay1_type"><option>Kaspi Transfer</option><option>Halyk Transfer</option><option>Kaspi рассрочка</option><option>Halyk рассрочка</option><option>Kaspi Red</option><option>Наличка</option></select>
           </div>
-          <div>
-            <label>Сомасы (₸):</label>
-            <input type="number" id="pay1_amount" inputmode="numeric" placeholder="0" min="0" oninput="calcSplitTotal()">
-          </div>
+          <div><label>Сомасы (₸):</label><input type="number" id="pay1_amount" inputmode="numeric" placeholder="0" min="0" oninput="calcSplitTotal()"></div>
         </div>
         <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:12px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px">Екінші төлем</div>
         <div class="split-row">
-          <div>
-            <label>Төлем түрі:</label>
-            <select id="pay2_type">
-              <option>Наличка</option><option>Kaspi Transfer</option><option>Halyk Transfer</option>
-              <option>Kaspi рассрочка</option><option>Halyk рассрочка</option>
-              <option>Kaspi Red</option>
-            </select>
+          <div><label>Төлем түрі:</label>
+            <select id="pay2_type"><option>Наличка</option><option>Kaspi Transfer</option><option>Halyk Transfer</option><option>Kaspi рассрочка</option><option>Halyk рассрочка</option><option>Kaspi Red</option></select>
           </div>
-          <div>
-            <label>Сомасы (₸):</label>
-            <input type="number" id="pay2_amount" inputmode="numeric" placeholder="0" min="0" oninput="calcSplitTotal()">
-          </div>
+          <div><label>Сомасы (₸):</label><input type="number" id="pay2_amount" inputmode="numeric" placeholder="0" min="0" oninput="calcSplitTotal()"></div>
         </div>
         <div style="font-size:13px;color:#166534;font-weight:600;padding:10px 12px;background:#d1fae5;border-radius:8px;margin-top:4px">
           Жалпы: <span id="splitTotalDisp" style="font-size:16px;font-weight:800">0 ₸</span>
@@ -227,7 +185,6 @@ input:focus,select:focus{border-color:var(--gr2)}
       </div>
     </div>
 
-    <!-- RECEIPT -->
     <div class="sec-title">Төлем чегі</div>
     <div class="field">
       <div class="file-upload" id="fileUploadBox">
@@ -240,27 +197,43 @@ input:focus,select:focus{border-color:var(--gr2)}
       </div>
     </div>
 
-    <!-- PRICE (single payment only) -->
     <div id="singlePriceBox" class="total-box">
       <label>Жалпы сатылған бағасы (₸):</label>
       <input type="number" id="price" inputmode="numeric" placeholder="0" required oninvalid="this.setCustomValidity('Бағасын жазыңыз')" oninput="this.setCustomValidity('')">
     </div>
-
     <button type="submit" class="submit-btn" id="submitBtn">ТАПСЫРЫСТЫ ЖІБЕРУ</button>
   </form>
 </div>
+
 <div class="popup" id="popup"></div>
 
-<!-- Логистика попап: жеткізу номері, трек, заметка, іздеу -->
-<div id="logisticsOverlay" class="log-overlay" onclick="if(event.target===this) closeLogisticsPopup()">
+<div id="logisticsOverlay" class="log-overlay" onclick="if(event.target===this)closeLogisticsPopup()">
   <div class="log-box">
     <div class="log-head">
-      <h2><i class="fas fa-truck"></i> Жеткізулер (Жолда / Күтілуде)</h2>
+      <h2><i class="fas fa-truck"></i> Жетті (Алынуды күтуде)</h2>
       <button type="button" class="log-close" onclick="closeLogisticsPopup()"><i class="fas fa-times"></i></button>
     </div>
-    <div class="log-search-wrap">
-      <i class="fas fa-search"></i>
-      <input type="text" id="logSearchInp" placeholder="Телефон, аты, тауар, баға, күні, трек..." oninput="filterLogisticsList()">
+    <div class="log-filters">
+      <div class="log-search">
+        <i class="fas fa-search"></i>
+        <input type="text" id="logSearchInp" placeholder="Телефон, аты, тауар, трек..." oninput="filterLogisticsList()">
+      </div>
+      <select class="log-mgr-filter" id="logMgrFilter" onchange="filterLogisticsList()">
+        <option value="">Барлық менеджер</option>
+      </select>
+      <select class="log-mgr-filter" id="logStatusFilter" onchange="filterLogisticsList()">
+        <option value="">Барлық статус</option>
+        <option>Жаңа</option>
+        <option>Процесте</option>
+        <option>Жолда</option>
+        <option>Жетті</option>
+        <option>Қабылданды</option>
+        <option>Қайтарылды</option>
+      </select>
+      <select class="log-mgr-filter" id="logSortFilter" onchange="filterLogisticsList()">
+        <option value="desc">Жаңадан ескіге</option>
+        <option value="asc">Ескіден жаңаға</option>
+      </select>
     </div>
     <div id="logisticsList" class="log-list"></div>
   </div>
@@ -270,31 +243,10 @@ input:focus,select:focus{border-color:var(--gr2)}
 const SB_URL='https://jnuokhhqojlurvadcduv.supabase.co';
 const SB_KEY='sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
 const sb=supabase.createClient(SB_URL,SB_KEY);
-const DPCT=9; // default bonus percent if manager-specific жоқ болса
+const GSHEET_URL='https://script.google.com/macros/s/AKfycbxJbkVjqkFyeTYstJABPxsVRgya5SdYtptA09XCKcWUmve3njkl51thYyKRW40LLyw/exec';
+const DPCT=9;
+let tabletOptions=[],giftOptions=[],mgrBonusDefaults={},mgrMap={};
 
-// ⬇️ МҰНДА GOOGLE APPS SCRIPT URL-ДІ ҚОЙЫҢЫЗ
-const GSHEET_URL = 'https://script.google.com/macros/s/AKfycbxJbkVjqkFyeTYstJABPxsVRgya5SdYtptA09XCKcWUmve3njkl51thYyKRW40LLyw/exec';
-
-let tabletOptions=[];
-let giftOptions=[];
-let mgrBonusDefaults={};
-
-// Google Sheets-ке жіберу функциясы
-async function sendToGoogleSheets(data) {
-  try {
-    await fetch(GSHEET_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    console.log('Google Sheets-ке сақталды');
-  } catch (err) {
-    console.warn('Google Sheets қатесі (заказ базаға сақталды):', err);
-  }
-}
-
-// init
 $(document).ready(async function(){
   $('#client_phone').inputmask('+7 (999) 999-9999');
   await loadSiteData();
@@ -306,30 +258,25 @@ async function loadSiteData(){
     sb.from('site_products').select('*').eq('is_active',true).order('category').order('sort_order'),
     sb.from('manager_bonus_settings').select('*')
   ]);
-  // managers
+  mgrMap={};
+  (mR.data||[]).forEach(m=>{mgrMap[m.id]=m.name;});
   const mgrSel=document.getElementById('manager_id');
   mgrSel.innerHTML='<option value="" disabled selected>Менеджерді таңдаңыз...</option>';
   (mR.data||[]).forEach(m=>mgrSel.add(new Option(m.name,m.id)));
-  // bonus defaults (manager -> percent)
   mgrBonusDefaults={};
   (bR.data||[]).forEach(b=>{mgrBonusDefaults[b.manager_id]=b.default_bonus_percent;});
-
-  // products
   tabletOptions=(pR.data||[]).filter(p=>p.category==='tablet').map(p=>p.name);
   giftOptions=(pR.data||[]).filter(p=>p.category==='gift').map(p=>p.name);
-  // fallback
-  if(!tabletOptions.length) tabletOptions=['G2000','17 Pro Max','17 Pad Pro'];
-  if(!giftOptions.length) giftOptions=['Смарт набор','Массажер','Смарт сағат','Переходник'];
+  if(!tabletOptions.length)tabletOptions=['G2000','17 Pro Max','17 Pad Pro'];
+  if(!giftOptions.length)giftOptions=['Смарт набор','Массажер','Смарт сағат','Переходник'];
 }
 
 function buildOptions(arr){return arr.map(n=>`<option value="${n}">${n}</option>`).join('');}
-
 function addItem(containerId,type){
-  const container=document.getElementById(containerId);
   const div=document.createElement('div');div.className='item-row';
   const opts=type==='tablet'?buildOptions(tabletOptions):buildOptions(giftOptions);
   div.innerHTML=`<select class="${type}-select">${opts}</select><input type="number" inputmode="numeric" class="item-count" value="1" min="1" style="padding:13px"><button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>`;
-  container.appendChild(div);
+  document.getElementById(containerId).appendChild(div);
 }
 
 function toggleTime(){
@@ -345,13 +292,7 @@ function toggleSplit(){
   document.getElementById('singlePriceBox').classList.toggle('hidden',on);
   const pt=document.getElementById('payment_type');
   pt.required=!on;
-  const pv=document.getElementById('price');
-  if(on){
-    pv.required=false;
-    pv.removeAttribute('required');
-  } else {
-    pv.required=true;
-  }
+  document.getElementById('price').required=!on;
   calcSplitTotal();
 }
 
@@ -386,20 +327,11 @@ document.getElementById('orderForm').addEventListener('submit',async function(e)
   e.preventDefault();
   const btn=document.getElementById('submitBtn');
   btn.textContent='Жіберілуде...';btn.disabled=true;
-
   const isSplit=document.getElementById('splitCheck').checked;
-
-  // products
   let products='';
-  document.querySelectorAll('.tablet-select').forEach((s,i)=>{
-    products+=s.value+' ('+document.querySelectorAll('#tabletsContainer .item-count')[i].value+' шт); ';
-  });
+  document.querySelectorAll('.tablet-select').forEach((s,i)=>{products+=s.value+' ('+document.querySelectorAll('#tabletsContainer .item-count')[i].value+' шт); ';});
   let gifts='';
-  document.querySelectorAll('.gift-select').forEach((s,i)=>{
-    gifts+=s.value+' ('+document.querySelectorAll('#giftsContainer .item-count')[i].value+' шт); ';
-  });
-
-  // time
+  document.querySelectorAll('.gift-select').forEach((s,i)=>{gifts+=s.value+' ('+document.querySelectorAll('#giftsContainer .item-count')[i].value+' шт); ';});
   let finalTime;
   if(document.getElementById('manualTimeCheck').checked){
     const d=document.getElementById('orderDate').value,t=document.getElementById('orderTime').value;
@@ -409,20 +341,16 @@ document.getElementById('orderForm').addEventListener('submit',async function(e)
     const now=new Date();
     finalTime=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString();
   }
-
   try{
-    // upload receipt
     let receiptUrl='';
     const file=document.getElementById('receiptFile').files[0];
     if(file){
       const fname=Date.now()+'_receipt.jpg';
       const{error:ue}=await sb.storage.from('receipts').upload(fname,file);
-      if(ue) throw new Error('Сурет жүктелмеді: '+ue.message);
+      if(ue)throw new Error('Сурет жүктелмеді: '+ue.message);
       const{data:ud}=sb.storage.from('receipts').getPublicUrl(fname);
       receiptUrl=ud.publicUrl;
     }
-
-    // order payload
     const payload={
       created_at:finalTime,
       client_name:document.getElementById('client_name').value.trim(),
@@ -433,15 +361,12 @@ document.getElementById('orderForm').addEventListener('submit',async function(e)
       delivery_type:document.getElementById('delivery_type').value,
       receipt_url:receiptUrl
     };
-
-    // bonus %: менеджердің ағымдағы дефолт пайызы бойынша
     const mgrId=parseInt(document.getElementById('manager_id').value)||null;
     payload.manager_id=mgrId;
     if(mgrId){
       const defPct=typeof mgrBonusDefaults[mgrId]==='number'?mgrBonusDefaults[mgrId]:DPCT;
       payload.bonus_percent=defPct;
     }
-
     if(isSplit){
       payload.payment_type=document.getElementById('pay1_type').value;
       payload.price=parseFloat(document.getElementById('pay1_amount').value)||0;
@@ -450,28 +375,18 @@ document.getElementById('orderForm').addEventListener('submit',async function(e)
     } else {
       payload.payment_type=document.getElementById('payment_type').value;
       payload.price=parseFloat(document.getElementById('price').value)||0;
-      payload.price2=0;
-      payload.payment_type2=null;
+      payload.price2=0;payload.payment_type2=null;
     }
-
-    // 1️⃣ Supabase-ке сақтау
     const{error:dbErr}=await sb.from('orders').insert([payload]);
-    if(dbErr) throw dbErr;
-
-    // 2️⃣ Google Sheets-ке де жіберу (параллель, қатесі болса да заказ сақталған)
-    sendToGoogleSheets(payload);
-
-    btn.textContent='✅ ЖІБЕРІЛДІ!';
-    btn.style.background='#059669';
+    if(dbErr)throw dbErr;
+    fetch(GSHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
+    btn.textContent='✅ ЖІБЕРІЛДІ!';btn.style.background='#059669';
     showPopup('Тапсырыс сәтті жіберілді!','g');
     setTimeout(()=>location.reload(),2200);
-
   } catch(err){
     console.error(err);
     showPopup('Қате: '+(err.message||'Белгісіз'),'r');
-    btn.disabled=false;
-    btn.textContent='Қайта жіберу';
-    btn.style.background='';
+    btn.disabled=false;btn.textContent='Қайта жіберу';btn.style.background='';
   }
 });
 
@@ -482,56 +397,101 @@ function showPopup(msg,type='g'){
   clearTimeout(pt);pt=setTimeout(()=>el.classList.remove('show'),3000);
 }
 
-// Логистика попап: тек жетпеген/жолда заказдар, іздеу, номер/трек, заметка
+function copyText(text,btn){
+  const fallback=()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.cssText='position:fixed;left:-9999px;top:-9999px';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');showPopup('Көшірілді!','g');}catch{showPopup(text,'g');}
+    document.body.removeChild(ta);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>showPopup('Көшірілді!','g')).catch(fallback);
+  } else fallback();
+}
+
 let logisticsOrders=[];
 function openLogisticsPopup(){
   document.getElementById('logisticsOverlay').classList.add('show');
   document.getElementById('logSearchInp').value='';
+  document.getElementById('logMgrFilter').value='';
+  document.getElementById('logStatusFilter').value='';
+  document.getElementById('logSortFilter').value='desc';
   loadLogisticsOrders();
 }
 function closeLogisticsPopup(){
   document.getElementById('logisticsOverlay').classList.remove('show');
 }
+
 async function loadLogisticsOrders(){
   const listEl=document.getElementById('logisticsList');
   listEl.innerHTML='<div class="log-empty"><i class="fas fa-spinner fa-spin"></i> Жүктелуде...</div>';
-  const { data, error } = await sb.from('orders').select('*').order('created_at',{ascending:false});
-  if(error){ listEl.innerHTML='<div class="log-empty">Жүктеу қатесі</div>'; return; }
-  logisticsOrders=(data||[]).filter(o=>(o.status||'Жаңа')!=='Қабылданды');
+  const{data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false});
+  if(error){listEl.innerHTML='<div class="log-empty">Жүктеу қатесі</div>';return;}
+  // always reload managers for correct name mapping
+  const{data:mD}=await sb.from('site_managers').select('id,name');
+  (mD||[]).forEach(m=>{mgrMap[m.id]=m.name;});
+  logisticsOrders=(data||[])
+    .map(o=>({...o,_mgrName:mgrMap[o.manager_id]||o.manager_name||'',_status:(o.status||'').trim()||'Жаңа'}));
+
+  // Populate manager filter with names
+  const mgrSel=document.getElementById('logMgrFilter');
+  const currentVal=mgrSel.value;
+  const mgrs=[...new Set(logisticsOrders.map(o=>o._mgrName).filter(Boolean))];
+  mgrSel.innerHTML='<option value="">Барлық менеджер</option>';
+  mgrs.forEach(m=>mgrSel.innerHTML+=`<option value="${m}">${m}</option>`);
+  mgrSel.value=currentVal;
+
   filterLogisticsList();
 }
+
 function filterLogisticsList(){
   const q=(document.getElementById('logSearchInp').value||'').toLowerCase().trim();
-  const list=!q ? logisticsOrders : logisticsOrders.filter(o=>{
-    const name=(o.client_name||'').toLowerCase();
-    const phone=(o.client_phone||'').replace(/\D/g,'');
-    const product=(o.product||'').toLowerCase();
-    const gift=(o.gift||'').toLowerCase();
-    const priceStr=String(Number(o.price||0)+Number(o.price2||0));
-    const dateStr=o.created_at ? o.created_at.slice(0,10) : '';
-    const track=(o.delivery_contact||'').toLowerCase();
-    const note=(o.logistics_note||'').toLowerCase();
+  const mgrF=(document.getElementById('logMgrFilter').value||'');
+  const stF=(document.getElementById('logStatusFilter').value||'');
+  let list=logisticsOrders;
+  if(mgrF) list=list.filter(o=>o._mgrName===mgrF);
+  if(stF) list=list.filter(o=>o._status===stF.trim());
+  const sortDir=(document.getElementById('logSortFilter').value||'desc');
+  list=[...list].sort((a,b)=>{
+    const da=new Date(a.created_at||0),db=new Date(b.created_at||0);
+    return sortDir==='asc'?da-db:db-da;
+  });
+  if(q) list=list.filter(o=>{
     const qNum=q.replace(/\D/g,'');
-    return name.includes(q)||product.includes(q)||gift.includes(q)||track.includes(q)||note.includes(q)||dateStr.includes(q)||priceStr.includes(q)||(qNum&&phone.includes(qNum));
+    return (o.client_name||'').toLowerCase().includes(q)
+      ||(o.client_phone||'').replace(/\D/g,'').includes(qNum&&qNum.length>2?qNum:'\x00')
+      ||(o.product||'').toLowerCase().includes(q)
+      ||(o.gift||'').toLowerCase().includes(q)
+      ||(o.address||'').toLowerCase().includes(q)
+      ||(o.delivery_contact||'').toLowerCase().includes(q)
+      ||(o.logistics_note||'').toLowerCase().includes(q)
+      ||(o.created_at||'').slice(0,10).includes(q)
+      ||String(Number(o.price||0)+Number(o.price2||0)).includes(q);
   });
   const listEl=document.getElementById('logisticsList');
-  if(!list.length){ listEl.innerHTML='<div class="log-empty">Тапсырыс табылмады</div>'; return; }
-  const stCls={Жаңа:'log-status-new',Процесте:'log-status-process',Жолда:'log-status-ship',Қабылданды:'log-status-done',Қайтарылды:'log-status-return'};
+  if(!list.length){listEl.innerHTML='<div class="log-empty">Тапсырыс табылмады</div>';return;}
+  const stCls={Жаңа:'log-status-new',Процесте:'log-status-process',Жолда:'log-status-ship',Жетті:'log-status-arrived',Қабылданды:'log-status-done',Қайтарылды:'log-status-return'};
+  const e2=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   listEl.innerHTML=list.map(o=>{
     const total=Number(o.price||0)+Number(o.price2||0);
-    const date=o.created_at ? new Date(o.created_at).toLocaleDateString('kk-KZ') : '';
-    const st=o.status||'Жаңа';
-    const trackHtml=o.delivery_contact ? '<div class="log-track"><i class="fas fa-truck"></i> '+o.delivery_contact+'</div>' : '';
-    const noteEsc=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    const noteHtml=o.logistics_note ? '<div class="log-note">'+noteEsc(o.logistics_note)+'</div>' : '';
-    return '<div class="log-card">'+
-      '<div class="log-card-row"><b>'+ (o.client_name||'—') +'</b><span class="log-meta">'+date+'</span></div>'+
-      '<div class="log-card-row"><span class="log-meta">'+ (o.client_phone||'') +'</span><span class="log-status '+ (stCls[st]||'log-status-new') +'">'+st+'</span></div>'+
-      '<div class="log-card-row"><span class="log-meta">'+ (o.address||'') +'</span></div>'+
-      '<div class="log-card-row"><span class="log-meta">'+ (o.product||'') + (o.gift?' + '+o.gift:'') +'</span><b>'+total.toLocaleString()+' ₸</b></div>'+
-      '<div class="log-card-row"><span class="log-meta">'+ (o.delivery_type||'') +'</span></div>'+
-      trackHtml+noteHtml+
-      '</div>';
+    const date=o.created_at?new Date(o.created_at).toLocaleDateString('kk-KZ'):'';
+    const st=o._status||'Жаңа';
+    const mgrName=o._mgrName?`<span class="log-meta" style="background:#f0fdf4;color:#166534;padding:2px 7px;border-radius:6px;font-weight:600">${e2(o._mgrName)}</span>`:'';
+    const trackHtml=o.delivery_contact?`
+      <div class="log-track">
+        <div class="log-track-text"><i class="fas fa-hashtag"></i><span>${e2(o.delivery_contact)}</span></div>
+        <button class="copy-btn" onclick="copyText('${e2(o.delivery_contact)}',this)"><i class="fas fa-copy"></i> Көшіру</button>
+      </div>`:'';
+    const noteHtml=o.logistics_note?`<div class="log-note">${e2(o.logistics_note)}</div>`:'';
+    return`<div class="log-card">
+      <div class="log-card-row"><b>${e2(o.client_name||'—')}</b><span class="log-status ${stCls[st]||'log-status-new'}">${st}</span></div>
+      <div class="log-card-row"><span class="log-meta">${e2(o.client_phone||'')}</span><span class="log-meta">${date}</span></div>
+      <div class="log-card-row"><span class="log-meta">${e2(o.address||'')}</span></div>
+      <div class="log-card-row"><span class="log-meta">${e2(o.product||'')}${o.gift?' + '+e2(o.gift):''}</span><b>${total.toLocaleString()} ₸</b></div>
+      <div class="log-card-row"><span class="log-meta">${e2(o.delivery_type||'')}</span>${mgrName}</div>
+      ${trackHtml}${noteHtml}
+    </div>`;
   }).join('');
 }
 </script>
