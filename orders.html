@@ -216,19 +216,18 @@ input:focus,select:focus{border-color:var(--gr2)}
     <div class="log-filters">
       <div class="log-search">
         <i class="fas fa-search"></i>
-        <input type="text" id="logSearchInp" placeholder="Телефон, аты, тауар, трек..." oninput="filterLogisticsList()">
+        <input type="text" id="logSearchInp" placeholder="Телефон, аты, адрес, менеджер, жеткізу түрі..." oninput="filterLogisticsList()">
       </div>
       <select class="log-mgr-filter" id="logMgrFilter" onchange="filterLogisticsList()">
         <option value="">Барлық менеджер</option>
       </select>
       <select class="log-mgr-filter" id="logStatusFilter" onchange="filterLogisticsList()">
         <option value="">Барлық статус</option>
-        <option>Жаңа</option>
-        <option>Процесте</option>
-        <option>Жолда</option>
-        <option>Жетті</option>
-        <option>Қабылданды</option>
-        <option>Қайтарылды</option>
+        <option value="Жаңа" selected>Жаңа</option>
+        <option value="Процесте">Процесте</option>
+        <option value="Жолда">Жолда</option>
+        <option value="Қабылданды">Жетті</option>
+        <option value="Қайтарылды">Қайтарылды</option>
       </select>
       <select class="log-mgr-filter" id="logSortFilter" onchange="filterLogisticsList()">
         <option value="desc">Жаңадан ескіге</option>
@@ -415,7 +414,7 @@ function openLogisticsPopup(){
   document.getElementById('logisticsOverlay').classList.add('show');
   document.getElementById('logSearchInp').value='';
   document.getElementById('logMgrFilter').value='';
-  document.getElementById('logStatusFilter').value='';
+  document.getElementById('logStatusFilter').value='Жаңа';
   document.getElementById('logSortFilter').value='desc';
   loadLogisticsOrders();
 }
@@ -464,6 +463,8 @@ function filterLogisticsList(){
       ||(o.product||'').toLowerCase().includes(q)
       ||(o.gift||'').toLowerCase().includes(q)
       ||(o.address||'').toLowerCase().includes(q)
+      ||(o._mgrName||'').toLowerCase().includes(q)
+      ||(o.delivery_type||'').toLowerCase().includes(q)
       ||(o.delivery_contact||'').toLowerCase().includes(q)
       ||(o.logistics_note||'').toLowerCase().includes(q)
       ||(o.created_at||'').slice(0,10).includes(q)
@@ -471,7 +472,7 @@ function filterLogisticsList(){
   });
   const listEl=document.getElementById('logisticsList');
   if(!list.length){listEl.innerHTML='<div class="log-empty">Тапсырыс табылмады</div>';return;}
-  const stCls={Жаңа:'log-status-new',Процесте:'log-status-process',Жолда:'log-status-ship',Жетті:'log-status-arrived',Қабылданды:'log-status-done',Қайтарылды:'log-status-return'};
+  const stCls={Жаңа:'log-status-new',Процесте:'log-status-process',Жолда:'log-status-ship',Қабылданды:'log-status-done',Жетті:'log-status-arrived',Қайтарылды:'log-status-return'};
   const e2=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   listEl.innerHTML=list.map(o=>{
     const total=Number(o.price||0)+Number(o.price2||0);
@@ -481,11 +482,12 @@ function filterLogisticsList(){
     const trackHtml=o.delivery_contact?`
       <div class="log-track">
         <div class="log-track-text"><i class="fas fa-hashtag"></i><span>${e2(o.delivery_contact)}</span></div>
-        <button class="copy-btn" onclick="copyText('${e2(o.delivery_contact)}',this)"><i class="fas fa-copy"></i> Көшіру</button>
+        <button class="copy-btn" onclick="copyText('${e2(o.delivery_contact)}',this)" title="Такси/жеткізуші номерін көшіру"><i class="fas fa-copy"></i> Такси номерін көшіру</button>
       </div>`:'';
     const noteHtml=o.logistics_note?`<div class="log-note">${e2(o.logistics_note)}</div>`:'';
+    const stLabel = st === 'Қабылданды' ? 'Жетті' : st;
     return`<div class="log-card">
-      <div class="log-card-row"><b>${e2(o.client_name||'—')}</b><span class="log-status ${stCls[st]||'log-status-new'}">${st}</span></div>
+      <div class="log-card-row"><b>${e2(o.client_name||'—')}</b><span class="log-status ${stCls[st]||'log-status-new'}">${stLabel}</span></div>
       <div class="log-card-row"><span class="log-meta">${e2(o.client_phone||'')}</span><span class="log-meta">${date}</span></div>
       <div class="log-card-row"><span class="log-meta">${e2(o.address||'')}</span></div>
       <div class="log-card-row"><span class="log-meta">${e2(o.product||'')}${o.gift?' + '+e2(o.gift):''}</span><b>${total.toLocaleString()} ₸</b></div>
