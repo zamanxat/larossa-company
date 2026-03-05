@@ -273,12 +273,25 @@
                         <div class="info-text" id="addr_${o.id}">${o.address || '—'}</div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn-action btn-copy" onclick="copy('addr_${o.id}', this)">Көшіру</button>
-                        <a href="https://2gis.kz/search/${encodeURIComponent(o.address)}" target="_blank" class="btn-action btn-2gis" style="text-decoration:none">2GIS</a>
+                        <button class="btn-action btn-copy" onclick="copy('addr_${o.id}', this)">Мекенжайды көшіру</button>
+                        <a href="https://2gis.kz/search/${encodeURIComponent(o.address || '')}" target="_blank" class="btn-action btn-2gis" style="text-decoration:none">2GIS</a>
+                        ${o.delivery_contact ? `<button class="btn-action btn-copy" data-copy="${String(o.delivery_contact).replace(/"/g,'&quot;')}" onclick="copyText(this.getAttribute('data-copy'), this)">Такси номерін көшіру</button>` : ''}
                     </div>
                     <div class="cargo-tag">
                         <div class="cargo-name">📦 ${o.product || '—'}</div>
                         ${o.gift ? `<div style="color:var(--danger); font-size:11px; margin-top:5px; font-weight:700;">🎁 ${o.gift}</div>` : ''}
+                    </div>
+                    <div class="field-editable" style="margin-bottom:10px;">
+                        <label style="font-size:11px;color:#64748b;font-weight:700;">Жеткізуші номері / трек</label>
+                        <input type="text" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" placeholder="Такси немесе трек номері" 
+                               onchange="update('${o.id}', 'delivery_contact', this.value)" 
+                               style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;margin-top:4px;box-sizing:border-box;">
+                    </div>
+                    <div class="field-editable" style="margin-bottom:10px;">
+                        <label style="font-size:11px;color:#64748b;font-weight:700;">Ескертпе</label>
+                        <input type="text" value="${(o.logistics_note||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" placeholder="Қысқа жазба" 
+                               onchange="update('${o.id}', 'logistics_note', this.value)" 
+                               style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;margin-top:4px;box-sizing:border-box;">
                     </div>
                     <div class="status-grid">
                         <select onchange="update('${o.id}', 'delivery_type', this.value)">
@@ -315,6 +328,12 @@
             const old = btn.innerText;
             btn.innerText = '✅ Көшірілді';
             setTimeout(() => btn.innerText = old, 1500);
+        }
+
+        function copyText(text, btn) {
+            navigator.clipboard.writeText(text);
+            const old = (btn && btn.innerText) || '';
+            if (btn) { btn.innerText = '✅ Көшірілді'; setTimeout(() => { btn.innerText = old; }, 1500); }
         }
 
         load();
