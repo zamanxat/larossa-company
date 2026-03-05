@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaRossa Target</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f0f2f8;--s:#fff;--b:#e4e7f0;--t:#1a1d2e;--m:#8b90a0;--a:#3b5bdb;--as:#eef1fd;--g:#12b76a;--gs:#e8f8f0;--r:#f04438;--rs:#fff0ef;--o:#f59e0b;--os:#fffbeb}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* TOAST */
+.tw{position:fixed;top:14px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:290px}
+.tn{pointer-events:auto;display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:11px;font-size:13px;font-weight:500;box-shadow:0 6px 24px rgba(0,0,0,.1);transform:translateX(115%);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.tn.show{transform:translateX(0)}
+.tn i{width:16px;height:16px;flex-shrink:0}
+.ok{background:#f0fdf8;color:var(--g);border:1px solid #a7f3d0}
+.er{background:var(--rs);color:var(--r);border:1px solid #fecaca}
+.in{background:var(--as);color:var(--a);border:1px solid #c7d2fe}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(10,12,28,.5);backdrop-filter:blur(5px);z-index:8000;display:none;align-items:center;justify-content:center;padding:16px}
+.mo.on{display:flex}
+.mb{background:var(--s);border-radius:18px;padding:28px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.14);animation:mi .2s ease}
+@keyframes mi{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+.mico{width:48px;height:48px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;background:var(--rs)}
+.mico i{width:22px;height:22px;color:var(--r)}
+.mb h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.mb p{color:var(--m);font-size:13px;line-height:1.6;margin-bottom:20px}
+.mba{display:flex;gap:8px}.mba .btn{flex:1;justify-content:center}
+
+/* LAYOUT */
+#app{max-width:1080px;margin:0 auto;padding:22px 14px}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.hl{display:flex;align-items:center;gap:10px}
+.hico{width:40px;height:40px;background:var(--a);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hico i{width:20px;height:20px;color:#fff}
+.hdr h1{font-size:18px;font-weight:800}.hdr h1 span{color:var(--a)}
+.hr{display:flex;gap:6px;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn i{width:13px;height:13px;flex-shrink:0}
+.bp{background:var(--a);color:#fff}.bp:hover{background:#2f4ecc}
+.bd{background:var(--rs);color:var(--r);border:1px solid #fecaca}.bd:hover{background:#fee2e2}
+.bg{background:transparent;color:var(--m);border:1px solid var(--b)}.bg:hover{background:var(--bg)}
+.bv{background:var(--gs);color:var(--g);border:1px solid #a7f3d0}
+.bo{background:var(--os);color:var(--o);border:1px solid #fed7aa}
+.bc{background:var(--as);color:var(--a);border:1px solid #c7d2fe}
+.sm{padding:7px 11px;font-size:12px;border-radius:8px}
+.ibtn{width:32px;height:32px;padding:0;border-radius:8px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
+.sc{background:var(--s);border:1px solid var(--b);border-radius:11px;padding:16px;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc:nth-child(1)::after{background:var(--a)}.sc:nth-child(2)::after{background:var(--g)}
+.sc:nth-child(3)::after{background:var(--o)}.sc:nth-child(4)::after{background:#06b6d4}
+.st{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.sl{font-size:10.5px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.5px}
+.si{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.si i{width:14px;height:14px}
+.sc:nth-child(1) .si{background:var(--as);color:var(--a)}.sc:nth-child(2) .si{background:var(--gs);color:var(--g)}
+.sc:nth-child(3) .si{background:var(--os);color:var(--o)}.sc:nth-child(4) .si{background:#ecfeff;color:#06b6d4}
+.sv{font-size:26px;font-weight:800}
+
+/* CARD */
+.card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:18px;margin-bottom:14px}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;flex-wrap:wrap;gap:8px}
+.ct{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.ti{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ti i{width:13px;height:13px}
+.ta{background:var(--as);color:var(--a)}.tg{background:var(--gs);color:var(--g)}.tc{background:#ecfeff;color:#06b6d4}
+
+/* FORM */
+.af{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:11px;align-items:end}
+.fg label{display:block;font-size:10.5px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.iw{position:relative;display:flex;align-items:center}
+.iw>i,.iw>svg{position:absolute;left:11px;width:15px;height:15px;color:var(--m);pointer-events:none;z-index:1;flex-shrink:0}
+.iw input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid var(--b);border-radius:9px;font-size:13.5px;font-family:inherit;outline:none;transition:border .2s,box-shadow .2s;background:#fff;color:var(--t)}
+.iw input:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(59,91,219,.1)}
+.iw input::placeholder{color:#cdd0dc}
+
+/* TABLE (desktop) */
+.ts{overflow-x:auto;margin:0 -18px;padding:0 18px}
+table{width:100%;border-collapse:collapse;min-width:540px}
+thead th{text-align:left;padding:8px 11px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--m);border-bottom:1.5px solid var(--b);white-space:nowrap;background:var(--bg)}
+tbody td{padding:11px;border-bottom:1px solid var(--b);font-size:13px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:#fafbfe}
+.n2{font-weight:700}.tp{color:var(--a);font-size:12px;font-weight:600}.tl2{font-size:17px;font-weight:800;color:var(--a)}.nm{color:var(--m);font-weight:500}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.badge i{width:10px;height:10px}
+.bact{background:var(--gs);color:var(--g)}.bpau{background:var(--rs);color:var(--r)}
+.cur{display:inline-flex;align-items:center;gap:3px;background:var(--as);color:var(--a);font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;margin-left:5px;animation:bl 2s infinite}
+.cur i{width:9px;height:9px}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.4}}
+.wa{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--g);font-size:11px}
+.acts{display:flex;gap:4px}
+
+/* MANAGER CARDS (mobile) */
+.mgr-cards{display:none;flex-direction:column;gap:10px}
+.mgr-card{background:var(--bg);border:1px solid var(--b);border-radius:11px;padding:14px}
+.mc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mc-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mc-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.mc-row:last-child{margin-bottom:0}
+.mc-label{font-size:10.5px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.5px}
+.mc-val{font-size:13px;font-weight:600}
+.mc-phone{color:var(--a);font-size:12.5px;font-weight:600}
+.mc-wa{color:var(--g);font-size:11.5px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:11px;padding-top:11px;border-top:1px solid var(--b)}
+
+/* FILTER */
+.fl{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:11px;background:var(--bg);border-radius:10px;border:1px solid var(--b);margin-bottom:12px}
+.fl label{font-size:11.5px;font-weight:600;color:var(--m);white-space:nowrap}
+.fl input[type=date],.fl select{padding:7px 9px;border:1.5px solid var(--b);border-radius:8px;font-size:12px;font-family:inherit;outline:none;background:#fff;color:var(--t);transition:border .2s}
+.fl input[type=date]:focus,.fl select:focus{border-color:var(--a)}
+.fg2{flex:1;min-width:8px}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px;color:var(--m)}
+.empty .ei{width:44px;height:44px;background:var(--as);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
+.empty .ei i{width:19px;height:19px;color:var(--a)}
+.empty p{font-size:13px}
+
+/* RESPONSIVE */
+@media(max-width:860px){.af{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){
+  #app{padding:12px 11px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:9px}
+  .card{padding:14px}
+  .ts{display:none}
+  .lts{display:block}
+  .mgr-cards{display:flex}
+  .sv{font-size:20px}.hdr h1{font-size:15px}
+  .hico{width:36px;height:36px}.hico i{width:18px;height:18px}
+  .tw{width:calc(100% - 22px);right:11px;top:11px}
+}
+@media(max-width:420px){
+  .af{grid-template-columns:1fr}
+  .sl{font-size:10px}.sv{font-size:18px}
+}
+</style>
+
+</head>
+<body>
+<div class="tw" id="tw"></div>
+
+<div class="mo" id="resetMo">
+  <div class="mb">
+    <div class="mico"><i data-lucide="alert-triangle"></i></div>
+    <h3>Лидтерді нөлдеу</h3>
+    <p>Барлық менеджерлердің лид саны 0-ге қайтарылады. Журнал сақталады.</p>
+    <div class="mba">
+      <button class="btn bg" onclick="closeModal('resetMo')"><i data-lucide="x"></i> Болдырмау</button>
+      <button class="btn bd" onclick="resetLeads()"><i data-lucide="trash-2"></i> Нөлдеу</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hl">
+      <div class="hico"><i data-lucide="crosshair"></i></div>
+      <h1>LaRossa <span>Target</span></h1>
+    </div>
+    <div class="hr">
+      <button class="btn bc sm" onclick="copyLink()"><i data-lucide="copy"></i> Сілтеме</button>
+      <button class="btn bg sm" onclick="loadAll()"><i data-lucide="refresh-cw"></i> Жаңарту</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="sc"><div class="st"><span class="sl">Менеджерлер</span><div class="si"><i data-lucide="users"></i></div></div><div class="sv" id="sT">—</div></div>
+    <div class="sc"><div class="st"><span class="sl">Белсенді</span><div class="si"><i data-lucide="user-check"></i></div></div><div class="sv" id="sA">—</div></div>
+    <div class="sc"><div class="st"><span class="sl">Барлық лид</span><div class="si"><i data-lucide="trending-up"></i></div></div><div class="sv" id="sL">—</div></div>
+    <div class="sc"><div class="st"><span class="sl">Бүгін</span><div class="si"><i data-lucide="zap"></i></div></div><div class="sv" id="sTd">—</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="ct"><div class="ti tg"><i data-lucide="user-plus"></i></div>Жаңа менеджер қосу</div></div>
+    <div class="af">
+      <div class="fg"><label>Аты-жөні</label><div class="iw"><i data-lucide="user"></i><input type="text" id="iN" placeholder="Арман" autocomplete="off"></div></div>
+      <div class="fg"><label>Телефон</label><div class="iw"><i data-lucide="phone"></i><input type="tel" id="iP" placeholder="+7 (777) 777-7777" inputmode="numeric" maxlength="18"></div></div>
+      <div class="fg"><label>WhatsApp хабарлама</label><div class="iw"><i data-lucide="message-circle"></i><input type="text" id="iM" placeholder="Сәлем, сұрақ бар еді" lang="en" autocomplete="off"></div></div>
+      <button class="btn bp" onclick="addMgr()" style="height:40px;margin-top:auto"><i data-lucide="plus"></i> Қосу</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><div class="ti ta"><i data-lucide="users"></i></div>Менеджерлер тізімі</div>
+      <button class="btn bd sm" onclick="openModal('resetMo')"><i data-lucide="rotate-ccw"></i> Нөлдеу</button>
+    </div>
+    <!-- Queue order -->
+    <div id="queueOrder" style="margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--b);font-size:12px;font-weight:600;color:var(--m);display:none"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap"><span style="color:var(--a)">Кезек тәртібі:</span><span style="font-size:11px;color:var(--m);font-weight:500">Атын басып кезекті ауыстыр</span></div><div id="queueLine" style="margin-top:8px;display:flex;align-items:center;flex-wrap:wrap;gap:4px"></div></div>
+    <!-- Desktop table -->
+    <div class="ts">
+      <table>
+        <thead><tr><th>#</th><th>Аты</th><th>Телефон</th><th>WhatsApp</th><th>Статус</th><th>Лид</th><th>Әрекет</th></tr></thead>
+        <tbody id="mB"></tbody>
+      </table>
+    </div>
+    <!-- Mobile cards -->
+    <div class="mgr-cards" id="mCards"></div>
+    <div class="empty" id="emM" style="display:none"><div class="ei"><i data-lucide="user-x"></i></div><p>Менеджер қосылмаған.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="ct"><div class="ti tc"><i data-lucide="clipboard-list"></i></div>Лидтер журналы</div></div>
+    <div class="fl">
+      <label>Күн:</label>
+      <input type="date" id="fF">
+      <span style="color:var(--m)">—</span>
+      <input type="date" id="fT">
+      <label>Менеджер:</label>
+      <select id="fM"><option value="">Барлығы</option></select>
+      <div class="fg2"></div>
+      <button class="btn bp sm" onclick="loadLeads()"><i data-lucide="search"></i> Іздеу</button>
+      <button class="btn bg sm" onclick="clrF()"><i data-lucide="x"></i></button>
+    </div>
+    <div class="ts lts">
+      <table>
+        <thead><tr><th>#</th><th>Менеджер</th><th>Уақыт</th><th>Referrer</th><th></th></tr></thead>
+        <tbody id="lB"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="emL" style="display:none"><div class="ei"><i data-lucide="inbox"></i></div><p>Лидтер жоқ.</p></div>
+  </div>
+</div>
+
+
+<!-- EDIT MODAL -->
+<div class="mo" id="editMo">
+  <div class="mb" style="max-width:440px;text-align:left">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700"><div class="ti ta" style="width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--as);color:var(--a)"><i data-lucide="edit-2" style="width:13px;height:13px"></i></div>Менеджерді өзгерту</div>
+      <button class="btn bg" style="width:30px;height:30px;padding:0;border-radius:8px" onclick="closeModal('editMo')"><i data-lucide="x"></i></button>
+    </div>
+    <input type="hidden" id="eId">
+    <div class="fg" style="margin-bottom:10px"><label style="display:block;font-size:10.5px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">Аты-жөні</label><div class="iw"><i data-lucide="user"></i><input type="text" id="eN" placeholder="Арман" autocomplete="off"></div></div>
+    <div class="fg" style="margin-bottom:10px"><label style="display:block;font-size:10.5px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">Телефон</label><div class="iw"><i data-lucide="phone"></i><input type="tel" id="eP" placeholder="+7 (777) 777-7777" inputmode="numeric" maxlength="18"></div></div>
+    <div class="fg" style="margin-bottom:16px"><label style="display:block;font-size:10.5px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">WhatsApp хабарлама</label><div class="iw"><i data-lucide="message-circle"></i><input type="text" id="eM" placeholder="Сәлем, сұрақ бар еді" lang="en" autocomplete="off"></div></div>
+    <div class="mba">
+      <button class="btn bg" onclick="closeModal('editMo')"><i data-lucide="x"></i> Болдырмау</button>
+      <button class="btn bp" onclick="saveMgr()"><i data-lucide="check"></i> Сақтау</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb=window.supabase.createClient('https://jnuokhhqojlurvadcduv.supabase.co','sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk');
+const G=id=>document.getElementById(id);
+let mgrs=[],tidx=0;
+
+// PHONE MASK
+const ph=G('iP');
+ph.addEventListener('input',function(){
+  let v=this.value.replace(/\D/g,'');
+  if(v.startsWith('8'))v='7'+v.slice(1);
+  if(v.length&&!v.startsWith('7'))v='7'+v;
+  let f='';
+  if(v.length>0)f='+'+v[0];
+  if(v.length>1)f+=' ('+v.slice(1,4);
+  if(v.length>4)f+=') '+v.slice(4,7);
+  if(v.length>7)f+='-'+v.slice(7,9);
+  if(v.length>9)f+='-'+v.slice(9,11);
+  this.value=f;
+});
+ph.addEventListener('keydown',function(e){
+  if(e.key==='Backspace'){
+    const l=this.value.slice(-1);
+    if(' ()'.includes(l)){e.preventDefault();this.value=this.value.slice(0,-2);this.dispatchEvent(new Event('input'));}
+    else if(l==='-'){e.preventDefault();this.value=this.value.slice(0,-1);this.dispatchEvent(new Event('input'));}
+  }
+});
+ph.addEventListener('focus',function(){if(!this.value)this.value='+7 (';});
+ph.addEventListener('blur',function(){if(['+7 (','+7','+'].includes(this.value))this.value='';});
+
+// TOAST
+function toast(msg,t='in'){
+  const ic={ok:'check-circle',er:'alert-circle',in:'info'};
+  const el=document.createElement('div');
+  el.className='tn '+t;
+  el.innerHTML=`<i data-lucide="${ic[t]}"></i><span>${esc(msg)}</span>`;
+  G('tw').appendChild(el);
+  lucide.createIcons({nodes:[el]});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350);},3200);
+}
+
+// MODAL
+function openModal(id){G(id).classList.add('on');}
+function closeModal(id){G(id).classList.remove('on');}
+function confirm2(msg){
+  return new Promise(res=>{
+    const ov=document.createElement('div');
+    ov.className='mo on';
+    ov.innerHTML=`<div class="mb"><div class="mico"><i data-lucide="alert-triangle"></i></div><h3>Растау</h3><p>${esc(msg)}</p><div class="mba"><button class="btn bg" id="_n"><i data-lucide="x"></i> Жоқ</button><button class="btn bd" id="_y"><i data-lucide="trash-2"></i> Жою</button></div></div>`;
+    document.body.appendChild(ov);
+    lucide.createIcons({nodes:[ov]});
+    ov.querySelector('#_y').onclick=()=>{ov.remove();res(true);};
+    ov.querySelector('#_n').onclick=()=>{ov.remove();res(false);};
+  });
+}
+
+// COPY
+function copyLink(){
+  const url='https://larossa-company.vercel.app/target.html';
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>toast('Сілтеме көшірілді!','ok')).catch(()=>fallbackCopy(url));
+  } else fallbackCopy(url);
+}
+function fallbackCopy(url){
+  const ta=document.createElement('textarea');
+  ta.value=url;ta.style.cssText='position:fixed;left:-9999px;top:-9999px';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');toast('Сілтеме көшірілді!','ok');}catch{toast(url,'in');}
+  document.body.removeChild(ta);
+}
+
+// LOAD
+async function loadAll(){await loadMgrs();await loadLeads();}
+
+async function loadMgrs(){
+  const{data,error}=await sb.from('larossa_target_managers').select('*').order('created_at',{ascending:true});
+  if(error){toast('Жүктеу қатесі','er');return;}
+  mgrs=data||[];
+  const{data:s}=await sb.from('larossa_target_settings').select('current_index').eq('id',1).single();
+  tidx=s?.current_index??0;
+  renderMgrs();updFilter();renderStats();
+}
+
+function fmtP(p){
+  if(!p)return'';
+  const c=p.replace(/\D/g,'');
+  return c.length===11?`+${c[0]} (${c.slice(1,4)}) ${c.slice(4,7)}-${c.slice(7,9)}-${c.slice(9,11)}`:p;
+}
+
+function renderMgrs(){
+  const tb=G('mB'),mc=G('mCards'),em=G('emM');
+  if(!mgrs.length){tb.innerHTML='';mc.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  const act=mgrs.filter(m=>m.is_active);
+
+  // Desktop rows
+  tb.innerHTML=mgrs.map((m,i)=>{
+    const isTurn=m.is_active&&act.findIndex(x=>x.id===m.id)===tidx;
+    const btns=m.is_active
+      ?`<button class="btn bo ibtn" title="Тоқтату" onclick="togMgr('${m.id}',false)"><i data-lucide="pause"></i></button>`
+      :`<button class="btn bv ibtn" title="Қосу" onclick="togMgr('${m.id}',true)"><i data-lucide="play"></i></button>`;
+    return`<tr>
+      <td class="nm">${i+1}</td>
+      <td><span class="n2">${esc(m.name)}</span>${isTurn?`<span class="cur"><i data-lucide="radio"></i>Кезекте</span>`:''}</td>
+      <td><span class="tp">${fmtP(m.phone)}</span></td>
+      <td><div class="wa" title="${esc(m.whatsapp_link)}">${esc(m.whatsapp_link)}</div></td>
+      <td><span class="badge ${m.is_active?'bact':'bpau'}"><i data-lucide="${m.is_active?'check-circle':'pause-circle'}"></i>${m.is_active?'Белсенді':'Тоқтатылған'}</span></td>
+      <td><span class="tl2">${m.total_leads||0}</span></td>
+      <td><div class="acts">${btns}<button class="btn bd ibtn" title="Жою" onclick="delMgr('${m.id}','${esc(m.name).replace(/'/g,"\\'")}')"><i data-lucide="trash-2"></i></button></div></td>
+    </tr>`;
+  }).join('');
+
+  // Mobile cards
+  mc.innerHTML=mgrs.map((m,i)=>{
+    const isTurn=m.is_active&&act.findIndex(x=>x.id===m.id)===tidx;
+    const toggleBtn=m.is_active
+      ?`<button class="btn bo sm" onclick="togMgr('${m.id}',false)"><i data-lucide="pause"></i> Тоқтату</button>`
+      :`<button class="btn bv sm" onclick="togMgr('${m.id}',true)"><i data-lucide="play"></i> Қосу</button>`;
+    return`<div class="mgr-card">
+      <div class="mc-top">
+        <div class="mc-name">
+          <span>${i+1}. ${esc(m.name)}</span>
+          ${isTurn?`<span class="cur"><i data-lucide="radio"></i>Кезекте</span>`:''}
+        </div>
+        <span class="badge ${m.is_active?'bact':'bpau'}"><i data-lucide="${m.is_active?'check-circle':'pause-circle'}"></i>${m.is_active?'Белсенді':'Тоқтатылған'}</span>
+      </div>
+      <div class="mc-row"><span class="mc-label">Телефон</span><span class="mc-phone">${fmtP(m.phone)}</span></div>
+      <div class="mc-row"><span class="mc-label">WhatsApp</span><span class="mc-wa">${esc(m.whatsapp_link)}</span></div>
+      <div class="mc-row"><span class="mc-label">Лидтер</span><span class="tl2">${m.total_leads||0}</span></div>
+      <div class="mc-bottom">
+        ${toggleBtn}
+        <button class="btn bd sm" onclick="delMgr('${m.id}','${esc(m.name).replace(/'/g,"\\'")}')"><i data-lucide="trash-2"></i> Жою</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderQueueOrder();
+  lucide.createIcons();
+}
+
+function updFilter(){
+  const s=G('fM'),v=s.value;
+  s.innerHTML='<option value="">Барлығы</option>';
+  mgrs.forEach(m=>s.innerHTML+=`<option value="${esc(m.name)}"${v===m.name?' selected':''}>${esc(m.name)}</option>`);
+}
+
+async function loadLeads(){
+  let q=sb.from('larossa_target_leads').select('*').order('created_at',{ascending:false}).limit(300);
+  const f=G('fF').value,t=G('fT').value,m=G('fM').value;
+  if(f)q=q.gte('created_at',f+'T00:00:00');
+  if(t)q=q.lte('created_at',t+'T23:59:59');
+  if(m)q=q.eq('manager_name',m);
+  const{data,error}=await q;
+  if(error){toast('Лид қатесі','er');return;}
+  const leads=data||[];
+  const tb=G('lB'),em=G('emL');
+  if(!leads.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  tb.innerHTML=leads.map((l,i)=>{
+    const d=new Date(l.created_at);
+    const ds=d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    return`<tr><td class="nm">${i+1}</td><td><strong>${esc(l.manager_name||'—')}</strong></td><td style="white-space:nowrap">${ds}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--m)">${esc(l.referrer||'—')}</td><td><button class="btn bd ibtn" title="Жою" onclick="delLead('${l.id}','${esc(l.manager_name||'')}')"><i data-lucide="trash-2"></i></button></td></tr>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+async function renderStats(){
+  G('sT').textContent=mgrs.length;
+  G('sA').textContent=mgrs.filter(m=>m.is_active).length;
+  G('sL').textContent=mgrs.reduce((s,m)=>s+(m.total_leads||0),0);
+  const today=new Date().toISOString().split('T')[0];
+  const{count}=await sb.from('larossa_target_leads').select('*',{count:'exact',head:true}).gte('created_at',today+'T00:00:00');
+  G('sTd').textContent=count??0;
+}
+
+async function addMgr(){
+  const name=G('iN').value.trim(),phone=G('iP').value.trim(),msg=G('iM').value.trim();
+  if(!name){toast('Атын жазыңыз!','er');return;}
+  const cp=phone.replace(/\D/g,'');
+  if(cp.length<11){toast('Телефон толық емес!','er');return;}
+  const wa='https://wa.me/'+cp+(msg?'?text='+encodeURIComponent(msg):'');
+  const{error}=await sb.from('larossa_target_managers').insert({name,phone:cp,whatsapp_link:wa,is_active:true,total_leads:0});
+  if(error){toast('Қосу қатесі: '+error.message,'er');return;}
+  G('iN').value='';G('iP').value='';G('iM').value='';
+  toast(name+' қосылды!','ok');loadAll();
+}
+
+async function togMgr(id,val){
+  const{error}=await sb.from('larossa_target_managers').update({is_active:val}).eq('id',id);
+  if(error){toast('Қате: '+error.message,'er');return;}
+  await sb.from('larossa_target_settings').update({current_index:0}).eq('id',1);
+  toast(val?'Менеджер қосылды':'Тоқтатылды','in');loadAll();
+}
+
+async function delMgr(id,name){
+  if(!await confirm2(name+' жойылсын ба?'))return;
+  const{error}=await sb.from('larossa_target_managers').delete().eq('id',id);
+  if(error){toast('Жою қатесі','er');return;}
+  await sb.from('larossa_target_settings').update({current_index:0}).eq('id',1);
+  toast(name+' жойылды','in');loadAll();
+}
+
+async function resetLeads(){
+  await Promise.all(mgrs.map(m=>sb.from('larossa_target_managers').update({total_leads:0}).eq('id',m.id)));
+  closeModal('resetMo');toast('Лидтер нөлденді!','ok');loadAll();
+}
+
+async function delLead(id,name){
+  if(!await confirm2((name?name+' — ':'')+'Бұл лидті жою?'))return;
+  const{error}=await sb.from('larossa_target_leads').delete().eq('id',id);
+  if(error){toast('Жою қатесі','er');return;}
+  toast('Лид жойылды','in');
+  await loadAll();
+}
+function clrF(){G('fF').value='';G('fT').value='';G('fM').value='';loadLeads();}
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+
+
+// EDIT MANAGER
+const eph=document.getElementById('eP');
+eph.addEventListener('input',function(){
+  let v=this.value.replace(/\D/g,'');
+  if(v.startsWith('8'))v='7'+v.slice(1);
+  if(v.length&&!v.startsWith('7'))v='7'+v;
+  let f='';
+  if(v.length>0)f='+'+v[0];
+  if(v.length>1)f+=' ('+v.slice(1,4);
+  if(v.length>4)f+=') '+v.slice(4,7);
+  if(v.length>7)f+='-'+v.slice(7,9);
+  if(v.length>9)f+='-'+v.slice(9,11);
+  this.value=f;
+});
+eph.addEventListener('focus',function(){if(!this.value)this.value='+7 (';});
+eph.addEventListener('blur',function(){if(['+7 (','+7','+'].includes(this.value))this.value='';});
+
+function openEdit(m){
+  G('eId').value=m.id;
+  G('eN').value=m.name||'';
+  G('eP').value=fmtP(m.phone||'');
+  // extract message from whatsapp_link
+  const wa=m.whatsapp_link||'';
+  const txtIdx=wa.indexOf('?text=');
+  G('eM').value=txtIdx>-1?decodeURIComponent(wa.slice(txtIdx+6)):'';
+  openModal('editMo');
+  renderQueueOrder();
+  lucide.createIcons();
+}
+
+async function saveMgr(){
+  const id=G('eId').value;
+  const name=G('eN').value.trim();
+  const phone=G('eP').value.trim();
+  const msg=G('eM').value.trim();
+  if(!name){toast('Атын жазыңыз!','er');return;}
+  const cp=phone.replace(/\D/g,'');
+  if(cp.length<11){toast('Телефон толық емес!','er');return;}
+  const wa='https://wa.me/'+cp+(msg?'?text='+encodeURIComponent(msg):'');
+  const{error}=await sb.from('larossa_target_managers').update({name,phone:cp,whatsapp_link:wa}).eq('id',id);
+  if(error){toast('Сақтау қатесі: '+error.message,'er');return;}
+  closeModal('editMo');toast(name+' жаңартылды!','ok');loadAll();
+}
+
+function renderQueueOrder(){
+  const act=mgrs.filter(m=>m.is_active);
+  const el=G('queueOrder'),ql=G('queueLine');
+  if(!act.length){el.style.display='none';return;}
+  el.style.display='block';
+  ql.innerHTML=act.map((m,i)=>{
+    const isCur=i===tidx;
+    return`
+      <button onclick="setQueueIdx(${i})" style="
+        background:${isCur?'var(--a)':'var(--s)'};
+        color:${isCur?'#fff':'var(--t)'};
+        border:1.5px solid ${isCur?'var(--a)':'var(--b)'};
+        padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;
+        cursor:pointer;font-family:inherit;transition:all .15s;
+        ${isCur?'box-shadow:0 2px 8px rgba(59,91,219,.25)':''}
+      ">${i+1}. ${esc(m.name)}</button>
+      ${i<act.length-1?'<span style="color:var(--m);font-size:14px;padding:0 2px">→</span>':''}
+    `;
+  }).join('');
+}
+
+async function setQueueIdx(i){
+  const act=mgrs.filter(m=>m.is_active);
+  if(i<0||i>=act.length)return;
+  const{error}=await sb.from('larossa_target_settings').update({current_index:i}).eq('id',1);
+  if(error){toast('Қате: '+error.message,'er');return;}
+  tidx=i;
+  renderMgrs();
+  toast(act[i].name+' — кезекке қойылды','ok');
+}
+
+lucide.createIcons();
+loadAll();
+setInterval(loadAll,30000);
+</script>
+</body>
+</html>
