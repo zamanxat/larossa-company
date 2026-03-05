@@ -1671,7 +1671,13 @@ async function loadWarranty(){
     .select('*')
     .order('created_at',{ascending:false})
     .limit(500);
-  if(!error) dbW=data||[];
+  if(error){
+    const msg='Жүктеу қатесі: '+(error.message||error);
+    if(typeof popup==='function') popup(msg);
+    else alert(msg);
+    return;
+  }
+  dbW=data||[];
   rendWarranty();
 }
 function rendWarranty(){
