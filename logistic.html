@@ -257,7 +257,7 @@
                 const statusMatch = (currentStatus === 'all') || (o.status === currentStatus);
                 const deliveryMatch = (currentDelivery === 'all') || (o.delivery_type === currentDelivery);
                 const mgrName = (o.manager_name || '').toLowerCase();
-                const managerMatch = (currentManager === 'all') || mgrName.includes(currentManager.toLowerCase());
+                const managerMatch = (currentManager === 'all') || mgrName === currentManager.toLowerCase().trim();
                 
                 let timeMatch = true;
                 if (currentTimeScope === 'Бүгін') timeMatch = orderDate >= startOfToday;
