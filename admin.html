@@ -28,7 +28,7 @@
   --sw:252px;--bnh:60px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden; padding: 20px; padding-bottom: 60px;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:60px;}
 
 /* AUTH */
 #authWrap{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a,#1e293b);padding:20px}
@@ -802,9 +802,12 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="nitem" onclick="goPage('target',this)"><i class="fas fa-bullseye"></i>Таргет</div>
   <div class="nitem" onclick="goPage('bonussettings',this)"><i class="fas fa-percent"></i>Бонус баптау</div>
   <div class="nitem" onclick="goPage('sitemanage',this)"><i class="fas fa-sliders-h"></i>Сайт баптау</div>
+  <div class="nitem" onclick="goPage('warranty',this)"><i class="fas fa-certificate"></i>Гарантия талон</div>
   <div class="ndiv"></div>
   <div class="nitem" onclick="goPage('settings',this)"><i class="fas fa-cog"></i>Баптау</div>
   <div class="nitem" onclick="goPage('help',this)"><i class="fas fa-question-circle"></i>Көмек</div>
+  <div class="ndiv"></div>
+  <div class="nitem" onclick="location.href='/'"><i class="fas fa-home"></i>Порталға өту</div>
 </aside>
 
 <main class="main">
@@ -943,7 +946,7 @@ tbody tr:hover td{background:#f8f9fd}
   </div>
   <div class="card">
     <div class="ch"><h3>Толық есеп</h3></div>
-    <div class="tw"><table><thead><tr><th>Менеджер</th><th>Заказ</th><th>Сауда</th><th>Орт.%</th><th>Бонус</th><th>Берілген</th><th>Берілмеген</th><th></th></tr></thead><tbody id="salTbl"></tbody></table></div>
+    <div class="tw"><table><thead><tr><th>Менеджер</th><th>Заказ</th><th>Сауда</th><th>Орт.%</th><th>Бонус</th><th>Берілген ЗП</th><th>Берілген Бонус</th><th>Берілмеген</th><th></th></tr></thead><tbody id="salTbl"></tbody></table></div>
   </div>
 </div>
 
@@ -1330,6 +1333,31 @@ tbody tr:hover td{background:#f8f9fd}
       <li>☰ — сол жақ мәзір</li></ul></div></div>
 </div>
 
+<!-- WARRANTY PAGE -->
+<div id="warrantyPage" class="page">
+  <h1 style="font-size:19px;font-weight:700;margin-bottom:14px">Гарантия талондар</h1>
+  <div class="card">
+    <div class="ch">
+      <h3>Талондар тізімі</h3>
+      <div class="srch"><i class="fas fa-search"></i><input type="text" id="wrtSrch" placeholder="Клиент немесе артикул..." oninput="rendWarranty()" style="width:170px"></div>
+    </div>
+    <div class="tw dtbl">
+      <table>
+        <thead>
+          <tr>
+            <th>Күні</th>
+            <th>Клиент аты</th>
+            <th>Артикул</th>
+            <th>Кепілдік мерзімі</th>
+          </tr>
+        </thead>
+        <tbody id="wrtTbl"></tbody>
+      </table>
+    </div>
+    <div id="wrtMob"></div>
+  </div>
+</div>
+
 </main>
 
 <!-- BNAV -->
@@ -1350,7 +1378,9 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="mitem" onclick="goPage('target',null);closeMore();setBA('')"><i class="fas fa-bullseye"></i><span>Таргет</span></div>
   <div class="mitem" onclick="goPage('bonussettings',null);closeMore();setBA('')"><i class="fas fa-percent"></i><span>Бонус</span></div>
   <div class="mitem" onclick="goPage('sitemanage',null);closeMore();setBA('')"><i class="fas fa-sliders-h"></i><span>Сайт</span></div>
+  <div class="mitem" onclick="goPage('warranty',null);closeMore();setBA('')"><i class="fas fa-certificate"></i><span>Гарантия</span></div>
   <div class="mitem" onclick="goPage('settings',null);closeMore();setBA('')"><i class="fas fa-cog"></i><span>Баптау</span></div>
+  <div class="mitem" onclick="location.href='/';closeMore()"><i class="fas fa-home"></i><span>Портал</span></div>
 </div>
 </div><!-- /appWrap -->
 
@@ -1630,6 +1660,41 @@ function trigPage(p){
   else if(p==='bonussettings') rendBS()
   else if(p==='sitemanage') rendSiteManage();
   else if(p==='logistics') lrsLoad();
+  else if(p==='warranty') { if(dbW.length===0) loadWarranty(); else rendWarranty(); }
+}
+
+// ===== WARRANTY =====
+let dbW=[];
+async function loadWarranty(){
+  const{data,error}=await sb
+    .from('warranty_certificates')
+    .select('*')
+    .order('created_at',{ascending:false})
+    .limit(500);
+  if(error){
+    const msg='Жүктеу қатесі: '+(error.message||error);
+    if(typeof popup==='function') popup(msg);
+    else alert(msg);
+    return;
+  }
+  dbW=data||[];
+  rendWarranty();
+}
+function rendWarranty(){
+  const q=(document.getElementById('wrtSrch')?.value||'').toLowerCase();
+  let d=q?dbW.filter(w=>(w.client_name||'').toLowerCase().includes(q)||(w.article||'').toLowerCase().includes(q)):dbW;
+  const tbody=document.getElementById('wrtTbl');
+  const mob=document.getElementById('wrtMob');
+  if(tbody) tbody.innerHTML=d.length?d.map(w=>`<tr>
+    <td style="font-size:12px;white-space:nowrap">${fDate(w.created_at)}</td>
+    <td><b>${eH(w.client_name||'—')}</b></td>
+    <td><span class="badge bb">${eH(w.article||'—')}</span></td>
+    <td style="font-size:12px">${w.expiry_date||'—'}</td>
+  </tr>`).join(''):`<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--mu)">Жазба жоқ</td></tr>`;
+  if(mob) mob.innerHTML=d.length?d.map(w=>`<div class="mob-card">
+    <div class="mc-r"><b>${eH(w.client_name||'—')}</b><span class="badge bb">${eH(w.article||'—')}</span></div>
+    <div class="mc-r"><span style="font-size:11px;color:var(--mu)">${fDate(w.created_at)}</span><span style="font-size:11px;color:var(--g)">${w.expiry_date||'—'}</span></div>
+  </div>`).join(''):'<div style="padding:20px;text-align:center;color:var(--mu)">Жазба жоқ</div>';
 }
 
 // ===== PERIOD =====
@@ -1655,6 +1720,8 @@ function curPage(){return(document.querySelector('.page.active')?.id||'').replac
 // ===== BONUS =====
 function oBon(o){return Math.round((Number(o.price||0)+Number(o.price2||0))*(parseFloat(o.bonus_percent??DPCT)/100));}
 function mPaid(mId){return dbP.filter(p=>p.manager_id==mId&&p.is_paid!==false).reduce((s,p)=>s+Number(p.amount),0);}
+function mSalPaid(mId){return dbP.filter(p=>p.manager_id==mId&&p.is_paid!==false&&(p.payment_kind||'salary')==='salary').reduce((s,p)=>s+Number(p.amount),0);}
+function mBonPaid(mId){return dbP.filter(p=>p.manager_id==mId&&p.is_paid!==false&&p.payment_kind==='bonus').reduce((s,p)=>s+Number(p.amount),0);}
 
 // ===== ORDERS =====
 function togDR(){const v=document.getElementById('pFilt').value;document.getElementById('cRng').style.display=v==='custom'?'flex':'none';filtOrd();}
@@ -1848,9 +1915,10 @@ function getMgrList(){
   return dbMgrs.map(m=>{
     const mO=d.filter(o=>o.manager_id==m.id);
     const sum=mO.reduce((s,o)=>s+Number(o.price||0)+Number(o.price2||0),0);
-    const bon=mO.reduce((s,o)=>s+oBon(o),0),paid=mPaid(m.id),up=Math.max(0,bon-paid);
+    const bon=mO.reduce((s,o)=>s+oBon(o),0);
+    const salaryPaid=mSalPaid(m.id),bonusPaid=mBonPaid(m.id),paid=salaryPaid+bonusPaid,up=Math.max(0,bon-paid);
     const avgP=mO.length?mO.reduce((s,o)=>s+parseFloat(o.bonus_percent??DPCT),0)/mO.length:DPCT;
-    return{...m,cnt:mO.length,sum,bon,paid,up,avgP};
+    return{...m,cnt:mO.length,sum,bon,paid,salaryPaid,bonusPaid,up,avgP};
   }).filter(m=>m.cnt>0||m.paid>0);
 }
 
@@ -1878,15 +1946,17 @@ function rendSal(){
       </div>
       <div class="ppc-nums">
         <div class="ppc-n"><span>Бонус қоры</span><b>${m.bon.toLocaleString()} ₸</b></div>
-        <div class="ppc-n gn"><span>Берілген</span><b>${m.paid.toLocaleString()} ₸</b></div>
+        <div class="ppc-n gn"><span>Берілген ЗП</span><b>${m.salaryPaid.toLocaleString()} ₸</b></div>
+        <div class="ppc-n" style="color:var(--b)"><span>Берілген Бонус</span><b style="color:var(--b)">${m.bonusPaid.toLocaleString()} ₸</b></div>
         <div class="ppc-n on"><span>Берілмеген</span><b>${m.up.toLocaleString()} ₸</b></div>
+        <div class="ppc-n" style="border-top:1px solid var(--brd);padding-top:5px;margin-top:4px"><span>Жалпы берілген</span><b>${m.paid.toLocaleString()} ₸</b></div>
       </div>
       <div class="prog" style="margin-top:10px"><div class="prog-f" style="width:${pct}%;background:${col}"></div></div>
       <div style="font-size:11px;color:var(--mu);margin-top:3px">${pct.toFixed(0)}% берілді</div>
     </div>`;
   }).join('');
   // table
-  document.getElementById('salTbl').innerHTML=mList.map(m=>`<tr><td><b>${m.name}</b></td><td>${m.cnt}</td><td>${m.sum.toLocaleString()} ₸</td><td><span class="badge bpp">${m.avgP.toFixed(1)}%</span></td><td>${m.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${m.paid.toLocaleString()} ₸</td><td style="color:var(--o)">${m.up.toLocaleString()} ₸</td><td><button class="btn sm bpu ic" onclick="openPayFor(${m.id})" title="Зп беру"><i class="fas fa-plus"></i></button></td></tr>`).join('');
+  document.getElementById('salTbl').innerHTML=mList.map(m=>`<tr><td><b>${m.name}</b></td><td>${m.cnt}</td><td>${m.sum.toLocaleString()} ₸</td><td><span class="badge bpp">${m.avgP.toFixed(1)}%</span></td><td>${m.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${m.salaryPaid.toLocaleString()} ₸</td><td style="color:var(--b)">${m.bonusPaid.toLocaleString()} ₸</td><td style="color:var(--o)">${m.up.toLocaleString()} ₸</td><td><button class="btn sm bpu ic" onclick="openPayFor(${m.id})" title="Зп беру"><i class="fas fa-plus"></i></button></td></tr>`).join('');
   rendSalHist();
 }
 
@@ -2361,7 +2431,7 @@ document.getElementById('delCfm').onclick=async()=>{
 };
 
 // ===== NAV =====
-const PTITLES={orders:'Тапсырыстар',dashboard:'Басты панель',salary:'Жалақы & Бонус',payments:'Төлем түрлері',daily:'Күнделікті есеп',ranking:'Рейтинг',clients:'Клиенттер',managers:'Менеджерлер',logistics:'Логистика',target:'Таргет',bonussettings:'Бонус баптау',sitemanage:'Сайт баптау',settings:'Баптау',help:'Көмек'};
+const PTITLES={orders:'Тапсырыстар',dashboard:'Басты панель',salary:'Жалақы & Бонус',payments:'Төлем түрлері',daily:'Күнделікті есеп',ranking:'Рейтинг',clients:'Клиенттер',managers:'Менеджерлер',logistics:'Логистика',target:'Таргет',bonussettings:'Бонус баптау',sitemanage:'Сайт баптау',settings:'Баптау',help:'Көмек',warranty:'Гарантия талондар'};
 function goPage(p,el){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nitem').forEach(x=>x.classList.remove('active'));

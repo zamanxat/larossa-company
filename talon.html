@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet" />
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
       :root {
@@ -78,7 +79,7 @@
 
       <div class="btn-stack">
         <button id="generateBtn" disabled>Жүктелуде...</button>
-        <button id="saveToSheetBtn">1. Базаға сақтау (Sheets)</button>
+        <button id="saveToSheetBtn">1. Базаға сақтау</button>
         <button id="downloadPngBtn">2. Сурет ретінде (PNG)</button>
         <button id="downloadPdfBtn">3. Құжат ретінде (PDF)</button>
       </div>
@@ -90,6 +91,9 @@
 
     <script>
       const { jsPDF } = window.jspdf;
+      const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
+      const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
+      const sbClient = supabase.createClient(SB_URL, SB_KEY);
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       const bg = new Image();
@@ -153,7 +157,7 @@
         downloadPngBtn.style.display = "block";
         downloadPdfBtn.style.display = "block";
         saveToSheetBtn.disabled = false;
-        saveToSheetBtn.textContent = "1. Базаға сақтау (Sheets)";
+        saveToSheetBtn.textContent = "1. Базаға сақтау";
       }
 
       async function saveToSheets() {
@@ -161,11 +165,43 @@
         saveToSheetBtn.disabled = true;
         saveToSheetBtn.textContent = "Сақталуда...";
         const url = "https://script.google.com/macros/s/AKfycbw00YL7eeTjY1SVnfbq-_Oe19XFlDAroLO8pTWkcUc2giWOaTmUn-NwKjfGwrikQTnF/exec";
+        
+        // Calculate expiry date for Supabase
+        let startDate = enableDateCb.checked && customDateInput.value ? new Date(customDateInput.value) : new Date();
+        let expiryDate = new Date(startDate);
+        expiryDate.setFullYear(startDate.getFullYear() + 1);
+
         try {
-          await fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify(currentData) });
-          statusMsg.textContent = "Мәліметтер базаға түсті Нұреке!";
-          statusMsg.style.color = "green";
-          saveToSheetBtn.textContent = "Сақталды Нұреке ✅";
+          // Save to Google Sheets
+          const sheetsResponse = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(currentData)
+          });
+          if (!sheetsResponse.ok) {
+            throw new Error("Google Sheets save failed");
+          }
+          
+          // Save to Supabase warranty_certificates
+          const sbPayload = {
+            client_name: currentData.client,
+            article: currentData.article,
+            custom_date: currentData.customDate || null,
+            expiry_date: expiryDate.toISOString().split('T')[0]
+          };
+          const { error: sbError } = await sbClient.from('warranty_certificates').insert(sbPayload);
+          if (sbError) {
+            statusMsg.textContent = "Sheets-ке сақталды, бірақ Supabase-ке сақталмады.";
+            statusMsg.style.color = "orange";
+            saveToSheetBtn.textContent = "Сақталды (тек Sheets) ⚠️";
+            saveToSheetBtn.disabled = false;
+          } else {
+            statusMsg.textContent = "Мәліметтер базаға түсті Нұреке!";
+            statusMsg.style.color = "green";
+            saveToSheetBtn.textContent = "Сақталды Нұреке ✅";
+          }
         } catch (e) {
           statusMsg.textContent = "Қате: Базаға сақталмады Нұреке:(";
           statusMsg.style.color = "red";
