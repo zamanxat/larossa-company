@@ -362,9 +362,16 @@
         async function updateField(id, field, val) {
             const ALLOWED_FIELDS = ['delivery_contact', 'logistics_note', 'delivery_type', 'status'];
             if (!ALLOWED_FIELDS.includes(field)) return;
-            await supabaseClient.from('orders').update({ [field]: val }).eq('id', id);
+            const { error } = await supabaseClient.from('orders')
+                .update({ [field]: val })
+                .eq('id', id);
+            if (error) {
+                console.error('Failed to update field in Supabase:', { id, field, val, error });
+                alert('Өзгерісті сақтау мүмкін болмады. Қайтадан байқап көріңіз.');
+                return;
+            }
             const item = store.find(o => o.id == id);
-            if (item) item[field] = val;
+            if (item) { item[field] = val; filter(); }
         }
 
         function copyPhone(phone, btn) {
