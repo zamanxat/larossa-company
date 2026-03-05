@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Larossa Талоны</title>
     <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet" />
-    
+    <link rel="preload" href="certificate.png" as="image" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
@@ -78,9 +78,9 @@
 
       <div class="btn-stack">
         <button id="generateBtn" disabled>Жүктелуде...</button>
-        <button id="saveToSheetBtn">1. Базаға сақтау (Sheets)</button>
-        <button id="downloadPngBtn">2. Сурет ретінде (PNG)</button>
-        <button id="downloadPdfBtn">3. Құжат ретінде (PDF)</button>
+        <button id="saveToSheetBtn">Базаға сақтау</button>
+        <button id="downloadPngBtn">Сурет ретінде (PNG)</button>
+        <button id="downloadPdfBtn">Құжат ретінде (PDF)</button>
       </div>
 
       <p id="statusMsg"></p>
@@ -88,12 +88,17 @@
     </div>
     
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      const { jsPDF } = window.jspdf;
-      const canvas = document.getElementById("canvas");
+      var canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       const bg = new Image();
-      bg.src = "certificate.png"; 
+      if (window.location.protocol !== "file:") bg.crossOrigin = "anonymous";
+      bg.src = "certificate.png";
+
+      const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
+      const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
+      const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
 
       const generateBtn = document.getElementById("generateBtn");
       const saveToSheetBtn = document.getElementById("saveToSheetBtn");
@@ -103,12 +108,23 @@
       const enableDateCb = document.getElementById("enableDate");
       const customDateInput = document.getElementById("customDate");
 
-      let currentData = null; 
+      let currentData = null;
 
-      bg.onload = () => {
+      function enableGenerateBtn() {
+        if (!generateBtn) return;
         generateBtn.disabled = false;
         generateBtn.textContent = "Талонды дайындау";
+      }
+      bg.onload = enableGenerateBtn;
+      bg.onerror = function() {
+        enableGenerateBtn();
+        if (statusMsg) {
+          statusMsg.textContent = "Шаблон суреті жүктелмеді. Сайтты http(s) серверден ашыңыз (file:// емес).";
+          statusMsg.style.color = "#c2410c";
+        }
       };
+      document.addEventListener("DOMContentLoaded", function() { setTimeout(enableGenerateBtn, 600); });
+      setTimeout(enableGenerateBtn, 1200);
 
       enableDateCb.onchange = () => {
         customDateInput.disabled = !enableDateCb.checked;
@@ -133,6 +149,11 @@
         expiry.setFullYear(startDate.getFullYear() + 1);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!bg.complete || !bg.naturalWidth) {
+          statusMsg.textContent = "Талон үшін шаблон суреті жүктелген болуы керек. Сайтты серверден ашып қайта көріңіз.";
+          statusMsg.style.color = "#c2410c";
+          return;
+        }
         ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#000000";
         ctx.font = "400 26px Play";
@@ -143,17 +164,18 @@
         ctx.fillText("Төле би 189A", 364, 461);
         ctx.fillText(formatDate(expiry) + " ж", 260, 628);
 
-        currentData = { client: name, article: article, customDate: customDateInput.value || null };
+        const saleDate = enableDateCb.checked && customDateInput.value ? customDateInput.value : new Date().toISOString().slice(0, 10);
+        currentData = { client: name, article: article, customDate: customDateInput.value || null, saleDate, expiryDate: formatDate(expiry) };
 
         statusMsg.textContent = "Талон дайын!";
         statusMsg.style.color = "blue";
-        
+
         canvas.style.display = "block";
         saveToSheetBtn.style.display = "block";
         downloadPngBtn.style.display = "block";
         downloadPdfBtn.style.display = "block";
         saveToSheetBtn.disabled = false;
-        saveToSheetBtn.textContent = "1. Базаға сақтау (Sheets)";
+        saveToSheetBtn.textContent = "Базаға сақтау";
       }
 
       async function saveToSheets() {
@@ -163,11 +185,19 @@
         const url = "https://script.google.com/macros/s/AKfycbw00YL7eeTjY1SVnfbq-_Oe19XFlDAroLO8pTWkcUc2giWOaTmUn-NwKjfGwrikQTnF/exec";
         try {
           await fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify(currentData) });
-          statusMsg.textContent = "Мәліметтер базаға түсті Нұреке!";
+          const { error } = await supabaseClient.from('warranty_talons').insert({
+            client_name: currentData.client,
+            article: currentData.article,
+            sale_date: currentData.saleDate || null,
+            expiry_date: currentData.expiryDate || null,
+            created_at: new Date().toISOString()
+          });
+          if (error) console.warn('Supabase:', error.message);
+          statusMsg.textContent = "Мәліметтер базаға және таблицаға сақталды Нұреке!";
           statusMsg.style.color = "green";
-          saveToSheetBtn.textContent = "Сақталды Нұреке ✅";
+          saveToSheetBtn.textContent = "Сақталды ✅";
         } catch (e) {
-          statusMsg.textContent = "Қате: Базаға сақталмады Нұреке:(";
+          statusMsg.textContent = "Қате: " + (e.message || "сақталмады");
           statusMsg.style.color = "red";
           saveToSheetBtn.disabled = false;
         }
@@ -184,6 +214,12 @@
 
       // PDF жүктеу
       downloadPdfBtn.onclick = () => {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+          statusMsg.textContent = "PDF кітапханасы әлі жүктелмеді. Бір сәт күтіп қайта көріңіз.";
+          statusMsg.style.color = "red";
+          return;
+        }
+        const jsPDF = window.jspdf.jsPDF;
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
         pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
