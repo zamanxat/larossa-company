@@ -6,6 +6,7 @@
 <title>Larossa | Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -57,10 +58,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .sib-name{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sib-role{font-size:10px;color:#64748b}
 .nsect{font-size:9.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em;padding:10px 10px 3px}
-.nitem{padding:9px 10px;border-radius:7px;display:flex;align-items:center;gap:10px;cursor:pointer;color:#94a3b8;font-weight:500;font-size:13px;transition:all .13s;user-select:none}
-.nitem:hover{background:rgba(255,255,255,.07);color:#e2e8f0}
+.nitem{padding:9px 10px;border-radius:7px;display:flex;align-items:center;gap:10px;cursor:pointer;color:#fff;font-weight:500;font-size:13px;transition:all .13s;user-select:none}
+.nitem:hover{background:rgba(255,255,255,.07);color:#fff}
 .nitem.active{background:linear-gradient(135deg,#334155,#475569);color:#fff}
 .nitem i{width:16px;text-align:center;font-size:13px;flex-shrink:0}
+.sidebar a.nitem{color:#fff!important}
 .ndiv{height:1px;background:rgba(255,255,255,.08);margin:6px 0}
 
 /* MAIN */
@@ -205,15 +207,15 @@ tbody tr:hover td{background:#fafbff}
 
 /* BNAV */
 .bnav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bnh);background:var(--pr);z-index:300;align-items:stretch;border-top:1px solid rgba(255,255,255,.09);box-shadow:0 -4px 20px rgba(0,0,0,.2)}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:#64748b;font-size:9px;font-weight:600;transition:color .13s;padding:6px 2px;user-select:none;min-width:0}
-.bni i{font-size:18px}.bni.active{color:#f59e0b}
-.bni span{white-space:nowrap}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:#e2e8f0;font-size:10px;font-weight:600;transition:color .13s;padding:6px 2px;user-select:none;min-width:0}
+.bni i{font-size:18px;color:inherit}.bni.active{color:#fbbf24}
+.bni span{white-space:nowrap;color:inherit}
 .more-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:350}
 .more-menu{display:none;position:fixed;bottom:var(--bnh);left:0;right:0;background:var(--pr);z-index:360;border-radius:14px 14px 0 0;padding:12px;gap:4px}
 .more-menu.open,.more-ov.open{display:block}
 .more-menu.open{display:grid;grid-template-columns:repeat(4,1fr)}
-.mitem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:11px 4px;border-radius:7px;cursor:pointer;color:#94a3b8;font-size:10px;font-weight:600;text-align:center;user-select:none}
-.mitem i{font-size:19px}.mitem:hover,.mitem.active{background:rgba(255,255,255,.08);color:#fff}
+.mitem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:11px 4px;border-radius:7px;cursor:pointer;color:#e2e8f0;font-size:10px;font-weight:600;text-align:center;user-select:none}
+.mitem i{font-size:19px;color:inherit}.mitem span{color:inherit}.mitem:hover,.mitem.active{background:rgba(255,255,255,.08);color:#fff}
 
 /* SETTINGS */
 .ss{background:var(--card);border-radius:var(--rad);border:1px solid var(--brd);box-shadow:var(--sh);margin-bottom:14px;overflow:hidden}
@@ -861,6 +863,12 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="nitem" onclick="goPage('bonussettings',this)"><i class="fas fa-percent"></i>Бонус баптау</div>
   <div class="nitem" onclick="goPage('sitemanage',this)"><i class="fas fa-sliders-h"></i>Сайт баптау</div>
   <div class="ndiv"></div>
+  <div class="nsect" style="font-size:9px;padding:6px 10px 2px">Сілтемелер</div>
+  <a href="index.html" target="_blank" rel="noopener" class="nitem" style="text-decoration:none"><i class="fas fa-home"></i>Индекс</a>
+  <a href="orders.html" target="_blank" rel="noopener" class="nitem" style="text-decoration:none"><i class="fas fa-clipboard-list"></i>Тапсырыс</a>
+  <a href="logistic.html" target="_blank" rel="noopener" class="nitem" style="text-decoration:none"><i class="fas fa-truck"></i>Логистика</a>
+  <a href="talon.html" target="_blank" rel="noopener" class="nitem" style="text-decoration:none"><i class="fas fa-file-contract"></i>Талон</a>
+  <div class="ndiv"></div>
   <div class="nitem" onclick="goPage('settings',this)"><i class="fas fa-cog"></i>Баптау</div>
   <div class="nitem" onclick="goPage('help',this)"><i class="fas fa-question-circle"></i>Көмек</div>
 </aside>
@@ -1016,6 +1024,10 @@ tbody tr:hover td{background:#f8f9fd}
     <div class="card"><div class="ch"><h3>Үлес</h3></div><div class="ch260"><canvas id="cPay"></canvas></div></div>
     <div class="card"><div class="ch"><h3>Кесте</h3></div><div class="tw dtbl"><table><thead><tr><th>Төлем түрі</th><th>Тапсырыс</th><th>Сома</th><th>%</th></tr></thead><tbody id="payTbl"></tbody></table></div><div id="payTblMob"></div></div>
   </div>
+  <div class="g g2" style="margin-top:14px">
+    <div class="card"><div class="ch"><h3>Төлем түрлері тізімі</h3><button class="btn bg2 sm" onclick="openAddPayType()"><i class="fas fa-plus"></i>Қосу</button></div><div class="cb"><ul id="payTypesList" style="list-style:none;padding:0;margin:0"></ul></div></div>
+    <div class="card"><div class="ch"><h3>Жеткізу түрлері тізімі</h3><button class="btn bbl sm" onclick="openAddDelType()"><i class="fas fa-plus"></i>Қосу</button></div><div class="cb"><ul id="delTypesList" style="list-style:none;padding:0;margin:0"></ul></div></div>
+  </div>
 </div>
 
 <!-- DAILY PAGE -->
@@ -1085,7 +1097,7 @@ tbody tr:hover td{background:#f8f9fd}
       <select id="lrsSt" onchange="lrsFilter()" style="height:38px;min-width:110px"><option value="all">Статус</option><option value="Жаңа">Жаңа</option><option value="Процесте">Процесте</option><option value="Жолда">Жолда</option><option value="Қабылданды">Жетті</option><option value="Қайтарылды">Қайтарылды</option></select>
     </div>
     <div class="tw dtbl" style="overflow-x:auto">
-      <table class="lrs-table" style="min-width:800px">
+      <table class="lrs-table" style="width:100%;min-width:800px">
         <thead>
           <tr>
             <th>ID / Күні</th>
@@ -1095,6 +1107,7 @@ tbody tr:hover td{background:#f8f9fd}
             <th>Бағасы</th>
             <th>Жеткізуші / трек</th>
             <th>Ескертпе</th>
+            <th></th>
             <th>Жеткізу</th>
             <th>Статус</th>
             <th>Чек</th>
@@ -1360,14 +1373,20 @@ tbody tr:hover td{background:#f8f9fd}
     </div>
   </div>
   <div class="ss">
+    <div class="ss-h"><i class="fas fa-users-cog"></i>Портал кірулері (индекс)</div>
+    <div class="ss-b">
+      <p style="font-size:13px;color:var(--mu);margin-bottom:12px">Менеджерлерге логин/пароль беру, сеанстарды басқару.</p>
+      <button class="btn bg2 sm" onclick="openAddPortalUser()"><i class="fas fa-user-plus"></i>Қосу</button>
+      <div id="portalUsersList" style="margin-top:14px"></div>
+    </div>
+  </div>
+  <div class="ss">
     <div class="ss-h"><i class="fas fa-sign-out-alt"></i>Сессия</div>
     <div class="ss-b">
       <p style="font-size:13px;color:var(--mu);margin-bottom:12px">Жүйеден шығу — кіру кезінде пароль сұралады.</p>
       <a href="/"><button class="btn bo" onclick="goDashboard()"><i class="fas fa-arrow-left"></i>Басты бетке қайту</button></a>
       <button class="btn br2" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i>Жүйеден шығу</button>
     </div>
-    
-    
   </div>
 </div>
 
@@ -1464,6 +1483,7 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="mbox md" style="max-width:620px">
     <div class="mhead"><h3><i class="fas fa-edit" style="color:var(--b)"></i>Тапсырысты өзгерту</h3><button class="mclose" onclick="closeMdl('editOrdMdl')"><i class="fas fa-times"></i></button></div>
     <input type="hidden" id="eoId">
+    <div class="fg"><label>Күні</label><input type="datetime-local" id="eoDate" step="1"></div>
     <div class="fg2">
       <div class="fg"><label>Клиент</label><input type="text" id="eoClient" placeholder="Аты-жөні"></div>
       <div class="fg"><label>Телефон</label><input type="tel" id="eoPhone" placeholder="+7"></div>
@@ -1545,6 +1565,15 @@ tbody tr:hover td{background:#f8f9fd}
     <div class="mfoot"><button class="btn bo" onclick="closeMdl('addMgrMdl')">Болдырмау</button><button class="btn bg2" onclick="submitAddMgr()"><i class="fas fa-check"></i>Қосу</button></div>
   </div>
 </div>
+<!-- EDIT MANAGER -->
+<div class="modal" id="editMgrMdl">
+  <div class="mbox sm">
+    <div class="mhead"><h3><i class="fas fa-edit" style="color:var(--b)"></i>Менеджер атын өзгерту</h3><button class="mclose" onclick="closeMdl('editMgrMdl')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="editMgrId">
+    <div class="fg"><label>Аты-жөні</label><input type="text" id="editMgrName" placeholder="Аты"></div>
+    <div class="mfoot"><button class="btn bo" onclick="closeMdl('editMgrMdl')">Болдырмау</button><button class="btn bbl" onclick="submitEditMgr()"><i class="fas fa-save"></i>Сақтау</button></div>
+  </div>
+</div>
 
 <!-- ADD PRODUCT -->
 <div class="modal" id="addProdMdl">
@@ -1553,6 +1582,46 @@ tbody tr:hover td{background:#f8f9fd}
     <div class="fg"><label>Атауы</label><input type="text" id="newProdName" placeholder="Тауар атауы"></div>
     <div class="fg"><label>Түрі</label><select id="newProdCat" style="height:38px"><option value="tablet">Планшет / Тауар</option><option value="gift">Сыйлық</option></select></div>
     <div class="mfoot"><button class="btn bo" onclick="closeMdl('addProdMdl')">Болдырмау</button><button class="btn bbl" onclick="submitAddProd()"><i class="fas fa-check"></i>Қосу</button></div>
+  </div>
+</div>
+
+<!-- ADD PORTAL USER -->
+<div class="modal" id="addPortalUserMdl">
+  <div class="mbox sm">
+    <div class="mhead"><h3><i class="fas fa-user-plus" style="color:var(--g)"></i>Портал қолданушы қосу</h3><button class="mclose" onclick="closeMdl('addPortalUserMdl')"><i class="fas fa-times"></i></button></div>
+    <div class="fg"><label>Логин</label><input type="text" id="puLogin" placeholder="Логин"></div>
+    <div class="fg"><label>Пароль</label><input type="password" id="puPwd" placeholder="Пароль"></div>
+    <div class="fg"><label>Көрсету аты</label><input type="text" id="puDisplayName" placeholder="Опционально"></div>
+    <div class="fg"><label>Менеджер</label><select id="puManager" style="height:38px"><option value="">— таңдамаңыз —</option></select></div>
+    <div class="mfoot"><button class="btn bo" onclick="closeMdl('addPortalUserMdl')">Болдырмау</button><button class="btn bg2" onclick="submitAddPortalUser()"><i class="fas fa-check"></i>Қосу</button></div>
+  </div>
+</div>
+<!-- EDIT PORTAL USER -->
+<div class="modal" id="editPortalUserMdl">
+  <div class="mbox sm">
+    <div class="mhead"><h3><i class="fas fa-edit" style="color:var(--b)"></i>Портал қолданушыны өзгерту</h3><button class="mclose" onclick="closeMdl('editPortalUserMdl')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="epuId">
+    <div class="fg"><label>Логин</label><input type="text" id="epuLogin" readonly style="background:#f1f5f9"></div>
+    <div class="fg"><label>Жаңа пароль <span style="font-size:11px;color:var(--mu)">(өзгертпесеңіз бос қалдырыңыз)</span></label><input type="password" id="epuPwd" placeholder="Жаңа пароль"></div>
+    <div class="fg"><label>Көрсету аты</label><input type="text" id="epuDisplayName" placeholder=""></div>
+    <div class="fg"><label>Менеджер</label><select id="epuManager" style="height:38px"><option value="">— таңдамаңыз —</option></select></div>
+    <div class="mfoot"><button class="btn bo" onclick="closeMdl('editPortalUserMdl')">Болдырмау</button><button class="btn bbl" onclick="submitEditPortalUser()"><i class="fas fa-save"></i>Сақтау</button></div>
+  </div>
+</div>
+<!-- ADD PAYMENT TYPE -->
+<div class="modal" id="addPayTypeMdl">
+  <div class="mbox sm">
+    <div class="mhead"><h3><i class="fas fa-credit-card" style="color:var(--g)"></i>Төлем түрін қосу</h3><button class="mclose" onclick="closeMdl('addPayTypeMdl')"><i class="fas fa-times"></i></button></div>
+    <div class="fg"><label>Атауы</label><input type="text" id="newPayTypeName" placeholder="Мысалы: Kaspi QR"></div>
+    <div class="mfoot"><button class="btn bo" onclick="closeMdl('addPayTypeMdl')">Болдырмау</button><button class="btn bg2" onclick="submitAddPayType()"><i class="fas fa-check"></i>Қосу</button></div>
+  </div>
+</div>
+<!-- ADD DELIVERY TYPE -->
+<div class="modal" id="addDelTypeMdl">
+  <div class="mbox sm">
+    <div class="mhead"><h3><i class="fas fa-truck" style="color:var(--b)"></i>Жеткізу түрін қосу</h3><button class="mclose" onclick="closeMdl('addDelTypeMdl')"><i class="fas fa-times"></i></button></div>
+    <div class="fg"><label>Атауы</label><input type="text" id="newDelTypeName" placeholder="Мысалы: Самовывоз"></div>
+    <div class="mfoot"><button class="btn bo" onclick="closeMdl('addDelTypeMdl')">Болдырмау</button><button class="btn bbl" onclick="submitAddDelType()"><i class="fas fa-check"></i>Қосу</button></div>
   </div>
 </div>
 
@@ -1586,7 +1655,9 @@ const COLS=['#0369a1','#059669','#b45309','#7c3aed','#dc2626','#0891b2','#65a30d
 const CLEAR_PWD='11111';
 const DPCT=9;
 
-let dbO=[],dbP=[],dbBS={},dbNotes={},dbMgrs=[],dbProds=[];
+let dbO=[],dbP=[],dbBS={},dbNotes={},dbMgrs=[],dbProds=[],dbPayTypes=[],dbDelTypes=[];
+const PAY_OPTS_FALLBACK=['Kaspi Transfer','Halyk Transfer','Kaspi рассрочка','Halyk рассрочка','Kaspi Red','Наличка'];
+const DELIVERY_OPTS_FALLBACK=['Курьер','Такси','Поезд','Почта'];
 let adminName='Admin',adminAva='';
 let gPer='all',gCS='',gCE='';
 let delId=null,delTbl='orders';
@@ -1627,10 +1698,11 @@ async function initApp(){
 
 // ===== SITE DATA =====
 async function loadSiteData(){
-  const[mR,pR,setR]=await Promise.all([
+  const[mR,pR,setR,siteDispR]=await Promise.all([
     sb.from('site_managers').select('*').order('sort_order').order('id'),
     sb.from('site_products').select('*').order('category').order('sort_order'),
-    sb.from('admin_settings').select('*').eq('id',1).single()
+    sb.from('admin_settings').select('*').eq('id',1).single(),
+    (async()=>{try{return await sb.from('site_display').select('company_name').eq('id',1).single();}catch(_){return {data:null};}})()
   ]);
   dbMgrs=mR.data||[];
   dbProds=pR.data||[];
@@ -1638,11 +1710,12 @@ async function loadSiteData(){
     const s=setR.data;
     adminName=s.admin_name||'Admin';
     adminAva=s.admin_avatar||'';
-    setVal('setComp',s.company_name||'LAROSSA');
     setVal('setName',adminName);
     setVal('setAva',adminAva);
     updateAdminUI();
   }
+  const compName=(siteDispR.data&&siteDispR.data.company_name)?siteDispR.data.company_name:(setR.data&&setR.data.company_name)?setR.data.company_name:'LAROSSA';
+  setVal('setComp',compName);
   // populate selects
   const mgrSels=['mFilt','salHMgr','bsOM','pmMgr','epMgr'];
   mgrSels.forEach(sid=>{
@@ -1680,16 +1753,20 @@ function getIni(n){const p=(n||'A').trim().split(' ');return(p.length>=2?(p[0][0
 
 // ===== LOAD ALL =====
 async function loadAll(){
-  const[oR,pR,bR,nR]=await Promise.all([
+  const[oR,pR,bR,nR,payR,delR]=await Promise.all([
     sb.from('orders').select('*').order('created_at',{ascending:false}),
     sb.from('salary_payments').select('*').order('paid_at',{ascending:false}),
     sb.from('manager_bonus_settings').select('*'),
-    sb.from('manager_notes').select('*')
+    sb.from('manager_notes').select('*'),
+    (async()=>{try{return await sb.from('payment_types').select('*').order('sort_order');}catch(_){return {data:null};}})(),
+    (async()=>{try{return await sb.from('delivery_types').select('*').order('sort_order');}catch(_){return {data:null};}})()
   ]);
   dbO=oR.data||[];
   dbP=pR.data||[];
   dbBS={};(bR.data||[]).forEach(b=>dbBS[b.manager_id]=b.default_bonus_percent);
   dbNotes={};(nR.data||[]).forEach(n=>dbNotes[n.manager_id]={id:n.id,note:n.note||''});
+  dbPayTypes=(payR.data&&payR.data.length)?payR.data.map(p=>({id:p.id,name:p.name})):PAY_OPTS_FALLBACK.map((name,i)=>({id:i,name}));
+  dbDelTypes=(delR.data&&delR.data.length)?delR.data.map(d=>({id:d.id,name:d.name})):DELIVERY_OPTS_FALLBACK.map((name,i)=>({id:i,name}));
   setEl('lastUpd',new Date().toLocaleTimeString('kk-KZ',{hour:'2-digit',minute:'2-digit'}));
   filtOrd();
   const ap=document.querySelector('.page.active');
@@ -1699,7 +1776,7 @@ async function loadAll(){
 function trigPage(p){
   if(p==='dashboard') rendDash();
   else if(p==='salary'){rendSal();}
-  else if(p==='payments') rendPay();
+  else if(p==='payments'){rendPay();rendPayTypesList();rendDelTypesList();}
   else if(p==='daily') rendDaily();
   else if(p==='ranking') rendRank();
   else if(p==='clients') rendCli();
@@ -1708,6 +1785,7 @@ function trigPage(p){
   else if(p==='sitemanage') rendSiteManage();
   else if(p==='logistics') lrsLoad();
   else if(p==='talon') loadTalons();
+  else if(p==='settings') rendPortalUsersList();
   else if(p==='target'){ if(typeof fetchAll==='function'){ fetchAll(); targetRefreshId=setInterval(fetchAll,25000); } }
   else { if(targetRefreshId){ clearInterval(targetRefreshId); targetRefreshId=null; } }
 }
@@ -1846,19 +1924,24 @@ async function updOBon(ordId,pctStr){
 function openEditOrd(id){
   const o=dbO.find(x=>x.id==id);if(!o) return;
   setVal('eoId',id);
+  let dateVal='';
+  if(o.created_at){const d=new Date(o.created_at);dateVal=d.toISOString().slice(0,19);}
+  setVal('eoDate',dateVal);
   setVal('eoClient',o.client_name||'');
   setVal('eoPhone',o.client_phone||'');
   setVal('eoAddress',o.address||'');
   setVal('eoProduct',o.product||'');
   setVal('eoGift',o.gift||'');
-  setVal('eoDelivery',o.delivery_type||'Курьер');
+  const payOpts=dbPayTypes.map(p=>p.name);
+  const delOpts=dbDelTypes.map(d=>d.name);
+  const elD=document.getElementById('eoDelivery');elD.innerHTML=delOpts.map(v=>'<option value="'+v+'">'+v+'</option>').join('');elD.value=(o.delivery_type&&delOpts.includes(o.delivery_type))?o.delivery_type:(delOpts[0]||'Курьер');
+  if(o.delivery_type&&!delOpts.includes(o.delivery_type)){const opt=document.createElement('option');opt.value=o.delivery_type;opt.textContent=o.delivery_type;elD.appendChild(opt);elD.value=o.delivery_type;}
   setVal('eoDeliveryContact',o.delivery_contact||'');
   setVal('eoLogisticsNote',o.logistics_note||'');
   setVal('eoPrice',Number(o.price||0));
   setVal('eoPrice2',Number(o.price2||0));
   setVal('eoBonusPct',parseFloat(o.bonus_percent??DPCT));
   setVal('eoStatus',o.status||'Жаңа');
-  const payOpts=['Kaspi Transfer','Halyk Transfer','Kaspi рассрочка','Halyk рассрочка','Kaspi Red','Наличка'];
   const el1=document.getElementById('eoPayType');el1.innerHTML=payOpts.map(v=>'<option value="'+v+'">'+v+'</option>').join('');el1.value=(o.payment_type&&payOpts.includes(o.payment_type))?o.payment_type:payOpts[0];
   const el2=document.getElementById('eoPayType2');el2.innerHTML='<option value="">— жоқ —</option>'+payOpts.map(v=>'<option value="'+v+'">'+v+'</option>').join('');el2.value=(o.payment_type2&&payOpts.includes(o.payment_type2))?o.payment_type2:'';
   if(o.payment_type&&!payOpts.includes(o.payment_type)){const opt=document.createElement('option');opt.value=o.payment_type;opt.textContent=o.payment_type;el1.appendChild(opt);el1.value=o.payment_type;}
@@ -1868,6 +1951,7 @@ function openEditOrd(id){
 }
 async function submitEditOrd(){
   const id=document.getElementById('eoId').value;
+  const eoDate=document.getElementById('eoDate').value;
   const payload={
     client_name:document.getElementById('eoClient').value.trim(),
     client_phone:document.getElementById('eoPhone').value.trim(),
@@ -1885,6 +1969,7 @@ async function submitEditOrd(){
     status:document.getElementById('eoStatus').value,
     manager_id:document.getElementById('eoMgr').value?parseInt(document.getElementById('eoMgr').value):null
   };
+  if(eoDate) payload.created_at=new Date(eoDate).toISOString();
   const{error}=await sb.from('orders').update(payload).eq('id',id);
   if(error){popup('Қате: '+error.message,'r');return;}
   const o=dbO.find(x=>x.id==id);if(o) Object.assign(o,payload);
@@ -2122,6 +2207,28 @@ function rendPay(){
   const payMob=document.getElementById('payTblMob');if(payMob)payMob.innerHTML=rows.map(r=>`<div class="mob-card"><div class="mc-r"><span>Төлем түрі</span><b>${r.n}</b></div><div class="mc-r"><span>Тапсырыс</span>${r.cnt}</div><div class="mc-r"><span>Сома</span><b>${r.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>%</span><b>${r.pct}%</b></div></div>`).join('');
   mkCh('cPay',ctx=>{charts.cPay=new Chart(ctx,{type:'doughnut',data:{labels:rows.map(r=>r.n),datasets:[{data:rows.map(r=>r.sum),backgroundColor:COLS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:6,boxWidth:10}}}}});});
 }
+function rendPayTypesList(){
+  const el=document.getElementById('payTypesList');if(!el)return;
+  el.innerHTML=dbPayTypes.map(p=>`<li style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9"><span>${eH(p.name)}</span><button class="btn sm br2 ic" onclick="openDel('${p.id}','payment_types','${eA(p.name)}')" title="Өшіру"><i class="fas fa-trash"></i></button></li>`).join('')||'<li style="color:var(--mu);padding:8px 0">Тізім бос немесе кесте жоқ. SQL скриптінің payment_types кестесін қосыңыз.</li>';
+}
+function rendDelTypesList(){
+  const el=document.getElementById('delTypesList');if(!el)return;
+  el.innerHTML=dbDelTypes.map(d=>`<li style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9"><span>${eH(d.name)}</span><button class="btn sm br2 ic" onclick="openDel('${d.id}','delivery_types','${eA(d.name)}')" title="Өшіру"><i class="fas fa-trash"></i></button></li>`).join('')||'<li style="color:var(--mu);padding:8px 0">Тізім бос немесе кесте жоқ. SQL скриптінің delivery_types кестесін қосыңыз.</li>';
+}
+function openAddPayType(){setVal('newPayTypeName','');document.getElementById('addPayTypeMdl').classList.add('show');}
+function openAddDelType(){setVal('newDelTypeName','');document.getElementById('addDelTypeMdl').classList.add('show');}
+async function submitAddPayType(){
+  const name=document.getElementById('newPayTypeName').value.trim();if(!name){popup('Атауын енгізіңіз','o');return;}
+  let res; try{res=await sb.from('payment_types').insert({name,sort_order:99});}catch(e){res={error:e};}
+  const error=res?.error; if(error){popup('Қате: '+(error.message||'кесте жоқ. supabase_schema.sql орындаңыз.'),'r');return;}
+  popup('Қосылды','g');closeMdl('addPayTypeMdl');loadAll();
+}
+async function submitAddDelType(){
+  const name=document.getElementById('newDelTypeName').value.trim();if(!name){popup('Атауын енгізіңіз','o');return;}
+  let res; try{res=await sb.from('delivery_types').insert({name,sort_order:99});}catch(e){res={error:e};}
+  const error=res?.error; if(error){popup('Қате: '+(error.message||'кесте жоқ. supabase_schema.sql орындаңыз.'),'r');return;}
+  popup('Қосылды','g');closeMdl('addDelTypeMdl');loadAll();
+}
 
 // ===== DAILY =====
 function rendDaily(){
@@ -2235,7 +2342,7 @@ function lrsFilt(){
       <td><b>${totalP.toLocaleString()} ₸</b>${o.payment_type2&&o.price2>0?`<br><span style="font-size:10px;color:var(--mu)">${o.payment_type}: ${Number(o.price).toLocaleString()} + ${o.payment_type2}: ${Number(o.price2).toLocaleString()}</span>`:''}</td>
       <td><span class="badge bgr">${getMgrName(o.manager_id)}</span></td>
       <td><select style="height:32px;font-size:11px;border:1px solid var(--brd);border-radius:6px;padding:0 6px;background:#f8fafc" onchange="lrsUpd('${o.id}','delivery_type',this.value)">
-        ${['Курьер','Такси','Поезд','Почта'].map(x=>`<option${o.delivery_type===x?' selected':''}>${x}</option>`).join('')}
+        ${(dbDelTypes.length?dbDelTypes:DELIVERY_OPTS_FALLBACK.map(n=>({id:0,name:n}))).map(x=>`<option${o.delivery_type===x.name?' selected':''}>${x.name}</option>`).join('')}
       </select></td>
       <td><select class="badge ${sc}" style="font-size:11px;font-weight:700;cursor:pointer;border:none;border-radius:5px;padding:4px 8px;height:30px" onchange="lrsUpd('${o.id}','status',this.value)">
         ${['Жаңа','Процесте','Жолда','Қабылданды','Қайтарылды'].map(x=>`<option${(o.status||'Жаңа')===x?' selected':''}>${x}</option>`).join('')}
@@ -2344,6 +2451,7 @@ async function rendSiteManage(){
     <td><b>${eH(m.name)}</b></td>
     <td>${m.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}</td>
     <td><div style="display:flex;gap:4px">
+      <button class="btn sm bbl ic" onclick="openEditMgr(${m.id})" title="Атын өзгерту"><i class="fas fa-edit"></i></button>
       <button class="btn sm ${m.is_active?'bo':'bg2'} ic" onclick="togMgr(${m.id},${!m.is_active})" title="${m.is_active?'Жабу':'Ашу'}"><i class="fas fa-${m.is_active?'eye-slash':'eye'}"></i></button>
       <button class="btn sm br2 ic" onclick="openDel('${m.id}','site_managers','${eA(m.name)}')"><i class="fas fa-trash"></i></button>
     </div></td>
@@ -2357,7 +2465,7 @@ async function rendSiteManage(){
       <button class="btn sm br2 ic" onclick="openDel('${p.id}','site_products','${eA(p.name)}')"><i class="fas fa-trash"></i></button>
     </div></td>
   </tr>`).join('');
-  const smMgrMob=document.getElementById('smMgrTblMob');if(smMgrMob)smMgrMob.innerHTML=dbMgrs.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b>${m.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}</div><div class="mc-r"><button class="btn sm ${m.is_active?'bo':'bg2'} ic" onclick="togMgr(${m.id},${!m.is_active})"><i class="fas fa-${m.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${m.id}','site_managers','${eA(m.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
+  const smMgrMob=document.getElementById('smMgrTblMob');if(smMgrMob)smMgrMob.innerHTML=dbMgrs.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b>${m.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}</div><div class="mc-r"><button class="btn sm bbl ic" onclick="openEditMgr(${m.id})"><i class="fas fa-edit"></i></button><button class="btn sm ${m.is_active?'bo':'bg2'} ic" onclick="togMgr(${m.id},${!m.is_active})"><i class="fas fa-${m.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${m.id}','site_managers','${eA(m.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
   const smProdMob=document.getElementById('smProdTblMob');if(smProdMob)smProdMob.innerHTML=dbProds.map(p=>`<div class="mob-card"><div class="mc-r"><b>${eH(p.name)}</b><span class="badge ${p.category==='gift'?'bpp':'bb'}" style="font-size:10px">${p.category==='gift'?'Сыйлық':'Тауар'}</span></div><div class="mc-r">${p.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}<button class="btn sm ${p.is_active?'bo':'bg2'} ic" onclick="togProd(${p.id},${!p.is_active})"><i class="fas fa-${p.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${p.id}','site_products','${eA(p.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
 }
 
@@ -2372,6 +2480,20 @@ async function submitAddMgr(){
   const{error}=await sb.from('site_managers').insert({name,is_active:true,sort_order:maxId});
   if(error){popup('Қате: '+error.message,'r');return;}
   popup(name+' қосылды','g');closeMdl('addMgrMdl');await loadSiteData();rendSiteManage();
+}
+function openEditMgr(id){
+  const m=dbMgrs.find(x=>x.id===id);if(!m) return;
+  document.getElementById('editMgrId').value=m.id;
+  document.getElementById('editMgrName').value=m.name||'';
+  document.getElementById('editMgrMdl').classList.add('show');
+}
+async function submitEditMgr(){
+  const id=parseInt(document.getElementById('editMgrId').value,10);
+  const name=document.getElementById('editMgrName').value.trim();
+  if(!name){popup('Атын жазыңыз','o');return;}
+  const{error}=await sb.from('site_managers').update({name}).eq('id',id);
+  if(error){popup('Қате: '+error.message,'r');return;}
+  popup('Сақталды','g');closeMdl('editMgrMdl');await loadSiteData();rendSiteManage();
 }
 
 function openAddProd(){document.getElementById('newProdName').value='';document.getElementById('addProdMdl').classList.add('show');}
@@ -2405,10 +2527,83 @@ async function saveProfile(){
 }
 
 async function saveGeneral(){
-  const comp=(document.getElementById('setComp')?.value||'LAROSSA').trim();
-  const{error}=await sb.from('admin_settings').update({company_name:comp,updated_at:new Date()}).eq('id',1);
-  if(error){popup('Қате','r');return;}
+  const comp=(document.getElementById('setComp')?.value||'').trim()||'LAROSSA';
+  await sb.from('admin_settings').update({company_name:comp,updated_at:new Date()}).eq('id',1);
+  const{error}=await sb.from('site_display').upsert({id:1,company_name:comp,updated_at:new Date()},{onConflict:'id'});
+  if(error){popup('Қате: '+error.message,'r');return;}
   popup('Сақталды','g');
+}
+
+// ===== PORTAL USERS (index login) =====
+let portalUsers=[],portalSessions=[];
+function sha256Hex(str){
+  return crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)).then(b=>Array.from(new Uint8Array(b)).map(x=>('0'+x.toString(16)).slice(-2)).join(''));
+}
+async function loadPortalData(){
+  let uR,sR;
+  try{uR=await sb.from('portal_users').select('*').order('created_at');}catch(_){uR={data:[]};}
+  try{sR=await sb.from('portal_sessions').select('*').order('created_at',{ascending:false});}catch(_){sR={data:[]};}
+  portalUsers=uR.data||[];
+  portalSessions=sR.data||[];
+}
+function rendPortalUsersList(){
+  const el=document.getElementById('portalUsersList');
+  if(!el) return;
+  loadPortalData().then(()=>{
+    if(!portalUsers.length){ el.innerHTML='<p style="color:var(--mu);font-size:13px">Портал қолданушылар жоқ. «Қосу» батырмасымен қосыңыз.</p>'; return; }
+    el.innerHTML=portalUsers.map(u=>{
+      const sessions=portalSessions.filter(s=>s.user_id===u.id);
+      const mgrName=u.manager_id?getMgrName(u.manager_id):'—';
+      return `<div style="border:1px solid var(--brd);border-radius:8px;padding:12px;margin-bottom:10px;background:#fafbfc">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div><b>${eH(u.login)}</b>${u.display_name?' <span style="color:var(--mu);font-size:12px">'+eH(u.display_name)+'</span>':''} <span style="font-size:11px;color:var(--mu)">Менеджер: ${eH(mgrName)}</span></div>
+          <div style="display:flex;gap:4px"><button class="btn sm bbl" onclick="openEditPortalUser('${u.id}')"><i class="fas fa-edit"></i></button><button class="btn sm br2 ic" onclick="openDel('${u.id}','portal_users','${eA(u.login)}')"><i class="fas fa-trash"></i></button></div>
+        </div>
+        ${sessions.length?`<div style="margin-top:10px;font-size:12px;color:var(--mu)">Сеанстар: ${sessions.map(s=>`<span style="display:inline-block;background:#e2e8f0;padding:2px 8px;border-radius:6px;margin:2px">${(s.device_info||'Құрылғы').slice(0,40)}... <button type="button" class="btn sm br2" style="padding:2px 6px;font-size:10px" onclick="endPortalSession('${s.id}')">Завершить</button></span>`).join(' ')}</div>`:'<div style="margin-top:6px;font-size:12px;color:var(--mu)">Сеанстар жоқ</div>'}
+      </div>`;
+    }).join('');
+  });
+}
+function openAddPortalUser(){
+  const sel=document.getElementById('puManager'); sel.innerHTML='<option value="">— таңдамаңыз —</option>'; dbMgrs.filter(m=>m.is_active).forEach(m=>sel.add(new Option(m.name,m.id)));
+  setVal('puLogin',''); setVal('puPwd',''); setVal('puDisplayName','');
+  document.getElementById('addPortalUserMdl').classList.add('show');
+}
+async function submitAddPortalUser(){
+  const login=document.getElementById('puLogin').value.trim();
+  const pwd=(document.getElementById('puPwd').value||'').trim();
+  const display_name=document.getElementById('puDisplayName').value.trim()||null;
+  const manager_id=document.getElementById('puManager').value?parseInt(document.getElementById('puManager').value,10):null;
+  if(!login||!pwd){popup('Логин және парольді енгізіңіз','o');return;}
+  const hash=await sha256Hex(pwd);
+  const{error}=await sb.from('portal_users').insert({login,password_hash:hash,display_name,manager_id});
+  if(error){popup('Қате: '+error.message,'r');return;}
+  popup('Қосылды','g'); closeMdl('addPortalUserMdl'); rendPortalUsersList();
+}
+function openEditPortalUser(id){
+  const u=portalUsers.find(x=>x.id===id); if(!u) return;
+  document.getElementById('epuId').value=u.id;
+  setVal('epuLogin',u.login);
+  setVal('epuPwd','');
+  setVal('epuDisplayName',u.display_name||'');
+  const sel=document.getElementById('epuManager'); sel.innerHTML='<option value="">— таңдамаңыз —</option>'; dbMgrs.filter(m=>m.is_active).forEach(m=>sel.add(new Option(m.name,m.id))); sel.value=u.manager_id||'';
+  document.getElementById('editPortalUserMdl').classList.add('show');
+}
+async function submitEditPortalUser(){
+  const id=document.getElementById('epuId').value;
+  const newPwd=document.getElementById('epuPwd').value;
+  const display_name=document.getElementById('epuDisplayName').value.trim()||null;
+  const manager_id=document.getElementById('epuManager').value?parseInt(document.getElementById('epuManager').value,10):null;
+  const upd={display_name,manager_id};
+  if(newPwd){ upd.password_hash=await sha256Hex(newPwd); }
+  const{error}=await sb.from('portal_users').update(upd).eq('id',id);
+  if(error){popup('Қате: '+error.message,'r');return;}
+  popup('Сақталды','g'); closeMdl('editPortalUserMdl'); loadPortalData(); rendPortalUsersList();
+}
+async function endPortalSession(sessionId){
+  const{error}=await sb.from('portal_sessions').delete().eq('id',sessionId);
+  if(error){popup('Қате','r');return;}
+  popup('Сеанс аяқталды','g'); loadPortalData(); rendPortalUsersList();
 }
 
 // ===== CLEAR ALL =====
@@ -2466,9 +2661,11 @@ document.getElementById('delCfm').onclick=async()=>{
   if(!delId) return;
   const{error}=await sb.from(delTbl).delete().eq('id',delId);
   if(error){popup('Қате','r');return;}
+  if(delTbl==='portal_users'){ await loadPortalData(); rendPortalUsersList(); }
   popup('Өшірілді','g');closeMdl('delMdl');loadAll();
   if(delTbl==='site_managers'||delTbl==='site_products') rendSiteManage();
   if(delTbl==='warranty_talons') loadTalons();
+  if(delTbl==='payment_types'||delTbl==='delivery_types') loadAll();
 };
 
 // ===== NAV =====
@@ -2538,7 +2735,7 @@ checkAuth();
 
         async function lrsLoad() {
             const tbody = document.getElementById('lrs-tbody');
-            tbody.innerHTML = '<tr><td colspan="8" class="lrs-loading"><i class="fas fa-spinner fa-spin" style="font-size: 20px; margin-bottom: 10px;"></i><div>Жүктелуде...</div></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11" class="lrs-loading"><i class="fas fa-spinner fa-spin" style="font-size: 20px; margin-bottom: 10px;"></i><div>Жүктелуде...</div></td></tr>';
             
             const { data, error } = await lrsSB.from('orders').select('*').order('created_at', { ascending: false });
             
@@ -2546,7 +2743,7 @@ checkAuth();
                 masterData = data;
                 lrsFilter();
             } else {
-                tbody.innerHTML = '<tr><td colspan="8" class="lrs-loading"><i class="fas fa-exclamation-triangle"></i><div>Жүктеу қатесі</div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="lrs-loading"><i class="fas fa-exclamation-triangle"></i><div>Жүктеу қатесі</div></td></tr>';
             }
         }
 
@@ -2593,17 +2790,22 @@ checkAuth();
             
             const mobEl = document.getElementById('lrsMob');
             if (items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="lrs-loading"><i class="fas fa-search"></i><div>Тапсырыс табылмады</div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="lrs-loading"><i class="fas fa-search"></i><div>Тапсырыс табылмады</div></td></tr>';
                 if (mobEl) mobEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mu)">Тапсырыс табылмады</div>';
                 return;
             }
 
             const stCls = s => { if(s==='Жаңа') return 'st-new'; if(s==='Процесте') return 'st-process'; if(s==='Жолда') return 'st-shipping'; if(s==='Қабылданды') return 'st-done'; if(s==='Қайтарылды') return 'st-return'; return 'st-new'; };
-            if (mobEl) mobEl.innerHTML = items.map(o => {
-                const total = Number(o.price||0) + Number(o.price2||0);
-                const st = o.status || 'Жаңа';
-                return `<div class="mob-card"><div class="mc-r"><b>${(o.client_name||'—').replace(/</g,'&lt;')}</b><span class="badge ${stCls(st)}" style="font-size:10px">${st==='Қабылданды'?'Жетті':st}</span></div><div class="mc-r"><span style="font-size:11px;color:var(--mu)">${(o.client_phone||'—')}</span><b>${total.toLocaleString()} ₸</b></div><div class="mc-r" style="font-size:12px">${(o.address||'—').replace(/</g,'&lt;')}</div><div class="mc-r" style="font-size:12px"><b>${(o.product||'—').replace(/</g,'&lt;')}</b>${o.gift?' + '+(o.gift||'').replace(/</g,'&lt;'):''}</div><div class="mc-r"><input type="text" class="lrs-delivery-input" placeholder="Номер/трек" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" onchange="lrsUpdate('${o.id}','delivery_contact',this.value)" style="max-width:140px"><textarea class="lrs-note-input" rows="1" placeholder="Ескертпе" onchange="lrsUpdate('${o.id}','logistics_note',this.value)" style="min-height:28px;max-width:160px">${(o.logistics_note||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></div><div class="mc-r"><select class="lrs-delivery-select" onchange="lrsUpdate('${o.id}','delivery_type',this.value)"><option value="Курьер" ${o.delivery_type==='Курьер'?'selected':''}>Курьер</option><option value="Такси" ${o.delivery_type==='Такси'?'selected':''}>Такси</option><option value="Поезд" ${o.delivery_type==='Поезд'?'selected':''}>Поезд</option><option value="Почта" ${o.delivery_type==='Почта'?'selected':''}>Почта</option></select><select class="lrs-delivery-select st-badge ${stCls(st)}" onchange="lrsUpdate('${o.id}','status',this.value)"><option value="Жаңа" ${st==='Жаңа'?'selected':''}>Жаңа</option><option value="Процесте" ${st==='Процесте'?'selected':''}>Процесте</option><option value="Жолда" ${st==='Жолда'?'selected':''}>Жолда</option><option value="Қабылданды" ${st==='Қабылданды'?'selected':''}>Жетті</option><option value="Қайтарылды" ${st==='Қайтарылды'?'selected':''}>Қайтарылды</option></select>${o.receipt_url ? `<button class="btn sm bo ic" onclick="lrsOpenModal('${o.receipt_url}')"><i class="fas fa-image"></i></button>` : ''}</div></div>`;
-            }).join('');
+            if (mobEl) {
+                const contactEsc = (v) => (v||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                mobEl.innerHTML = items.map(o => {
+                    const total = Number(o.price||0) + Number(o.price2||0);
+                    const st = o.status || 'Жаңа';
+                    const c0 = (o.delivery_contact||'').toString();
+                    const n0 = (o.logistics_note||'').toString();
+                    return `<div class="mob-card lrs-mob-card" data-order-id="${o.id}"><div class="mc-r"><b>${(o.client_name||'—').replace(/</g,'&lt;')}</b><span class="badge ${stCls(st)}" style="font-size:10px">${st==='Қабылданды'?'Жетті':st}</span></div><div class="mc-r"><span style="font-size:11px;color:var(--mu)">${(o.client_phone||'—')}</span><b>${total.toLocaleString()} ₸</b></div><div class="mc-r" style="font-size:12px">${(o.address||'—').replace(/</g,'&lt;')}</div><div class="mc-r" style="font-size:12px"><b>${(o.product||'—').replace(/</g,'&lt;')}</b>${o.gift?' + '+(o.gift||'').replace(/</g,'&lt;'):''}</div><div class="mc-r"><input type="text" class="lrs-delivery-input" placeholder="Номер/трек" value="${contactEsc(c0)}" data-original="${contactEsc(c0)}" oninput="lrsRowDirtyMob(this)" style="max-width:140px"><textarea class="lrs-note-input" rows="1" placeholder="Ескертпе" data-original="${contactEsc(n0)}" oninput="lrsRowDirtyMob(this)" style="min-height:28px;max-width:160px">${n0.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea><button type="button" class="btn sm bg2 lrs-mob-save" style="display:none;margin-top:4px" onclick="lrsSaveRowMob(this)" data-order-id="${o.id}"><i class="fas fa-save"></i> Сохранить</button></div><div class="mc-r"><select class="lrs-delivery-select" onchange="lrsUpdate('${o.id}','delivery_type',this.value)">${(dbDelTypes.length?dbDelTypes:DELIVERY_OPTS_FALLBACK.map(n=>({name:n}))).map(x=>`<option value="${(x.name||'').replace(/"/g,'&quot;')}" ${o.delivery_type===x.name?'selected':''}>${(x.name||'').replace(/</g,'&lt;')}</option>`).join('')}</select><select class="lrs-delivery-select st-badge ${stCls(st)}" onchange="lrsUpdate('${o.id}','status',this.value)"><option value="Жаңа" ${st==='Жаңа'?'selected':''}>Жаңа</option><option value="Процесте" ${st==='Процесте'?'selected':''}>Процесте</option><option value="Жолда" ${st==='Жолда'?'selected':''}>Жолда</option><option value="Қабылданды" ${st==='Қабылданды'?'selected':''}>Жетті</option><option value="Қайтарылды" ${st==='Қайтарылды'?'selected':''}>Қайтарылды</option></select>${o.receipt_url ? `<button class="btn sm bo ic" onclick="lrsOpenModal('${o.receipt_url}')"><i class="fas fa-image"></i></button>` : ''}</div></div>`;
+                }).join('');
+            }
 
             tbody.innerHTML = items.map(o => {
                 const giftData = o.gifts || o.gift || o.comment || "";
@@ -2642,17 +2844,17 @@ checkAuth();
                     </td>
                     <td>${priceHtml}</td>
                     <td>
-                        <input class="lrs-delivery-input" type="text" placeholder="Номер / трек" value="${contactVal.replace(/"/g,'&quot;')}" onchange="lrsUpdate('${o.id}','delivery_contact',this.value)">
+                        <input class="lrs-delivery-input" type="text" placeholder="Номер / трек" value="${contactVal.replace(/"/g,'&quot;')}" data-original="${contactVal.replace(/"/g,'&quot;')}" oninput="lrsRowDirty(this)">
                     </td>
                     <td>
-                        <textarea class="lrs-note-input" rows="1" placeholder="Логист заметка" onchange="lrsUpdate('${o.id}','logistics_note',this.value)">${noteVal.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+                        <textarea class="lrs-note-input" rows="1" placeholder="Логист заметка" data-original="${noteVal.replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" oninput="lrsRowDirty(this)">${noteVal.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+                    </td>
+                    <td class="lrs-save-cell">
+                        <button type="button" class="btn sm bg2" style="display:none" onclick="lrsSaveRow(this)" data-order-id="${o.id}"><i class="fas fa-save"></i> Сохранить</button>
                     </td>
                     <td>
                         <select class="lrs-delivery-select" onchange="lrsUpdate('${o.id}', 'delivery_type', this.value)">
-                            <option value="Курьер" ${o.delivery_type==='Курьер'?'selected':''}>🛵 Курьер</option>
-                            <option value="Такси" ${o.delivery_type==='Такси'?'selected':''}>🚕 Такси</option>
-                            <option value="Поезд" ${o.delivery_type==='Поезд'?'selected':''}>🚂 Поезд</option>
-                            <option value="Почта" ${o.delivery_type==='Почта'?'selected':''}>📦 Почта</option>
+                            ${(dbDelTypes.length?dbDelTypes:DELIVERY_OPTS_FALLBACK.map(n=>({name:n}))).map(x=>`<option value="${eH(x.name)}" ${o.delivery_type===x.name?'selected':''}>${eH(x.name)}</option>`).join('')}
                         </select>
                     </td>
                     <td>
@@ -2672,9 +2874,60 @@ checkAuth();
             }).join('');
         }
 
+        function lrsRowDirty(inp) {
+            const row = inp.closest('tr');
+            if (!row) return;
+            const contactInp = row.querySelector('.lrs-delivery-input');
+            const noteInp = row.querySelector('.lrs-note-input');
+            const origC = (contactInp && contactInp.getAttribute('data-original')) || '';
+            const origN = (noteInp && noteInp.getAttribute('data-original')) || '';
+            const dirty = (contactInp && contactInp.value !== origC) || (noteInp && noteInp.value !== origN);
+            const btn = row.querySelector('.lrs-save-cell button');
+            if (btn) btn.style.display = dirty ? 'inline-flex' : 'none';
+        }
+        function lrsRowDirtyMob(inp) {
+            const card = inp.closest('.lrs-mob-card');
+            if (!card) return;
+            const contactInp = card.querySelector('.lrs-delivery-input');
+            const noteInp = card.querySelector('.lrs-note-input');
+            const origC = (contactInp && contactInp.getAttribute('data-original')) || '';
+            const origN = (noteInp && noteInp.getAttribute('data-original')) || '';
+            const dirty = (contactInp && contactInp.value !== origC) || (noteInp && noteInp.value !== origN);
+            const saveBtn = card.querySelector('.lrs-mob-save');
+            if (saveBtn) saveBtn.style.display = dirty ? 'inline-flex' : 'none';
+        }
+        async function lrsSaveRowMob(btn) {
+            const id = btn.getAttribute('data-order-id');
+            const card = btn.closest('.lrs-mob-card');
+            const contactInp = card.querySelector('.lrs-delivery-input');
+            const noteInp = card.querySelector('.lrs-note-input');
+            const contactVal = contactInp ? contactInp.value : '';
+            const noteVal = noteInp ? noteInp.value : '';
+            await lrsSB.from('orders').update({ delivery_contact: contactVal, logistics_note: noteVal }).eq('id', id);
+            const o = masterData.find(x => x.id == id); if (o) { o.delivery_contact = contactVal; o.logistics_note = noteVal; }
+            if (contactInp) contactInp.setAttribute('data-original', contactVal);
+            if (noteInp) noteInp.setAttribute('data-original', noteVal);
+            btn.style.display = 'none';
+            if (typeof popup === 'function') popup('Сақталды', 'g');
+        }
+        async function lrsSaveRow(btn) {
+            const row = btn.closest('tr');
+            const id = btn.getAttribute('data-order-id');
+            const contactInp = row.querySelector('.lrs-delivery-input');
+            const noteInp = row.querySelector('.lrs-note-input');
+            const contactVal = contactInp ? contactInp.value : '';
+            const noteVal = noteInp ? noteInp.value : '';
+            await lrsSB.from('orders').update({ delivery_contact: contactVal, logistics_note: noteVal }).eq('id', id);
+            const o = masterData.find(x => x.id == id); if (o) { o.delivery_contact = contactVal; o.logistics_note = noteVal; }
+            if (contactInp) contactInp.setAttribute('data-original', contactVal);
+            if (noteInp) noteInp.setAttribute('data-original', noteVal);
+            btn.style.display = 'none';
+            if (typeof popup === 'function') popup('Сақталды', 'g');
+        }
         async function lrsUpdate(id, field, val) {
             await lrsSB.from('orders').update({ [field]: val }).eq('id', id);
-            lrsLoad();
+            const o = masterData.find(x => x.id == id); if (o) o[field] = val;
+            lrsFilter();
         }
 
         function lrsOpenModal(url) { 
@@ -2704,11 +2957,11 @@ checkAuth();
         <td><span class="badge bpp">${eH(t.article)}</span></td>
         <td>${t.sale_date||'—'}</td>
         <td>${t.expiry_date||'—'}</td>
-        <td><div style="display:flex;gap:4px"><button class="btn sm bbl ic" onclick="openEditTalon('${t.id}')" title="Өзгерту"><i class="fas fa-edit"></i></button><button class="btn sm br2 ic" onclick="openDel('${t.id}','warranty_talons','${eA(t.client_name)} ${eA(t.article)}')" title="Өшіру"><i class="fas fa-trash"></i></button></div></td>
+        <td><div style="display:flex;gap:4px;flex-wrap:wrap"><button class="btn sm bbl ic" onclick="openEditTalon('${t.id}')" title="Өзгерту"><i class="fas fa-edit"></i></button><button class="btn sm bg2 ic" onclick="downloadTalonPng('${t.id}')" title="PNG"><i class="fas fa-image"></i></button><button class="btn sm bo2 ic" onclick="downloadTalonPdf('${t.id}')" title="PDF"><i class="fas fa-file-pdf"></i></button><button class="btn sm br2 ic" onclick="openDel('${t.id}','warranty_talons','${eA(t.client_name)} ${eA(t.article)}')" title="Өшіру"><i class="fas fa-trash"></i></button></div></td>
       </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--mu)">Талон жоқ</td></tr>';
       if(mob) mob.innerHTML=list.length?list.map(t=>{
         const delLab=((t.client_name||'')+' '+(t.article||'')).trim().replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-        return`<div class="talon-mob-card"><div class="tmc-head"><b>${eH(t.client_name)}</b><span class="tmc-art">${eH(t.article)}</span></div><div class="tmc-row"><span>Сату күні</span>${t.sale_date||'—'}</div><div class="tmc-row"><span>Аяқталу</span>${t.expiry_date||'—'}</div><div class="tmc-row"><span>Күні</span>${fDate(t.created_at)}</div><div class="tmc-acts"><button class="btn sm bbl" onclick="openEditTalon('${t.id}')"><i class="fas fa-edit"></i> Өзгерту</button><button class="btn sm br2" onclick="openDel('${t.id}','warranty_talons','${delLab}')"><i class="fas fa-trash"></i> Өшіру</button></div></div>`;
+        return`<div class="talon-mob-card"><div class="tmc-head"><b>${eH(t.client_name)}</b><span class="tmc-art">${eH(t.article)}</span></div><div class="tmc-row"><span>Сату күні</span>${t.sale_date||'—'}</div><div class="tmc-row"><span>Аяқталу</span>${t.expiry_date||'—'}</div><div class="tmc-row"><span>Күні</span>${fDate(t.created_at)}</div><div class="tmc-acts"><button class="btn sm bbl" onclick="openEditTalon('${t.id}')"><i class="fas fa-edit"></i> Өзгерту</button><button class="btn sm bg2" onclick="downloadTalonPng('${t.id}')"><i class="fas fa-image"></i> PNG</button><button class="btn sm bo2" onclick="downloadTalonPdf('${t.id}')"><i class="fas fa-file-pdf"></i> PDF</button><button class="btn sm br2" onclick="openDel('${t.id}','warranty_talons','${delLab}')"><i class="fas fa-trash"></i> Өшіру</button></div></div>`;
       }).join(''):'';
     }
     function updTalonExpiry(){
@@ -2757,6 +3010,88 @@ checkAuth();
       talonList=data||[];
       setVal('talonSrch','');
       rendTalons();
+    }
+    function drawTalonOnCanvas(ctx, t, img) {
+      const cw = 1200, ch = 800;
+      ctx.clearRect(0, 0, cw, ch);
+      if (img && img.complete && img.naturalWidth) {
+        try { ctx.drawImage(img, 0, 0, cw, ch); } catch (_) {}
+      } else {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, cw, ch);
+      }
+      ctx.fillStyle = '#000000';
+      ctx.font = '400 26px Play, sans-serif';
+      ctx.fillText(t.client_name || '', 424, 353);
+      ctx.font = '400 24px Play, sans-serif';
+      ctx.fillText('Larossa компаниясы', 385, 390);
+      ctx.fillText(t.article || '', 349, 426);
+      ctx.fillText('Төле би 189A', 364, 461);
+      const expiryText = (t.expiry_date || '').replace(/\s*ж\s*$/, '') ? (t.expiry_date || '').trim() : '';
+      if (expiryText) ctx.fillText(expiryText + ' ж', 260, 628);
+    }
+    function doTalonPngDownload(canvas, t) {
+      const a = document.createElement('a');
+      a.download = 'Talon_' + (t.client_name || 'client').replace(/\s+/g, '_') + '.png';
+      try {
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        if (typeof popup === 'function') popup('PNG жүктелді', 'g');
+      } catch (e) {
+        drawTalonOnCanvas(canvas.getContext('2d'), t, null);
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        if (typeof popup === 'function') popup('PNG жүктелді', 'g');
+      }
+    }
+    function downloadTalonPng(id) {
+      const t = talonList.find(x => x.id === id); if (!t) return;
+      const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 800;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = function() {
+        drawTalonOnCanvas(ctx, t, img);
+        doTalonPngDownload(canvas, t);
+      };
+      img.onerror = function() {
+        drawTalonOnCanvas(ctx, t, null);
+        doTalonPngDownload(canvas, t);
+      };
+      img.crossOrigin = 'anonymous';
+      img.src = 'certificate.png';
+    }
+    function doTalonPdfDownload(canvas, t) {
+      const JsPDF = window.jspdf && window.jspdf.jsPDF;
+      if (!JsPDF) { if (typeof popup === 'function') popup('PDF кітапханасы жоқ', 'r'); return; }
+      try {
+        const dataUrl = canvas.toDataURL('image/png');
+        const pdf = new JsPDF({ orientation: 'landscape', unit: 'px', format: [1200, 800] });
+        pdf.addImage(dataUrl, 'PNG', 0, 0, 1200, 800);
+        pdf.save('Talon_' + (t.client_name || 'client').replace(/\s+/g, '_') + '.pdf');
+        if (typeof popup === 'function') popup('PDF жүктелді', 'g');
+      } catch (e) {
+        drawTalonOnCanvas(canvas.getContext('2d'), t, null);
+        const pdf = new JsPDF({ orientation: 'landscape', unit: 'px', format: [1200, 800] });
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 1200, 800);
+        pdf.save('Talon_' + (t.client_name || 'client').replace(/\s+/g, '_') + '.pdf');
+        if (typeof popup === 'function') popup('PDF жүктелді', 'g');
+      }
+    }
+    function downloadTalonPdf(id) {
+      const t = talonList.find(x => x.id === id); if (!t) return;
+      const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 800;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = function() {
+        drawTalonOnCanvas(ctx, t, img);
+        doTalonPdfDownload(canvas, t);
+      };
+      img.onerror = function() {
+        drawTalonOnCanvas(ctx, t, null);
+        doTalonPdfDownload(canvas, t);
+      };
+      img.crossOrigin = 'anonymous';
+      img.src = 'certificate.png';
     }
     </script>
 
