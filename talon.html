@@ -90,6 +90,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+      if(!localStorage.getItem('portal_token')){ document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:sans-serif;max-width:400px;margin:40px auto"><h2 style="color:#1a1a1a">Сіздің құрылғы тіркелмеген</h2><p style="margin:20px 0"><a href="index.html" style="color:#0A8754;font-weight:600">Басты бетке өту</a></p></div>'; }
+      else {
       var canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       const bg = new Image();
@@ -99,6 +101,16 @@
       const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
       const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
       const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
+      function checkPortalSession(){
+        var t = localStorage.getItem('portal_token');
+        if (!t) return;
+        supabaseClient.from('portal_sessions').select('id').eq('token', t).maybeSingle().then(function(r){
+          if (r.error || !r.data) { localStorage.removeItem('portal_token'); window.location.href = 'index.html'; }
+        });
+      }
+      checkPortalSession();
+      setInterval(checkPortalSession, 15000);
+      supabaseClient.channel('portal_sessions_kick_talon').on('postgres_changes',{event:'DELETE',schema:'public',table:'portal_sessions'},function(p){ if(p.old&&p.old.token===localStorage.getItem('portal_token')){ localStorage.removeItem('portal_token'); window.location.href='index.html'; } }).subscribe();
 
       const generateBtn = document.getElementById("generateBtn");
       const saveToSheetBtn = document.getElementById("saveToSheetBtn");
@@ -205,30 +217,51 @@
 
       // PNG жүктеу
       downloadPngBtn.onclick = () => {
-        const fileNamePart = currentData.client.replace(/\s+/g, '_');
-        const link = document.createElement("a");
-        link.download = `Certificate_${fileNamePart}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
+        try {
+          const fileNamePart = currentData.client.replace(/\s+/g, '_');
+          const link = document.createElement("a");
+          link.download = `Certificate_${fileNamePart}.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+          statusMsg.textContent = "PNG жүктелді.";
+          statusMsg.style.color = "green";
+        } catch (e) {
+          statusMsg.textContent = "Сурет қате: " + (e.message || "The operation is insecure.");
+          statusMsg.style.color = "#dc2626";
+        }
       };
 
-      // PDF жүктеу
+      // PDF жүктеу (try-catch: "The operation is insecure" болмас үшін сайтты http(s) серверден ашыңыз)
       downloadPdfBtn.onclick = () => {
         if (!window.jspdf || !window.jspdf.jsPDF) {
           statusMsg.textContent = "PDF кітапханасы әлі жүктелмеді. Бір сәт күтіп қайта көріңіз.";
           statusMsg.style.color = "red";
           return;
         }
-        const jsPDF = window.jspdf.jsPDF;
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
-        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-        const fileNamePart = currentData.client.replace(/\s+/g, '_');
-        pdf.save(`Certificate_${fileNamePart}.pdf`);
+        try {
+          const jsPDF = window.jspdf.jsPDF;
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
+          pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+          const fileNamePart = currentData.client.replace(/\s+/g, '_');
+          pdf.save(`Certificate_${fileNamePart}.pdf`);
+          statusMsg.textContent = "PDF жүктелді.";
+          statusMsg.style.color = "green";
+        } catch (e) {
+          const errMsg = (e && e.message) ? e.message : "Қате";
+          if (errMsg.indexOf("insecure") !== -1) {
+            statusMsg.textContent = "PDF қате: Қауіпсіздік шектеуі. Сайтты интернет серверден ашыңыз (localhost немесе домен), сонда PDF сақталады.";
+            statusMsg.style.color = "#dc2626";
+          } else {
+            statusMsg.textContent = "PDF қате: " + errMsg;
+            statusMsg.style.color = "#dc2626";
+          }
+        }
       };
 
       generateBtn.onclick = generateCertificate;
       saveToSheetBtn.onclick = saveToSheets;
+      }
     </script>
   </body>
 </html>
