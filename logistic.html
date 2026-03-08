@@ -68,9 +68,14 @@
         }
         .date-range-picker input { border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px; font-size: 12px; }
 
+        #container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
         .card {
             background: var(--white); border-radius: var(--card-radius);
-            padding: 18px; margin-bottom: 16px;
+            padding: 18px; margin-bottom: 0;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(226, 232, 240, 0.8);
             animation: slideIn 0.3s ease-out;
@@ -157,17 +162,35 @@
     </button>
 
     <script>
+        if(!localStorage.getItem('portal_token')){ document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:sans-serif;max-width:400px;margin:40px auto"><h2 style="color:#1a1a1a">Сіздің құрылғы тіркелмеген</h2><p style="margin:20px 0"><a href="index.html" style="color:#0A8754;font-weight:600">Басты бетке өту</a></p></div>'; }
+        else {
         const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
         const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk'; 
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+        function checkPortalSession(){
+          const t = localStorage.getItem('portal_token');
+          if (!t) return;
+          supabaseClient.from('portal_sessions').select('id').eq('token', t).maybeSingle().then(function(r){
+            if (r.error || !r.data) { localStorage.removeItem('portal_token'); window.location.href = 'index.html'; }
+          });
+        }
+        checkPortalSession();
+        setInterval(checkPortalSession, 15000);
+        supabaseClient.channel('portal_sessions_kick_log').on('postgres_changes',{event:'DELETE',schema:'public',table:'portal_sessions'},function(p){ if(p.old&&p.old.token===localStorage.getItem('portal_token')){ localStorage.removeItem('portal_token'); window.location.href='index.html'; } }).subscribe();
 
         let store = [];
+        let deliveryTypes = ['Курьер','Такси','Поезд','Почта'];
         let currentStatus = 'all';
         let currentTimeScope = 'Барлығы';
 
         async function load() {
             document.getElementById('container').innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">Жүктелуде...</div>';
-            const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+            const [ordersRes, delRes] = await Promise.all([
+                supabaseClient.from('orders').select('*').order('created_at', { ascending: false }),
+                supabaseClient.from('delivery_types').select('name').order('sort_order').then(r => r.data && r.data.length ? r.data.map(d => d.name) : null).catch(() => null)
+            ]);
+            if (delRes && delRes.length) deliveryTypes = delRes;
+            const { data, error } = ordersRes;
             if (!error) {
                 store = (data || []).map(o => ({
                     ...o,
@@ -283,22 +306,20 @@
                     </div>
                     <div class="field-editable" style="margin-bottom:10px;">
                         <label style="font-size:11px;color:#64748b;font-weight:700;">Жеткізуші номері / трек</label>
-                        <input type="text" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" placeholder="Такси немесе трек номері" 
-                               onchange="update('${o.id}', 'delivery_contact', this.value)" 
+                        <input type="text" class="log-delivery-input" data-order-id="${o.id}" data-original="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" placeholder="Такси немесе трек номері" 
+                               oninput="logRowDirty(this)" 
                                style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;margin-top:4px;box-sizing:border-box;">
                     </div>
                     <div class="field-editable" style="margin-bottom:10px;">
                         <label style="font-size:11px;color:#64748b;font-weight:700;">Ескертпе</label>
-                        <input type="text" value="${(o.logistics_note||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" placeholder="Қысқа жазба" 
-                               onchange="update('${o.id}', 'logistics_note', this.value)" 
+                        <input type="text" class="log-note-input" data-order-id="${o.id}" data-original="${(o.logistics_note||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" value="${(o.logistics_note||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" placeholder="Қысқа жазба" 
+                               oninput="logRowDirty(this)" 
                                style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;margin-top:4px;box-sizing:border-box;">
+                        <button type="button" class="log-save-btn" style="display:none;margin-top:6px;padding:8px 14px;background:#22c55e;color:white;border:none;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer" onclick="logSaveRow(this)" data-order-id="${o.id}"><i class="fas fa-save"></i> Сохранить</button>
                     </div>
                     <div class="status-grid">
                         <select onchange="update('${o.id}', 'delivery_type', this.value)">
-                            <option value="Курьер" ${o.delivery_type === 'Курьер' ? 'selected' : ''}>🛵 Курьер</option>
-                            <option value="Такси" ${o.delivery_type === 'Такси' ? 'selected' : ''}>🚕 Такси</option>
-                            <option value="Поезд" ${o.delivery_type === 'Поезд' ? 'selected' : ''}>🚂 Поезд</option>
-                            <option value="Почта" ${o.delivery_type === 'Почта' ? 'selected' : ''}>📦 Почта</option>
+                            ${deliveryTypes.map(x => `<option value="${x.replace(/"/g,'&quot;')}" ${o.delivery_type === x ? 'selected' : ''}>${x.replace(/</g,'&lt;')}</option>`).join('')}
                         </select>
                         <select onchange="update('${o.id}', 'status', this.value)" 
                                 style="background: ${o.status==='Қабылданды'?'#dcfce7':o.status==='Жолда'?'#dbeafe':o.status==='Процесте'?'#fffbeb':'white'};
@@ -321,6 +342,33 @@
                 if (item) { item[field] = val; filter(); }
             }
         }
+        function logRowDirty(inp) {
+            const card = inp.closest('.card');
+            if (!card) return;
+            const contactInp = card.querySelector('.log-delivery-input');
+            const noteInp = card.querySelector('.log-note-input');
+            const origC = (contactInp && contactInp.getAttribute('data-original')) || '';
+            const origN = (noteInp && noteInp.getAttribute('data-original')) || '';
+            const dirty = (contactInp && contactInp.value !== origC) || (noteInp && noteInp.value !== origN);
+            const btn = card.querySelector('.log-save-btn');
+            if (btn) btn.style.display = dirty ? 'inline-block' : 'none';
+        }
+        async function logSaveRow(btn) {
+            const id = btn.getAttribute('data-order-id');
+            const card = btn.closest('.card');
+            const contactInp = card.querySelector('.log-delivery-input');
+            const noteInp = card.querySelector('.log-note-input');
+            const contactVal = contactInp ? contactInp.value : '';
+            const noteVal = noteInp ? noteInp.value : '';
+            const { error } = await supabaseClient.from('orders').update({ delivery_contact: contactVal, logistics_note: noteVal }).eq('id', id);
+            if (!error) {
+                const item = store.find(o => o.id == id);
+                if (item) { item.delivery_contact = contactVal; item.logistics_note = noteVal; }
+                if (contactInp) contactInp.setAttribute('data-original', contactVal);
+                if (noteInp) noteInp.setAttribute('data-original', noteVal);
+                btn.style.display = 'none';
+            }
+        }
 
         function copy(elementId, btn) {
             const text = document.getElementById(elementId).innerText;
@@ -337,6 +385,7 @@
         }
 
         load();
+        }
     </script>
 </body>
 </html>
