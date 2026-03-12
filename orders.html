@@ -107,7 +107,7 @@ input:focus,select:focus{border-color:var(--gr2)}
   <div class="back"><a href="/">&#8592; Артқа</a></div>
   <div class="header">
     <img src="https://i.ibb.co.com/hFhh091B/logo.jpg" alt="Larossa" class="logo-img">
-    <span class="logo-text">LAROSSA</span>
+    <span class="logo-text" id="companyName">LAROSSA</span>
     <button type="button" class="logistics-btn" onclick="openLogisticsPopup()"><i class="fas fa-truck"></i><span>Жеткізулер</span></button>
   </div>
   <form id="orderForm">
@@ -116,6 +116,7 @@ input:focus,select:focus{border-color:var(--gr2)}
       <select id="manager_id" required oninvalid="this.setCustomValidity('Менеджерді таңдаңыз')" oninput="this.setCustomValidity('')">
         <option value="" disabled selected>Менеджерді таңдаңыз...</option>
       </select>
+      <div id="managerHint" style="display:none;font-size:12px;margin-top:6px;"></div>
     </div>
 
     <div class="sec-title">Тапсырыс уақыты</div>
@@ -239,59 +240,83 @@ input:focus,select:focus{border-color:var(--gr2)}
 </div>
 
 <script>
-if(!localStorage.getItem('portal_token')){ document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:sans-serif;max-width:400px;margin:40px auto"><h2 style="color:#1a1a1a">Сіздің құрылғы тіркелмеген</h2><p style="margin:20px 0"><a href="index.html" style="color:#0A8754;font-weight:600">Басты бетке өту</a></p></div>'; }
-else {
 const SB_URL='https://jnuokhhqojlurvadcduv.supabase.co';
 const SB_KEY='sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
-const sb=supabase.createClient(SB_URL,SB_KEY);
-function checkPortalSession(){
-  var t=localStorage.getItem('portal_token');
-  if(!t) return;
-  sb.from('portal_sessions').select('id').eq('token',t).maybeSingle().then(function(r){
-    if(r.error||!r.data){ localStorage.removeItem('portal_token'); window.location.href='index.html'; }
-  });
-}
-checkPortalSession();
-setInterval(checkPortalSession,15000);
-sb.channel('portal_sessions_kick_ord').on('postgres_changes',{event:'DELETE',schema:'public',table:'portal_sessions'},function(p){ if(p.old&&p.old.token===localStorage.getItem('portal_token')){ localStorage.removeItem('portal_token'); window.location.href='index.html'; } }).subscribe();
+const sb=typeof supabase!=='undefined'?supabase.createClient(SB_URL,SB_KEY):null;
 const GSHEET_URL='https://script.google.com/macros/s/AKfycbxJbkVjqkFyeTYstJABPxsVRgya5SdYtptA09XCKcWUmve3njkl51thYyKRW40LLyw/exec';
 const DPCT=9;
 const PAY_OPTS_FALLBACK=['Kaspi Transfer','Halyk Transfer','Kaspi рассрочка','Halyk рассрочка','Kaspi Red','Наличка'];
 const DELIVERY_OPTS_FALLBACK=['Такси','Курьер','Почта','Поезд'];
 let tabletOptions=[],giftOptions=[],mgrBonusDefaults={},mgrMap={};
 
+function safeQuery(fn){ return Promise.resolve().then(fn).then(function(r){ return r&&typeof r==='object'?r:{data:[]}; }).catch(function(){ return {data:[]}; }); }
+
 $(document).ready(async function(){
   $('#client_phone').inputmask('+7 (999) 999-9999');
   await loadSiteData();
+  loadCompanyName();
 });
 
+function loadCompanyName(){
+  if(!sb)return;
+  sb.from('site_display').select('company_name').eq('id',1).single().then(function(r){ if(r&&r.data&&r.data.company_name){ var el=document.getElementById('companyName'); if(el)el.textContent=r.data.company_name; } }).catch(function(){});
+}
+
 async function loadSiteData(){
-  const[mR,pR,bR,payR,delR]=await Promise.all([
-    sb.from('site_managers').select('*').eq('is_active',true).order('sort_order').order('id'),
-    sb.from('site_products').select('*').eq('is_active',true).order('category').order('sort_order'),
-    sb.from('manager_bonus_settings').select('*'),
-    sb.from('payment_types').select('name').order('sort_order').catch(()=>({data:null})),
-    sb.from('delivery_types').select('name').order('sort_order').catch(()=>({data:null}))
-  ]);
+  var mgrs=[],prods=[],bR={data:[]},payR={data:null},delR={data:null};
+  if(!sb){ fillFallbacks(); return; }
+  var rMgr1,rMgr2,rMgr3,rProd,rBonus,rPay,rDel;
+  try{
+    var res=await Promise.all([
+      safeQuery(function(){return sb.from('managers_list').select('id,name').order('id');}),
+      safeQuery(function(){return sb.from('managers').select('id,name').order('id');}),
+      safeQuery(function(){return sb.from('site_managers').select('id,name').order('sort_order').order('id');}),
+      safeQuery(function(){return sb.from('site_products').select('*').order('category').order('sort_order');}),
+      safeQuery(function(){return sb.from('manager_bonus_settings').select('*');}),
+      safeQuery(function(){return sb.from('payment_types').select('name').order('sort_order');}),
+      safeQuery(function(){return sb.from('delivery_types').select('name').order('sort_order');})
+    ]);
+    rMgr1=res[0];rMgr2=res[1];rMgr3=res[2];rProd=res[3];rBonus=res[4];rPay=res[5];rDel=res[6];
+  }catch(e){ fillFallbacks(); return; }
+  mgrs=(rMgr1.data&&rMgr1.data.length)?rMgr1.data:(rMgr2.data&&rMgr2.data.length)?rMgr2.data:(rMgr3.data||[]);
+  prods=(rProd.data||[]);bR=rBonus||{data:[]};payR=rPay||{data:null};delR=rDel||{data:null};
   mgrMap={};
-  (mR.data||[]).forEach(m=>{mgrMap[m.id]=m.name;});
-  const mgrSel=document.getElementById('manager_id');
-  mgrSel.innerHTML='<option value="" disabled selected>Менеджерді таңдаңыз...</option>';
-  (mR.data||[]).forEach(m=>mgrSel.add(new Option(m.name,m.id)));
+  mgrs.forEach(function(m){mgrMap[m.id]=m.name;});
+  var mgrSel=document.getElementById('manager_id');
+  if(mgrSel){
+    mgrSel.innerHTML='<option value="" disabled selected>Менеджерді таңдаңыз...</option>';
+    if(mgrs.length) mgrs.forEach(function(m){mgrSel.add(new Option(m.name,m.id));});
+    else mgrSel.add(new Option('— Менеджерлер жоқ —',''));
+    mgrSel.required=mgrs.length>0;
+  }
   mgrBonusDefaults={};
-  (bR.data||[]).forEach(b=>{mgrBonusDefaults[b.manager_id]=b.default_bonus_percent;});
-  tabletOptions=(pR.data||[]).filter(p=>p.category==='tablet').map(p=>p.name);
-  giftOptions=(pR.data||[]).filter(p=>p.category==='gift').map(p=>p.name);
+  ((bR&&bR.data)||[]).forEach(function(b){mgrBonusDefaults[b.manager_id]=b.default_bonus_percent;});
+  var activeProds=prods.filter(function(p){return p.is_active!==false;});
+  tabletOptions=activeProds.filter(function(p){return p.category==='tablet';}).sort(function(a,b){return (a.sort_order||99)-(b.sort_order||99);}).map(function(p){return p.name;});
+  giftOptions=activeProds.filter(function(p){return p.category==='gift';}).sort(function(a,b){return (a.sort_order||99)-(b.sort_order||99);}).map(function(p){return p.name;});
   if(!tabletOptions.length)tabletOptions=['G2000','17 Pro Max','17 Pad Pro'];
   if(!giftOptions.length)giftOptions=['Смарт набор','Массажер','Смарт сағат','Переходник'];
-  const payNames=(payR.data&&payR.data.length)?payR.data.map(p=>p.name):PAY_OPTS_FALLBACK;
-  const delNames=(delR.data&&delR.data.length)?delR.data.map(d=>d.name):DELIVERY_OPTS_FALLBACK;
-  const payOpts=payNames.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n.replace(/</g,'&lt;')}</option>`).join('');
-  const delOpts=delNames.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n.replace(/</g,'&lt;')}</option>`).join('');
+  var payNames=(payR&&payR.data&&payR.data.length)?payR.data.map(function(p){return p.name;}):PAY_OPTS_FALLBACK;
+  var delNames=(delR&&delR.data&&delR.data.length)?delR.data.map(function(d){return d.name;}):DELIVERY_OPTS_FALLBACK;
+  var payOpts=payNames.map(function(n){return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';}).join('');
+  var delOpts=delNames.map(function(n){return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';}).join('');
   document.getElementById('delivery_type').innerHTML=delOpts;
   document.getElementById('payment_type').innerHTML='<option value="" disabled selected>— таңдаңыз —</option>'+payOpts;
   document.getElementById('pay1_type').innerHTML=payOpts;
   document.getElementById('pay2_type').innerHTML=payOpts;
+}
+
+function fillFallbacks(){
+  tabletOptions=tabletOptions.length?tabletOptions:['G2000','17 Pro Max','17 Pad Pro'];
+  giftOptions=giftOptions.length?giftOptions:['Смарт набор','Массажер','Смарт сағат','Переходник'];
+  var mgrSel=document.getElementById('manager_id');
+  if(mgrSel&&mgrSel.options.length<=1) mgrSel.add(new Option('— Менеджерлер жоқ —',''));
+  var payOpts=PAY_OPTS_FALLBACK.map(function(n){return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';}).join('');
+  var delOpts=DELIVERY_OPTS_FALLBACK.map(function(n){return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/</g,'&lt;')+'</option>';}).join('');
+  var delEl=document.getElementById('delivery_type');if(delEl&&!delEl.options.length)delEl.innerHTML=delOpts;
+  var payEl=document.getElementById('payment_type');if(payEl&&payEl.options.length<=1)payEl.innerHTML='<option value="" disabled selected>— таңдаңыз —</option>'+payOpts;
+  var p1=document.getElementById('pay1_type');if(p1&&!p1.options.length)p1.innerHTML=payOpts;
+  var p2=document.getElementById('pay2_type');if(p2&&!p2.options.length)p2.innerHTML=payOpts;
 }
 
 function buildOptions(arr){return arr.map(n=>`<option value="${n}">${n}</option>`).join('');}
@@ -348,6 +373,7 @@ function clearImg(e){
 
 document.getElementById('orderForm').addEventListener('submit',async function(e){
   e.preventDefault();
+  if(!sb){showPopup('Байланыс жоқ. Интернетті тексеріңіз.','r');return;}
   const btn=document.getElementById('submitBtn');
   btn.textContent='Жіберілуде...';btn.disabled=true;
   const isSplit=document.getElementById('splitCheck').checked;
@@ -447,13 +473,23 @@ function closeLogisticsPopup(){
 }
 
 async function loadLogisticsOrders(){
-  const listEl=document.getElementById('logisticsList');
+  var listEl=document.getElementById('logisticsList');
+  if(!listEl)return;
   listEl.innerHTML='<div class="log-empty"><i class="fas fa-spinner fa-spin"></i> Жүктелуде...</div>';
-  const{data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false});
-  if(error){listEl.innerHTML='<div class="log-empty">Жүктеу қатесі</div>';return;}
-  // always reload managers for correct name mapping
-  const{data:mD}=await sb.from('site_managers').select('id,name');
-  (mD||[]).forEach(m=>{mgrMap[m.id]=m.name;});
+  if(!sb){listEl.innerHTML='<div class="log-empty">Байланыс жоқ</div>';return;}
+  var ord,rM1,rM2,rM3;
+  try{
+    var res=await Promise.all([
+      safeQuery(function(){return sb.from('orders').select('*').order('created_at',{ascending:false});}),
+      safeQuery(function(){return sb.from('managers_list').select('id,name');}),
+      safeQuery(function(){return sb.from('managers').select('id,name');}),
+      safeQuery(function(){return sb.from('site_managers').select('id,name');})
+    ]);
+    ord=res[0];rM1=res[1];rM2=res[2];rM3=res[3];
+  }catch(e){listEl.innerHTML='<div class="log-empty">Жүктеу қатесі</div>';return;}
+  var data=ord.data||[];
+  var mD=(rM1.data&&rM1.data.length)?rM1.data:(rM2.data&&rM2.data.length)?rM2.data:(rM3.data||[]);
+  mD.forEach(function(m){mgrMap[m.id]=m.name;});
   logisticsOrders=(data||[])
     .map(o=>({...o,_mgrName:mgrMap[o.manager_id]||o.manager_name||'',_status:(o.status||'').trim()||'Жаңа'}));
 
@@ -519,7 +555,6 @@ function filterLogisticsList(){
       ${trackHtml}${noteHtml}
     </div>`;
   }).join('');
-}
 }
 </script>
 </body>
