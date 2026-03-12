@@ -56,8 +56,9 @@
   <body>
     
     <div class="container">
-      <div class="back">
+      <div class="back" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
       <a href="/" style="text-decoration: none; font-weight: 700; font-size: 14px;">&#8592; Артқа</a>
+      <span id="companyName" style="font-weight:700;font-size:16px;color:var(--primary);">Larossa</span>
     </div>
       <h2>Кепілдік талоны</h2>
 
@@ -90,8 +91,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      if(!localStorage.getItem('portal_token')){ document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:sans-serif;max-width:400px;margin:40px auto"><h2 style="color:#1a1a1a">Сіздің құрылғы тіркелмеген</h2><p style="margin:20px 0"><a href="index.html" style="color:#0A8754;font-weight:600">Басты бетке өту</a></p></div>'; }
-      else {
       var canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       const bg = new Image();
@@ -100,17 +99,15 @@
 
       const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
       const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
-      const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
-      function checkPortalSession(){
-        var t = localStorage.getItem('portal_token');
-        if (!t) return;
-        supabaseClient.from('portal_sessions').select('id').eq('token', t).maybeSingle().then(function(r){
-          if (r.error || !r.data) { localStorage.removeItem('portal_token'); window.location.href = 'index.html'; }
-        });
+      const supabaseClient = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+      var siteCompanyName = 'Larossa компаниясы';
+      if (supabaseClient) {
+        supabaseClient.from('site_display').select('company_name').eq('id', 1).single().then(function(r) {
+          if (r && r.data && r.data.company_name) { siteCompanyName = r.data.company_name + ' компаниясы'; }
+          var el = document.getElementById('companyName');
+          if (el) el.textContent = r && r.data && r.data.company_name ? r.data.company_name : 'Larossa';
+        }).catch(function() {});
       }
-      checkPortalSession();
-      setInterval(checkPortalSession, 15000);
-      supabaseClient.channel('portal_sessions_kick_talon').on('postgres_changes',{event:'DELETE',schema:'public',table:'portal_sessions'},function(p){ if(p.old&&p.old.token===localStorage.getItem('portal_token')){ localStorage.removeItem('portal_token'); window.location.href='index.html'; } }).subscribe();
 
       const generateBtn = document.getElementById("generateBtn");
       const saveToSheetBtn = document.getElementById("saveToSheetBtn");
@@ -171,7 +168,7 @@
         ctx.font = "400 26px Play";
         ctx.fillText(name, 424, 353);
         ctx.font = "400 24px Play";
-        ctx.fillText("Larossa компаниясы", 385, 390);
+        ctx.fillText(siteCompanyName, 385, 390);
         ctx.fillText(article, 349, 426);
         ctx.fillText("Төле би 189A", 364, 461);
         ctx.fillText(formatDate(expiry) + " ж", 260, 628);
@@ -261,7 +258,6 @@
 
       generateBtn.onclick = generateCertificate;
       saveToSheetBtn.onclick = saveToSheets;
-      }
     </script>
   </body>
 </html>
