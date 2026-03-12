@@ -122,8 +122,9 @@
 <body>
     
     <div class="header">
-        <div class="back">
+        <div class="back" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
                 <a href="/" style="text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px; border-radius: 10px;">&#8592; Артқа</a>
+                <span id="companyName" style="font-weight:700;font-size:16px;color:var(--primary);">Larossa</span>
         </div>
         <div class="search-box" style="margin-top: 20px;">
             <i class="fas fa-search"></i>
@@ -162,21 +163,9 @@
     </button>
 
     <script>
-        if(!localStorage.getItem('portal_token')){ document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:sans-serif;max-width:400px;margin:40px auto"><h2 style="color:#1a1a1a">Сіздің құрылғы тіркелмеген</h2><p style="margin:20px 0"><a href="index.html" style="color:#0A8754;font-weight:600">Басты бетке өту</a></p></div>'; }
-        else {
         const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
         const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk'; 
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-        function checkPortalSession(){
-          const t = localStorage.getItem('portal_token');
-          if (!t) return;
-          supabaseClient.from('portal_sessions').select('id').eq('token', t).maybeSingle().then(function(r){
-            if (r.error || !r.data) { localStorage.removeItem('portal_token'); window.location.href = 'index.html'; }
-          });
-        }
-        checkPortalSession();
-        setInterval(checkPortalSession, 15000);
-        supabaseClient.channel('portal_sessions_kick_log').on('postgres_changes',{event:'DELETE',schema:'public',table:'portal_sessions'},function(p){ if(p.old&&p.old.token===localStorage.getItem('portal_token')){ localStorage.removeItem('portal_token'); window.location.href='index.html'; } }).subscribe();
 
         let store = [];
         let deliveryTypes = ['Курьер','Такси','Поезд','Почта'];
@@ -185,18 +174,24 @@
 
         async function load() {
             document.getElementById('container').innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">Жүктелуде...</div>';
-            const [ordersRes, delRes] = await Promise.all([
-                supabaseClient.from('orders').select('*').order('created_at', { ascending: false }),
-                supabaseClient.from('delivery_types').select('name').order('sort_order').then(r => r.data && r.data.length ? r.data.map(d => d.name) : null).catch(() => null)
-            ]);
-            if (delRes && delRes.length) deliveryTypes = delRes;
-            const { data, error } = ordersRes;
-            if (!error) {
-                store = (data || []).map(o => ({
-                    ...o,
-                    status: (o.status === null || o.status === "" || o.status === "null") ? "Жаңа" : o.status
-                }));
-                filter();
+            try {
+                const [ordersRes, delRes] = await Promise.all([
+                    supabaseClient.from('orders').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('delivery_types').select('name').order('sort_order').then(r => r && r.data && r.data.length ? r.data.map(d => d.name) : null).catch(() => null)
+                ]);
+                if (delRes && delRes.length) deliveryTypes = delRes;
+                const { data, error } = ordersRes || {};
+                if (!error && data) {
+                    store = (data || []).map(o => ({
+                        ...o,
+                        status: (o.status === null || o.status === "" || o.status === "null") ? "Жаңа" : o.status
+                    }));
+                    filter();
+                } else {
+                    document.getElementById('container').innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Жүктеу қатесі. Қайта көріңіз.</div>';
+                }
+            } catch (e) {
+                document.getElementById('container').innerHTML = '<div style="text-align:center; padding:50px; color:#ef4444;">Жүктеу қатесі. Қайта көріңіз.</div>';
             }
         }
 
@@ -384,8 +379,10 @@
             if (btn) { btn.innerText = '✅ Көшірілді'; setTimeout(() => { btn.innerText = old; }, 1500); }
         }
 
+        (function syncCompanyName(){
+          supabaseClient.from('site_display').select('company_name').eq('id',1).single().then(function(r){ if(r&&r.data&&r.data.company_name){ var e=document.getElementById('companyName'); if(e)e.textContent=r.data.company_name; } }).catch(function(){});
+        })();
         load();
-        }
     </script>
 </body>
 </html>
