@@ -46,19 +46,6 @@
             min-width: 0;
         }
         .header .main-logo { margin-bottom: 0; }
-        .header-auth-btn {
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            border: 1px solid rgba(10,135,84,0.4);
-            background: #fff;
-            color: var(--larossa-green);
-            flex-shrink: 0;
-        }
-        .header-auth-btn:hover { background: #f0fdf4; }
-
         .main-logo {
             width: 80px;
             height: 80px;
@@ -175,19 +162,6 @@
             <img src="https://i.ibb.co.com/xqrTSq0d/logo2.jpg" alt="Larossa" class="main-logo">
             <h2 id="companyName">Larossa Company</h2>
         </div>
-        <button type="button" id="authBtn" class="header-auth-btn">Войти</button>
-    </div>
-    <div id="authPopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:20px">
-        <div style="background:#fff;border-radius:16px;padding:28px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)">
-            <h3 style="margin:0 0 20px;font-size:18px">Кіру</h3>
-            <p id="authErr" style="color:#dc2626;font-size:13px;margin-bottom:10px;min-height:18px"></p>
-            <input type="text" id="authLogin" placeholder="Логин" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:10px;font-size:15px;box-sizing:border-box">
-            <input type="password" id="authPwd" placeholder="Пароль" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:16px;font-size:15px;box-sizing:border-box">
-            <div style="display:flex;gap:10px;margin-top:4px">
-                <button type="button" id="authCancel" style="flex:1;padding:12px;border:1px solid #e2e8f0;border-radius:10px;background:#f1f5f9;color:#1e293b;font-weight:600;cursor:pointer;font-size:14px">Болдырмау</button>
-                <button type="button" id="authSubmit" style="flex:1;padding:12px;border:none;border-radius:10px;background:var(--larossa-green);color:#fff;font-weight:600;cursor:pointer;font-size:14px">Кіру</button>
-            </div>
-        </div>
     </div>
 
     <div class="container">
@@ -243,132 +217,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
-  const SB_URL='https://jnuokhhqojlurvadcduv.supabase.co';
-  const SB_KEY='sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
-  const sb=window.supabase.createClient(SB_URL,SB_KEY);
-  const PORTAL_TOKEN_KEY='portal_token';
-  const PROTECTED_PAGES=['orders.html','logistic.html','talon.html','admin.html'];
-
+  if(typeof window.supabase==='undefined')return;
+  var sb=window.supabase.createClient('https://jnuokhhqojlurvadcduv.supabase.co','sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk');
   sb.from('site_display').select('company_name').eq('id',1).single().then(function(r){
-    if(r.data&&r.data.company_name){
-      var el=document.getElementById('companyName');
-      if(el) el.textContent=r.data.company_name;
+    if(r&&r.data&&r.data.company_name){
+      var e=document.getElementById('companyName');
+      if(e)e.textContent=r.data.company_name;
     }
-  });
-
-  function updateAuthButton(){
-    var btn=document.getElementById('authBtn');
-    if(!btn) return;
-    btn.textContent=localStorage.getItem(PORTAL_TOKEN_KEY)?'Выйти':'Войти';
-  }
-  function showAuthPopup(){
-    document.getElementById('authErr').textContent='';
-    document.getElementById('authLogin').value='';
-    document.getElementById('authPwd').value='';
-    document.getElementById('authPopup').style.display='flex';
-  }
-  function hideAuthPopup(){
-    document.getElementById('authPopup').style.display='none';
-  }
-  function sha256Hex(str){
-    return crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)).then(function(buf){
-      return Array.from(new Uint8Array(buf)).map(function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
-    });
-  }
-  function doLogin(){
-    var login=document.getElementById('authLogin').value.trim();
-    var pwd=(document.getElementById('authPwd').value||'').trim();
-    var errEl=document.getElementById('authErr');
-    if(!login){ errEl.textContent='Логин енгізіңіз'; return; }
-    if(!pwd){ errEl.textContent='Пароль енгізіңіз'; return; }
-    errEl.textContent='';
-    sb.from('portal_users').select('id,password_hash').eq('login', login).maybeSingle().then(function(r){
-      if(r.error){ errEl.textContent='Қате: '+ (r.error.message||'база'); return; }
-      var user=r.data;
-      if(!user||!user.id){ errEl.textContent='Логин немесе пароль қате'; return; }
-      var stored=String(user.password_hash||'').trim();
-      var storedLower=stored.toLowerCase();
-      var isSha256Hex=/^[0-9a-f]{64}$/.test(storedLower);
-      function doSession(){
-        var token=crypto.randomUUID?crypto.randomUUID():''+Date.now()+Math.random();
-        var deviceInfo=(navigator.userAgent||'').slice(0,500);
-        sb.from('portal_sessions').insert({user_id:user.id,token:token,device_info:deviceInfo}).then(function(ins){
-          if(ins.error){ errEl.textContent='Сеанс қате: '+ins.error.message; return; }
-          localStorage.setItem(PORTAL_TOKEN_KEY,token);
-          hideAuthPopup();
-          updateAuthButton();
-        });
-      }
-      if(!isSha256Hex){
-        if(pwd!==stored){ errEl.textContent='Логин немесе пароль қате'; return; }
-        doSession();
-        return;
-      }
-      sha256Hex(pwd).then(function(inputHash){
-        var inputHashStr=String(inputHash||'').trim().toLowerCase();
-        if(inputHashStr!==storedLower){ errEl.textContent='Логин немесе пароль қате'; return; }
-        doSession();
-      });
-    }).catch(function(e){ errEl.textContent='Қате: '+(e&&e.message?e.message:'желі'); });
-  }
-  function doLogout(){
-    localStorage.removeItem(PORTAL_TOKEN_KEY);
-    updateAuthButton();
-  }
-
-  document.getElementById('authBtn').addEventListener('click',function(){
-    if(localStorage.getItem(PORTAL_TOKEN_KEY)) doLogout();
-    else showAuthPopup();
-  });
-  document.getElementById('authCancel').addEventListener('click',hideAuthPopup);
-  document.getElementById('authSubmit').addEventListener('click',doLogin);
-  document.getElementById('authPwd').addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
-
-  document.querySelector('.container').addEventListener('click',function(e){
-    var a=e.target.closest('a[href]');
-    if(!a||!a.href) return;
-    var path=a.getAttribute('href')||'';
-    var isProtected=PROTECTED_PAGES.some(function(p){ return path.indexOf(p)!==-1; });
-    if(isProtected&&!localStorage.getItem(PORTAL_TOKEN_KEY)){
-      e.preventDefault();
-      showAuthPopup();
-    }
-  });
-
-  updateAuthButton();
-
-  // Сеанс әлі бар-жоғын тексеру (админ аяқтағанда сол құрылғыдан шығару)
-  function checkSessionAndLogout(){
-    var token=localStorage.getItem(PORTAL_TOKEN_KEY);
-    if(!token) return;
-    sb.from('portal_sessions').select('id').eq('token',token).maybeSingle().then(function(r){
-      if(r.error||!r.data){
-        localStorage.removeItem(PORTAL_TOKEN_KEY);
-        updateAuthButton();
-        alert('Сеанс аяқталды. Қайта кіріңіз.');
-      }
-    });
-  }
-
-  // Бет ашылғанда бір рет тексеру
-  if(localStorage.getItem(PORTAL_TOKEN_KEY)) checkSessionAndLogout();
-  // 15 сек сайын тексеру (админ «Завершить» басқанда көп күтпей шығады)
-  setInterval(checkSessionAndLogout,15000);
-
-  // Realtime: админ сеансты жойған сәтте дереу шығару
-  function subscribeSessionKick(){
-    var token=localStorage.getItem(PORTAL_TOKEN_KEY);
-    if(!token) return;
-    sb.channel('portal_sessions_kick').on('postgres_changes',{event:'DELETE',schema:'public',table:'portal_sessions'},function(p){
-      var old=p.old;
-      if(old&&old.token===token){
-        localStorage.removeItem(PORTAL_TOKEN_KEY);
-        updateAuthButton();
-        alert('Сеанс аяқталды. Қайта кіріңіз.');
-      }
-    }).subscribe();
-  }
-  subscribeSessionKick();
+  }).catch(function(){});
 })();
 </script>
 </body>
