@@ -855,7 +855,7 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="nitem" onclick="goPage('daily',this)"><i class="fas fa-calendar-day"></i>Күнделікті есеп</div>
   <div class="nitem" onclick="goPage('ranking',this)"><i class="fas fa-trophy"></i>Рейтинг</div>
   <div class="nitem" onclick="goPage('clients',this)"><i class="fas fa-users"></i>Клиенттер</div>
-  <div class="nitem" onclick="goPage('managers',this)"><i class="fas fa-user-tie"></i>Менеджерлер</div>
+  <div class="nitem" onclick="goPage('managers_list',this)"><i class="fas fa-user-tie"></i>Менеджерлер</div>
   <div class="nsect">Жүйе</div>
   <div class="nitem" onclick="goPage('logistics',this)"><i class="fas fa-truck"></i>Логистика</div>
   <div class="nitem" onclick="goPage('talon',this)"><i class="fas fa-file-contract"></i>Гарантия талон</div>
@@ -1056,7 +1056,7 @@ tbody tr:hover td{background:#f8f9fd}
 </div>
 
 <!-- MANAGERS PAGE -->
-<div id="managersPage" class="page">
+<div id="managers_listPage" class="page">
   <h1 style="font-size:19px;font-weight:700;margin-bottom:14px">Менеджерлер</h1>
   <div class="g g4">
     <div class="sc"><div class="lb">Менеджерлер</div><div class="vl" id="mgrC">0</div></div>
@@ -1373,14 +1373,6 @@ tbody tr:hover td{background:#f8f9fd}
     </div>
   </div>
   <div class="ss">
-    <div class="ss-h"><i class="fas fa-users-cog"></i>Портал кірулері (индекс)</div>
-    <div class="ss-b">
-      <p style="font-size:13px;color:var(--mu);margin-bottom:12px">Менеджерлерге логин/пароль беру, сеанстарды басқару.</p>
-      <button class="btn bg2 sm" onclick="openAddPortalUser()"><i class="fas fa-user-plus"></i>Қосу</button>
-      <div id="portalUsersList" style="margin-top:14px"></div>
-    </div>
-  </div>
-  <div class="ss">
     <div class="ss-h"><i class="fas fa-sign-out-alt"></i>Сессия</div>
     <div class="ss-b">
       <p style="font-size:13px;color:var(--mu);margin-bottom:12px">Жүйеден шығу — кіру кезінде пароль сұралады.</p>
@@ -1442,7 +1434,7 @@ tbody tr:hover td{background:#f8f9fd}
   <div class="mitem" onclick="goPage('daily',null);closeMore();setBA('')"><i class="fas fa-calendar-day"></i><span>Күнделік</span></div>
   <div class="mitem" onclick="goPage('ranking',null);closeMore();setBA('')"><i class="fas fa-trophy"></i><span>Рейтинг</span></div>
   <div class="mitem" onclick="goPage('clients',null);closeMore();setBA('')"><i class="fas fa-users"></i><span>Клиент</span></div>
-  <div class="mitem" onclick="goPage('managers',null);closeMore();setBA('')"><i class="fas fa-user-tie"></i><span>Менеджер</span></div>
+  <div class="mitem" onclick="goPage('managers_list',null);closeMore();setBA('')"><i class="fas fa-user-tie"></i><span>Менеджер</span></div>
   <div class="mitem" onclick="goPage('target',null);closeMore();setBA('')"><i class="fas fa-bullseye"></i><span>Таргет</span></div>
   <div class="mitem" onclick="goPage('bonussettings',null);closeMore();setBA('')"><i class="fas fa-percent"></i><span>Бонус</span></div>
   <div class="mitem" onclick="goPage('sitemanage',null);closeMore();setBA('')"><i class="fas fa-sliders-h"></i><span>Сайт</span></div>
@@ -1585,29 +1577,6 @@ tbody tr:hover td{background:#f8f9fd}
   </div>
 </div>
 
-<!-- ADD PORTAL USER -->
-<div class="modal" id="addPortalUserMdl">
-  <div class="mbox sm">
-    <div class="mhead"><h3><i class="fas fa-user-plus" style="color:var(--g)"></i>Портал қолданушы қосу</h3><button class="mclose" onclick="closeMdl('addPortalUserMdl')"><i class="fas fa-times"></i></button></div>
-    <div class="fg"><label>Логин</label><input type="text" id="puLogin" placeholder="Логин"></div>
-    <div class="fg"><label>Пароль</label><input type="password" id="puPwd" placeholder="Пароль"></div>
-    <div class="fg"><label>Көрсету аты</label><input type="text" id="puDisplayName" placeholder="Опционально"></div>
-    <div class="fg"><label>Менеджер</label><select id="puManager" style="height:38px"><option value="">— таңдамаңыз —</option></select></div>
-    <div class="mfoot"><button class="btn bo" onclick="closeMdl('addPortalUserMdl')">Болдырмау</button><button class="btn bg2" onclick="submitAddPortalUser()"><i class="fas fa-check"></i>Қосу</button></div>
-  </div>
-</div>
-<!-- EDIT PORTAL USER -->
-<div class="modal" id="editPortalUserMdl">
-  <div class="mbox sm">
-    <div class="mhead"><h3><i class="fas fa-edit" style="color:var(--b)"></i>Портал қолданушыны өзгерту</h3><button class="mclose" onclick="closeMdl('editPortalUserMdl')"><i class="fas fa-times"></i></button></div>
-    <input type="hidden" id="epuId">
-    <div class="fg"><label>Логин</label><input type="text" id="epuLogin" readonly style="background:#f1f5f9"></div>
-    <div class="fg"><label>Жаңа пароль <span style="font-size:11px;color:var(--mu)">(өзгертпесеңіз бос қалдырыңыз)</span></label><input type="password" id="epuPwd" placeholder="Жаңа пароль"></div>
-    <div class="fg"><label>Көрсету аты</label><input type="text" id="epuDisplayName" placeholder=""></div>
-    <div class="fg"><label>Менеджер</label><select id="epuManager" style="height:38px"><option value="">— таңдамаңыз —</option></select></div>
-    <div class="mfoot"><button class="btn bo" onclick="closeMdl('editPortalUserMdl')">Болдырмау</button><button class="btn bbl" onclick="submitEditPortalUser()"><i class="fas fa-save"></i>Сақтау</button></div>
-  </div>
-</div>
 <!-- ADD PAYMENT TYPE -->
 <div class="modal" id="addPayTypeMdl">
   <div class="mbox sm">
@@ -1650,10 +1619,11 @@ tbody tr:hover td{background:#f8f9fd}
 <script>
 const SB_URL='https://jnuokhhqojlurvadcduv.supabase.co';
 const SB_KEY='sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const sb=typeof supabase!=='undefined'?supabase.createClient(SB_URL,SB_KEY):null;
 const COLS=['#0369a1','#059669','#b45309','#7c3aed','#dc2626','#0891b2','#65a30d','#be185d','#c2410c','#0f172a','#f59e0b'];
 const CLEAR_PWD='11111';
 const DPCT=9;
+function safeQuery(fn){ return Promise.resolve().then(fn).then(function(r){ return r&&typeof r==='object'?r:{data:null}; }).catch(function(){ return {data:null}; }); }
 
 let dbO=[],dbP=[],dbBS={},dbNotes={},dbMgrs=[],dbProds=[],dbPayTypes=[],dbDelTypes=[];
 const PAY_OPTS_FALLBACK=['Kaspi Transfer','Halyk Transfer','Kaspi рассрочка','Halyk рассрочка','Kaspi Red','Наличка'];
@@ -1661,6 +1631,7 @@ const DELIVERY_OPTS_FALLBACK=['Курьер','Такси','Поезд','Почт
 let adminName='Admin',adminAva='';
 let gPer='all',gCS='',gCE='';
 let delId=null,delTbl='orders';
+let mgrTable='site_managers',prodTable='site_products';
 let sugAmt=0;
 let noteTimers={};
 let lrsD=[];
@@ -1668,6 +1639,7 @@ let charts={};
 
 // ===== AUTH =====
 async function checkAuth(){
+  if(!sb){document.getElementById('authWrap').style.display='block';document.getElementById('appWrap').style.display='none';return;}
   if(localStorage.getItem('lrs_auth')==='1'){
     document.getElementById('authWrap').style.display='none';
     document.getElementById('appWrap').style.display='block';
@@ -1677,6 +1649,7 @@ async function checkAuth(){
 async function doLogin(){
   const pwd=document.getElementById('authPwd').value.trim();
   if(!pwd){setAuthErr('Пароль енгізіңіз');return;}
+  if(!sb){setAuthErr('Жүйе қатесі. Байланысты тексеріңіз.');return;}
   const{data,error}=await sb.from('admin_settings').select('password_hash').eq('id',1).single();
   if(error){setAuthErr('Жүйе қатесі');return;}
   if(data?.password_hash===pwd){
@@ -1698,15 +1671,30 @@ async function initApp(){
 
 // ===== SITE DATA =====
 async function loadSiteData(){
-  const[mR,pR,setR,siteDispR]=await Promise.all([
-    sb.from('site_managers').select('*').order('sort_order').order('id'),
-    sb.from('site_products').select('*').order('category').order('sort_order'),
-    sb.from('admin_settings').select('*').eq('id',1).single(),
-    (async()=>{try{return await sb.from('site_display').select('company_name').eq('id',1).single();}catch(_){return {data:null};}})()
-  ]);
-  dbMgrs=mR.data||[];
-  dbProds=pR.data||[];
-  if(setR.data){
+  if(!sb)return;
+  var setR,siteDispR,rMgr1,rMgr2,rMgr3,rProd1,rProd2;
+  try{
+    var res=await Promise.all([
+      safeQuery(function(){return sb.from('admin_settings').select('*').eq('id',1).single();}),
+      safeQuery(function(){return sb.from('site_display').select('company_name').eq('id',1).single();}),
+      safeQuery(function(){return sb.from('managers_list').select('*').order('id');}),
+      safeQuery(function(){return sb.from('managers').select('*').order('id');}),
+      safeQuery(function(){return sb.from('site_managers').select('*').order('sort_order').order('id');}),
+      safeQuery(function(){return sb.from('site_products').select('*').order('category').order('sort_order');}),
+      safeQuery(function(){return sb.from('product_types').select('*');})
+    ]);
+    setR=res[0];siteDispR=res[1];rMgr1=res[2];rMgr2=res[3];rMgr3=res[4];rProd1=res[5];rProd2=res[6];
+  }catch(e){return;}
+  mgrTable='managers_list';
+  var mgrs=(rMgr1.data&&rMgr1.data.length)?rMgr1.data:[];
+  if(!mgrs.length&&rMgr2.data&&rMgr2.data.length){mgrs=rMgr2.data;mgrTable='managers';}
+  if(!mgrs.length&&rMgr3.data&&rMgr3.data.length){mgrs=rMgr3.data;mgrTable='site_managers';}
+  dbMgrs=mgrs;
+  prodTable='site_products';
+  var prods=(rProd1.data&&rProd1.data.length)?rProd1.data:[];
+  if(!prods.length&&rProd2.data&&rProd2.data.length){prods=rProd2.data.map(function(p){return{id:p.id,name:p.name,category:p.category||'tablet',is_active:true,sort_order:99};});prodTable='product_types';}
+  dbProds=prods;
+  if(setR&&setR.data){
     const s=setR.data;
     adminName=s.admin_name||'Admin';
     adminAva=s.admin_avatar||'';
@@ -1714,7 +1702,7 @@ async function loadSiteData(){
     setVal('setAva',adminAva);
     updateAdminUI();
   }
-  const compName=(siteDispR.data&&siteDispR.data.company_name)?siteDispR.data.company_name:(setR.data&&setR.data.company_name)?setR.data.company_name:'LAROSSA';
+  const compName=(siteDispR&&siteDispR.data&&siteDispR.data.company_name)?siteDispR.data.company_name:(setR&&setR.data&&setR.data.company_name)?setR.data.company_name:'LAROSSA';
   setVal('setComp',compName);
   // populate selects
   const mgrSels=['mFilt','salHMgr','bsOM','pmMgr','epMgr'];
@@ -1722,7 +1710,7 @@ async function loadSiteData(){
     const el=document.getElementById(sid);
     if(!el) return;
     while(el.options.length>1) el.remove(1);
-    dbMgrs.filter(m=>m.is_active).forEach(m=>el.add(new Option(m.name,m.id)));
+    dbMgrs.filter(m=>m.is_active!==false).forEach(m=>el.add(new Option(m.name,m.id)));
   });
 }
 
@@ -1753,20 +1741,25 @@ function getIni(n){const p=(n||'A').trim().split(' ');return(p.length>=2?(p[0][0
 
 // ===== LOAD ALL =====
 async function loadAll(){
-  const[oR,pR,bR,nR,payR,delR]=await Promise.all([
-    sb.from('orders').select('*').order('created_at',{ascending:false}),
-    sb.from('salary_payments').select('*').order('paid_at',{ascending:false}),
-    sb.from('manager_bonus_settings').select('*'),
-    sb.from('manager_notes').select('*'),
-    (async()=>{try{return await sb.from('payment_types').select('*').order('sort_order');}catch(_){return {data:null};}})(),
-    (async()=>{try{return await sb.from('delivery_types').select('*').order('sort_order');}catch(_){return {data:null};}})()
-  ]);
-  dbO=oR.data||[];
-  dbP=pR.data||[];
-  dbBS={};(bR.data||[]).forEach(b=>dbBS[b.manager_id]=b.default_bonus_percent);
-  dbNotes={};(nR.data||[]).forEach(n=>dbNotes[n.manager_id]={id:n.id,note:n.note||''});
-  dbPayTypes=(payR.data&&payR.data.length)?payR.data.map(p=>({id:p.id,name:p.name})):PAY_OPTS_FALLBACK.map((name,i)=>({id:i,name}));
-  dbDelTypes=(delR.data&&delR.data.length)?delR.data.map(d=>({id:d.id,name:d.name})):DELIVERY_OPTS_FALLBACK.map((name,i)=>({id:i,name}));
+  if(!sb){filtOrd();return;}
+  var oR,pR,bR,nR,payR,delR;
+  try{
+    var res=await Promise.all([
+      safeQuery(function(){return sb.from('orders').select('*').order('created_at',{ascending:false});}),
+      safeQuery(function(){return sb.from('salary_payments').select('*').order('paid_at',{ascending:false});}),
+      safeQuery(function(){return sb.from('manager_bonus_settings').select('*');}),
+      safeQuery(function(){return sb.from('manager_notes').select('*');}),
+      safeQuery(function(){return sb.from('payment_types').select('*').order('sort_order');}),
+      safeQuery(function(){return sb.from('delivery_types').select('*').order('sort_order');})
+    ]);
+    oR=res[0];pR=res[1];bR=res[2];nR=res[3];payR=res[4];delR=res[5];
+  }catch(e){filtOrd();return;}
+  dbO=(oR&&oR.data)||[];
+  dbP=(pR&&pR.data)||[];
+  dbBS={};((bR&&bR.data)||[]).forEach(b=>dbBS[b.manager_id]=b.default_bonus_percent);
+  dbNotes={};((nR&&nR.data)||[]).forEach(n=>dbNotes[n.manager_id]={id:n.id,note:n.note||''});
+  dbPayTypes=(payR&&payR.data&&payR.data.length)?payR.data.map(p=>({id:p.id,name:p.name})):PAY_OPTS_FALLBACK.map((name,i)=>({id:i,name}));
+  dbDelTypes=(delR&&delR.data&&delR.data.length)?delR.data.map(d=>({id:d.id,name:d.name})):DELIVERY_OPTS_FALLBACK.map((name,i)=>({id:i,name}));
   setEl('lastUpd',new Date().toLocaleTimeString('kk-KZ',{hour:'2-digit',minute:'2-digit'}));
   filtOrd();
   const ap=document.querySelector('.page.active');
@@ -1780,12 +1773,11 @@ function trigPage(p){
   else if(p==='daily') rendDaily();
   else if(p==='ranking') rendRank();
   else if(p==='clients') rendCli();
-  else if(p==='managers') rendMgr();
+  else if(p==='managers_list') rendMgr();
   else if(p==='bonussettings') rendBS()
   else if(p==='sitemanage') rendSiteManage();
   else if(p==='logistics') lrsLoad();
   else if(p==='talon') loadTalons();
-  else if(p==='settings') rendPortalUsersList();
   else if(p==='target'){ if(typeof fetchAll==='function'){ fetchAll(); targetRefreshId=setInterval(fetchAll,25000); } }
   else { if(targetRefreshId){ clearInterval(targetRefreshId); targetRefreshId=null; } }
 }
@@ -1946,7 +1938,7 @@ function openEditOrd(id){
   const el2=document.getElementById('eoPayType2');el2.innerHTML='<option value="">— жоқ —</option>'+payOpts.map(v=>'<option value="'+v+'">'+v+'</option>').join('');el2.value=(o.payment_type2&&payOpts.includes(o.payment_type2))?o.payment_type2:'';
   if(o.payment_type&&!payOpts.includes(o.payment_type)){const opt=document.createElement('option');opt.value=o.payment_type;opt.textContent=o.payment_type;el1.appendChild(opt);el1.value=o.payment_type;}
   if(o.payment_type2&&!payOpts.includes(o.payment_type2)){const opt=document.createElement('option');opt.value=o.payment_type2;opt.textContent=o.payment_type2;el2.appendChild(opt);el2.value=o.payment_type2;}
-  const mgrEl=document.getElementById('eoMgr');mgrEl.innerHTML='';dbMgrs.filter(m=>m.is_active).forEach(m=>mgrEl.add(new Option(m.name,m.id)));mgrEl.value=o.manager_id||'';
+  const mgrEl=document.getElementById('eoMgr');mgrEl.innerHTML='';dbMgrs.filter(m=>m.is_active!==false).forEach(m=>mgrEl.add(new Option(m.name,m.id)));mgrEl.value=o.manager_id||'';
   document.getElementById('editOrdMdl').classList.add('show');
 }
 async function submitEditOrd(){
@@ -2132,7 +2124,7 @@ function openEditPay(id){
   setVal('epStatus',(p.is_paid!==false).toString());
   const el=document.getElementById('epMgr');
   while(el.options.length>0) el.remove(0);
-  dbMgrs.filter(m=>m.is_active).forEach(m=>el.add(new Option(m.name,m.id)));
+  dbMgrs.filter(m=>m.is_active!==false).forEach(m=>el.add(new Option(m.name,m.id)));
   el.value=p.manager_id;
   document.getElementById('editPayMdl').classList.add('show');
 }
@@ -2271,7 +2263,7 @@ function rendCli(){
 // ===== MANAGERS =====
 function rendMgr(){
   const d=getFilt();
-  const list=dbMgrs.filter(m=>m.is_active).map(m=>{
+  const list=dbMgrs.filter(m=>m.is_active!==false).map(m=>{
     const mO=d.filter(o=>o.manager_id==m.id);
     const sum=mO.reduce((s,o)=>s+Number(o.price||0)+Number(o.price2||0),0),bon=mO.reduce((s,o)=>s+oBon(o),0),paid=mPaid(m.id);
     const avgP=mO.length?mO.reduce((s,o)=>s+parseFloat(o.bonus_percent??DPCT),0)/mO.length:DPCT;
@@ -2283,7 +2275,7 @@ function rendMgr(){
   document.getElementById('mgrTbl').innerHTML=list.map(m=>`<tr><td><b>${m.name}</b></td><td>${m.cnt}</td><td>${m.sum.toLocaleString()} ₸</td><td><span class="badge bpp" style="font-size:10px">${m.avgP.toFixed(1)}%</span></td><td>${m.bon.toLocaleString()} ₸</td><td style="color:var(--g)">${m.paid.toLocaleString()} ₸</td><td style="color:var(--o)">${m.up.toLocaleString()} ₸</td></tr>`).join('');
   const mMob=document.getElementById('mgrTblMob');if(mMob)mMob.innerHTML=list.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b></div><div class="mc-r"><span>Заказ</span>${m.cnt}</div><div class="mc-r"><span>Түсім</span><b>${m.sum.toLocaleString()} ₸</b></div><div class="mc-r"><span>Берілген</span><span style="color:var(--g)">${m.paid.toLocaleString()} ₸</span></div><div class="mc-r"><span>Берілмеген</span><span style="color:var(--o)">${m.up.toLocaleString()} ₸</span></div></div>`).join('');
   // notes
-  document.getElementById('mgrNotes').innerHTML=dbMgrs.filter(m=>m.is_active).map(m=>{
+  document.getElementById('mgrNotes').innerHTML=dbMgrs.filter(m=>m.is_active!==false).map(m=>{
     const note=dbNotes[m.id]?.note||'';
     return`<div class="note-wrap"><label><i class="fas fa-sticky-note"></i> ${m.name} — заметка</label><textarea id="note_${m.id}" placeholder="Осы менеджер туралы жазба..." oninput="qNote(${m.id})">${eH(note)}</textarea></div>`;
   }).join('');
@@ -2402,7 +2394,7 @@ function rendBS(){
     mkCh('cBsLn',ctx=>{charts.cBsLn=new Chart(ctx,{type:'line',data:{labels:rc.map(o=>fDate(o.created_at)),datasets:[{label:'Бонус %',data:rc.map(o=>parseFloat(o.bonus_percent??DPCT)),borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.1)',fill:true,tension:.3,pointRadius:2,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:20,ticks:{callback:v=>v+'%'}}}}});});
   }
   // default % table
-  const bsDefRows=dbMgrs.filter(m=>m.is_active).map(m=>{const mO=d.filter(o=>o.manager_id==m.id),bon=mO.reduce((s,o)=>s+oBon(o),0),paid=mPaid(m.id),defP=dbBS[m.id]??DPCT;return{mgrId:m.id,name:m.name,defP,mO,bon,paid,up:Math.max(0,bon-paid)};});
+  const bsDefRows=dbMgrs.filter(m=>m.is_active!==false).map(m=>{const mO=d.filter(o=>o.manager_id==m.id),bon=mO.reduce((s,o)=>s+oBon(o),0),paid=mPaid(m.id),defP=dbBS[m.id]??DPCT;return{mgrId:m.id,name:m.name,defP,mO,bon,paid,up:Math.max(0,bon-paid)};});
   document.getElementById('bsDefT').innerHTML=bsDefRows.map(r=>`<tr><td><b>${r.name}</b></td>
       <td><div style="display:flex;align-items:center;gap:6px"><input type="number" id="bsDef_${r.mgrId}" class="bpct" value="${r.defP}" min="0" max="100" step="0.1" inputmode="decimal"><span style="font-size:10px;color:var(--mu)">%</span><button class="btn sm bpu" onclick="saveDefP(${r.mgrId})"><i class="fas fa-save"></i></button></div></td>
       <td>${r.mO.length}</td><td>${r.bon.toLocaleString()} ₸</td>
@@ -2453,7 +2445,7 @@ async function rendSiteManage(){
     <td><div style="display:flex;gap:4px">
       <button class="btn sm bbl ic" onclick="openEditMgr(${m.id})" title="Атын өзгерту"><i class="fas fa-edit"></i></button>
       <button class="btn sm ${m.is_active?'bo':'bg2'} ic" onclick="togMgr(${m.id},${!m.is_active})" title="${m.is_active?'Жабу':'Ашу'}"><i class="fas fa-${m.is_active?'eye-slash':'eye'}"></i></button>
-      <button class="btn sm br2 ic" onclick="openDel('${m.id}','site_managers','${eA(m.name)}')"><i class="fas fa-trash"></i></button>
+      <button class="btn sm br2 ic" onclick="openDel('${m.id}',mgrTable,'${eA(m.name)}')"><i class="fas fa-trash"></i></button>
     </div></td>
   </tr>`).join('');
   document.getElementById('smProdTbl').innerHTML=dbProds.map(p=>`<tr>
@@ -2462,22 +2454,23 @@ async function rendSiteManage(){
     <td>${p.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}</td>
     <td><div style="display:flex;gap:4px">
       <button class="btn sm ${p.is_active?'bo':'bg2'} ic" onclick="togProd(${p.id},${!p.is_active})" title="${p.is_active?'Жабу':'Ашу'}"><i class="fas fa-${p.is_active?'eye-slash':'eye'}"></i></button>
-      <button class="btn sm br2 ic" onclick="openDel('${p.id}','site_products','${eA(p.name)}')"><i class="fas fa-trash"></i></button>
+      <button class="btn sm br2 ic" onclick="openDel('${p.id}',prodTable,'${eA(p.name)}')"><i class="fas fa-trash"></i></button>
     </div></td>
   </tr>`).join('');
-  const smMgrMob=document.getElementById('smMgrTblMob');if(smMgrMob)smMgrMob.innerHTML=dbMgrs.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b>${m.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}</div><div class="mc-r"><button class="btn sm bbl ic" onclick="openEditMgr(${m.id})"><i class="fas fa-edit"></i></button><button class="btn sm ${m.is_active?'bo':'bg2'} ic" onclick="togMgr(${m.id},${!m.is_active})"><i class="fas fa-${m.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${m.id}','site_managers','${eA(m.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
-  const smProdMob=document.getElementById('smProdTblMob');if(smProdMob)smProdMob.innerHTML=dbProds.map(p=>`<div class="mob-card"><div class="mc-r"><b>${eH(p.name)}</b><span class="badge ${p.category==='gift'?'bpp':'bb'}" style="font-size:10px">${p.category==='gift'?'Сыйлық':'Тауар'}</span></div><div class="mc-r">${p.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}<button class="btn sm ${p.is_active?'bo':'bg2'} ic" onclick="togProd(${p.id},${!p.is_active})"><i class="fas fa-${p.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${p.id}','site_products','${eA(p.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
+  const smMgrMob=document.getElementById('smMgrTblMob');if(smMgrMob)smMgrMob.innerHTML=dbMgrs.map(m=>`<div class="mob-card"><div class="mc-r"><b>${eH(m.name)}</b>${m.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}</div><div class="mc-r"><button class="btn sm bbl ic" onclick="openEditMgr(${m.id})"><i class="fas fa-edit"></i></button><button class="btn sm ${m.is_active?'bo':'bg2'} ic" onclick="togMgr(${m.id},${!m.is_active})"><i class="fas fa-${m.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${m.id}',mgrTable,'${eA(m.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
+  const smProdMob=document.getElementById('smProdTblMob');if(smProdMob)smProdMob.innerHTML=dbProds.map(p=>`<div class="mob-card"><div class="mc-r"><b>${eH(p.name)}</b><span class="badge ${p.category==='gift'?'bpp':'bb'}" style="font-size:10px">${p.category==='gift'?'Сыйлық':'Тауар'}</span></div><div class="mc-r">${p.is_active?'<span class="badge bg">Белсенді</span>':'<span class="badge br">Жабық</span>'}<button class="btn sm ${p.is_active?'bo':'bg2'} ic" onclick="togProd(${p.id},${!p.is_active})"><i class="fas fa-${p.is_active?'eye-slash':'eye'}"></i></button><button class="btn sm br2 ic" onclick="openDel('${p.id}',prodTable,'${eA(p.name)}')"><i class="fas fa-trash"></i></button></div></div>`).join('');
 }
 
-async function togMgr(id,active){const{error}=await sb.from('site_managers').update({is_active:active}).eq('id',id);if(error){popup('Қате','r');return;}popup(active?'Белсендірілді':'Жабылды',active?'g':'o');rendSiteManage();}
-async function togProd(id,active){const{error}=await sb.from('site_products').update({is_active:active}).eq('id',id);if(error){popup('Қате','r');return;}popup(active?'Белсендірілді':'Жабылды',active?'g':'o');rendSiteManage();}
+async function togMgr(id,active){if(mgrTable==='managers'){const m=dbMgrs.find(x=>x.id===id);if(m)m.is_active=active;rendSiteManage();popup(active?'Белсендірілді':'Жабылды','o');return;}const{error}=await sb.from(mgrTable).update({is_active:active}).eq('id',id);if(error){popup('Қате: '+(error.message||'RLS'),'r');return;}const m=dbMgrs.find(x=>x.id===id);if(m)m.is_active=active;popup(active?'Белсендірілді':'Жабылды',active?'g':'o');rendSiteManage();}
+async function togProd(id,active){const{error}=await sb.from(prodTable).update({is_active:active}).eq('id',id);if(error){popup('Қате: '+(error.message||'RLS'),'r');return;}const p=dbProds.find(x=>x.id===id);if(p)p.is_active=active;popup(active?'Белсендірілді':'Жабылды',active?'g':'o');rendSiteManage();}
 
 function openAddMgr(){document.getElementById('newMgrName').value='';document.getElementById('addMgrMdl').classList.add('show');}
 async function submitAddMgr(){
   const name=document.getElementById('newMgrName').value.trim();
   if(!name){popup('Атын жазыңыз','o');return;}
   const maxId=dbMgrs.length?Math.max(...dbMgrs.map(m=>m.id))+1:1;
-  const{error}=await sb.from('site_managers').insert({name,is_active:true,sort_order:maxId});
+  const payload=mgrTable==='managers'?{name,base_percent:9}:mgrTable==='managers_list'?{name,is_active:true}:{name,is_active:true,sort_order:99};
+  const{error}=await sb.from(mgrTable).insert(payload);
   if(error){popup('Қате: '+error.message,'r');return;}
   popup(name+' қосылды','g');closeMdl('addMgrMdl');await loadSiteData();rendSiteManage();
 }
@@ -2491,7 +2484,7 @@ async function submitEditMgr(){
   const id=parseInt(document.getElementById('editMgrId').value,10);
   const name=document.getElementById('editMgrName').value.trim();
   if(!name){popup('Атын жазыңыз','o');return;}
-  const{error}=await sb.from('site_managers').update({name}).eq('id',id);
+  const{error}=await sb.from(mgrTable).update({name}).eq('id',id);
   if(error){popup('Қате: '+error.message,'r');return;}
   popup('Сақталды','g');closeMdl('editMgrMdl');await loadSiteData();rendSiteManage();
 }
@@ -2500,7 +2493,8 @@ function openAddProd(){document.getElementById('newProdName').value='';document.
 async function submitAddProd(){
   const name=document.getElementById('newProdName').value.trim(),cat=document.getElementById('newProdCat').value;
   if(!name){popup('Атауын жазыңыз','o');return;}
-  const{error}=await sb.from('site_products').insert({name,category:cat,is_active:true,sort_order:99});
+  const payload=prodTable==='product_types'?{name,category:cat}:{name,category:cat,is_active:true,sort_order:99};
+  const{error}=await sb.from(prodTable).insert(payload);
   if(error){popup('Қате: '+error.message,'r');return;}
   popup(name+' қосылды','g');closeMdl('addProdMdl');await loadSiteData();rendSiteManage();
 }
@@ -2532,78 +2526,6 @@ async function saveGeneral(){
   const{error}=await sb.from('site_display').upsert({id:1,company_name:comp,updated_at:new Date()},{onConflict:'id'});
   if(error){popup('Қате: '+error.message,'r');return;}
   popup('Сақталды','g');
-}
-
-// ===== PORTAL USERS (index login) =====
-let portalUsers=[],portalSessions=[];
-function sha256Hex(str){
-  return crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)).then(b=>Array.from(new Uint8Array(b)).map(x=>('0'+x.toString(16)).slice(-2)).join(''));
-}
-async function loadPortalData(){
-  let uR,sR;
-  try{uR=await sb.from('portal_users').select('*').order('created_at');}catch(_){uR={data:[]};}
-  try{sR=await sb.from('portal_sessions').select('*').order('created_at',{ascending:false});}catch(_){sR={data:[]};}
-  portalUsers=uR.data||[];
-  portalSessions=sR.data||[];
-}
-function rendPortalUsersList(){
-  const el=document.getElementById('portalUsersList');
-  if(!el) return;
-  loadPortalData().then(()=>{
-    if(!portalUsers.length){ el.innerHTML='<p style="color:var(--mu);font-size:13px">Портал қолданушылар жоқ. «Қосу» батырмасымен қосыңыз.</p>'; return; }
-    el.innerHTML=portalUsers.map(u=>{
-      const sessions=portalSessions.filter(s=>s.user_id===u.id);
-      const mgrName=u.manager_id?getMgrName(u.manager_id):'—';
-      return `<div style="border:1px solid var(--brd);border-radius:8px;padding:12px;margin-bottom:10px;background:#fafbfc">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-          <div><b>${eH(u.login)}</b>${u.display_name?' <span style="color:var(--mu);font-size:12px">'+eH(u.display_name)+'</span>':''} <span style="font-size:11px;color:var(--mu)">Менеджер: ${eH(mgrName)}</span></div>
-          <div style="display:flex;gap:4px"><button class="btn sm bbl" onclick="openEditPortalUser('${u.id}')"><i class="fas fa-edit"></i></button><button class="btn sm br2 ic" onclick="openDel('${u.id}','portal_users','${eA(u.login)}')"><i class="fas fa-trash"></i></button></div>
-        </div>
-        ${sessions.length?`<div style="margin-top:10px;font-size:12px;color:var(--mu)">Сеанстар: ${sessions.map(s=>`<span style="display:inline-block;background:#e2e8f0;padding:2px 8px;border-radius:6px;margin:2px">${(s.device_info||'Құрылғы').slice(0,40)}... <button type="button" class="btn sm br2" style="padding:2px 6px;font-size:10px" onclick="endPortalSession('${s.id}')">Завершить</button></span>`).join(' ')}</div>`:'<div style="margin-top:6px;font-size:12px;color:var(--mu)">Сеанстар жоқ</div>'}
-      </div>`;
-    }).join('');
-  });
-}
-function openAddPortalUser(){
-  const sel=document.getElementById('puManager'); sel.innerHTML='<option value="">— таңдамаңыз —</option>'; dbMgrs.filter(m=>m.is_active).forEach(m=>sel.add(new Option(m.name,m.id)));
-  setVal('puLogin',''); setVal('puPwd',''); setVal('puDisplayName','');
-  document.getElementById('addPortalUserMdl').classList.add('show');
-}
-async function submitAddPortalUser(){
-  const login=document.getElementById('puLogin').value.trim();
-  const pwd=(document.getElementById('puPwd').value||'').trim();
-  const display_name=document.getElementById('puDisplayName').value.trim()||null;
-  const manager_id=document.getElementById('puManager').value?parseInt(document.getElementById('puManager').value,10):null;
-  if(!login||!pwd){popup('Логин және парольді енгізіңіз','o');return;}
-  const hash=await sha256Hex(pwd);
-  const{error}=await sb.from('portal_users').insert({login,password_hash:hash,display_name,manager_id});
-  if(error){popup('Қате: '+error.message,'r');return;}
-  popup('Қосылды','g'); closeMdl('addPortalUserMdl'); rendPortalUsersList();
-}
-function openEditPortalUser(id){
-  const u=portalUsers.find(x=>x.id===id); if(!u) return;
-  document.getElementById('epuId').value=u.id;
-  setVal('epuLogin',u.login);
-  setVal('epuPwd','');
-  setVal('epuDisplayName',u.display_name||'');
-  const sel=document.getElementById('epuManager'); sel.innerHTML='<option value="">— таңдамаңыз —</option>'; dbMgrs.filter(m=>m.is_active).forEach(m=>sel.add(new Option(m.name,m.id))); sel.value=u.manager_id||'';
-  document.getElementById('editPortalUserMdl').classList.add('show');
-}
-async function submitEditPortalUser(){
-  const id=document.getElementById('epuId').value;
-  const newPwd=document.getElementById('epuPwd').value;
-  const display_name=document.getElementById('epuDisplayName').value.trim()||null;
-  const manager_id=document.getElementById('epuManager').value?parseInt(document.getElementById('epuManager').value,10):null;
-  const upd={display_name,manager_id};
-  if(newPwd){ upd.password_hash=await sha256Hex(newPwd); }
-  const{error}=await sb.from('portal_users').update(upd).eq('id',id);
-  if(error){popup('Қате: '+error.message,'r');return;}
-  popup('Сақталды','g'); closeMdl('editPortalUserMdl'); loadPortalData(); rendPortalUsersList();
-}
-async function endPortalSession(sessionId){
-  const{error}=await sb.from('portal_sessions').delete().eq('id',sessionId);
-  if(error){popup('Қате','r');return;}
-  popup('Сеанс аяқталды','g'); loadPortalData(); rendPortalUsersList();
 }
 
 // ===== CLEAR ALL =====
@@ -2659,17 +2581,17 @@ function dlFile(name,uri){const a=document.createElement('a');a.href=uri;a.downl
 function openDel(id,tbl,det){delId=id;delTbl=tbl;setEl('delDet',det||'');document.getElementById('delMdl').classList.add('show');}
 document.getElementById('delCfm').onclick=async()=>{
   if(!delId) return;
-  const{error}=await sb.from(delTbl).delete().eq('id',delId);
-  if(error){popup('Қате','r');return;}
-  if(delTbl==='portal_users'){ await loadPortalData(); rendPortalUsersList(); }
-  popup('Өшірілді','g');closeMdl('delMdl');loadAll();
-  if(delTbl==='site_managers'||delTbl==='site_products') rendSiteManage();
-  if(delTbl==='warranty_talons') loadTalons();
-  if(delTbl==='payment_types'||delTbl==='delivery_types') loadAll();
+  const tbl=delTbl,id=delId;
+  const{error}=await sb.from(tbl).delete().eq('id',id);
+  if(error){popup('Қате: '+(error.message||'RLS немесе құқық'),'r');return;}
+  popup('Өшірілді','g');closeMdl('delMdl');delId=null;delTbl='';
+  if(tbl===mgrTable||tbl===prodTable||tbl==='site_managers'||tbl==='site_products'){ await loadSiteData(); rendSiteManage(); }
+  await loadAll();
+  if(tbl==='warranty_talons') loadTalons();
 };
 
 // ===== NAV =====
-const PTITLES={orders:'Тапсырыстар',dashboard:'Басты панель',salary:'Жалақы & Бонус',payments:'Төлем түрлері',daily:'Күнделікті есеп',ranking:'Рейтинг',clients:'Клиенттер',managers:'Менеджерлер',logistics:'Логистика',talon:'Гарантия талон',target:'Таргет',bonussettings:'Бонус баптау',sitemanage:'Сайт баптау',settings:'Баптау',help:'Көмек'};
+const PTITLES={orders:'Тапсырыстар',dashboard:'Басты панель',salary:'Жалақы & Бонус',payments:'Төлем түрлері',daily:'Күнделікті есеп',ranking:'Рейтинг',clients:'Клиенттер',managers_list:'Менеджерлер',logistics:'Логистика',talon:'Гарантия талон',target:'Таргет',bonussettings:'Бонус баптау',sitemanage:'Сайт баптау',settings:'Баптау',help:'Көмек'};
 function goPage(p,el){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nitem').forEach(x=>x.classList.remove('active'));
