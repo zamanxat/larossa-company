@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title></title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>html,body{margin:0;padding:0;background:#fff;min-height:100%}</style>
+</head>
+<body>
+<script>
+(function () {
+  "use strict";
+  var SB_URL = "https://jnuokhhqojlurvadcduv.supabase.co";
+  var SB_KEY = "sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk";
+  var CAMP = "tablet";
+  function goWa(phone, msg) {
+    var d = String(phone || "").replace(/\D/g, "");
+    if (!d) return;
+    var u = "https://wa.me/" + d;
+    var t = String(msg || "").trim();
+    if (t.length > 4000) t = t.slice(0, 4000);
+    if (t) u += "?text=" + encodeURIComponent(t);
+    window.location.replace(u);
+  }
+  function parseRpcPayload(d) {
+    if (d == null) return null;
+    if (typeof d === "string") return { phone: d, message: "" };
+    if (typeof d === "object" && d.phone != null) {
+      return { phone: d.phone, message: d.message != null ? String(d.message) : "" };
+    }
+    return null;
+  }
+  if (typeof supabase === "undefined" || !supabase.createClient) return;
+  var sb = supabase.createClient(SB_URL, SB_KEY);
+  sb.rpc("larossa_target_next", { p_campaign: CAMP }).then(function (res) {
+    var p = parseRpcPayload(res.data);
+    if (res.error || !p) return;
+    goWa(p.phone, p.message);
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

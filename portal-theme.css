@@ -1,0 +1,420 @@
+/* Larossa — ортақ «премиум» портал темасы (карточкалар, фон, жұмсақ анимация) */
+:root {
+  --pt-premium-bg0: #e5f4ed;
+  --pt-premium-bg1: #f0f4fc;
+  --pt-premium-glass: rgba(255, 255, 255, 0.86);
+  --pt-premium-shadow: 0 4px 10px rgba(15, 23, 42, 0.05), 0 26px 64px rgba(15, 23, 42, 0.11);
+  --pt-premium-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05), 0 16px 44px rgba(15, 23, 42, 0.09);
+  --pt-premium-radius: 22px;
+  --pt-premium-accent: #059669;
+}
+
+body.portal-elite {
+  background-color: #eef7f4;
+  background-image:
+    radial-gradient(ellipse 130% 90% at -5% -15%, rgba(167, 243, 208, 0.5), transparent 52%),
+    radial-gradient(ellipse 100% 80% at 105% 5%, rgba(199, 210, 254, 0.38), transparent 48%),
+    radial-gradient(ellipse 80% 60% at 85% 105%, rgba(254, 215, 170, 0.22), transparent 42%),
+    linear-gradient(168deg, var(--pt-premium-bg0) 0%, #eef2f9 45%, var(--pt-premium-bg1) 100%);
+  background-attachment: fixed;
+  --ui-switch-on-bg: var(--pt-premium-accent);
+  --ui-switch-on-brd: #047857;
+}
+
+body.portal-elite .shell,
+body.portal-elite .container {
+  animation: portalShellIn 0.14s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes portalShellIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.portal-elite .shell,
+  body.portal-elite .container {
+    animation: none !important;
+  }
+}
+
+/* Басты бет: бүгінгі тапсырыс карточкалары */
+.today-section {
+  margin-bottom: 22px;
+  animation: portalShellIn 0.14s ease 0.02s both;
+}
+
+.today-section-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--muted, #64748b);
+  font-weight: 800;
+  margin: 0 0 6px 4px;
+}
+
+.today-section-sub {
+  font-size: 0.75rem;
+  color: var(--muted, #64748b);
+  font-weight: 600;
+  margin: 0 0 14px 4px;
+  line-height: 1.4;
+}
+
+.rank-period-hint {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted, #64748b);
+  margin: -6px 0 14px 4px;
+  line-height: 1.45;
+}
+
+.today-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.today-card {
+  background: var(--card, #fff);
+  border-radius: var(--pt-premium-radius);
+  padding: 14px 16px;
+  border: 1px solid rgba(5, 150, 105, 0.12);
+  box-shadow: var(--pt-premium-shadow-sm);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  animation: todayCardIn 0.42s ease both;
+}
+
+.today-card:nth-child(1) { animation-delay: 0.02s; }
+.today-card:nth-child(2) { animation-delay: 0.05s; }
+.today-card:nth-child(3) { animation-delay: 0.08s; }
+.today-card:nth-child(n+4) { animation-delay: 0.1s; }
+
+@keyframes todayCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today-card { animation: none !important; }
+}
+
+.today-card:active {
+  transform: scale(0.992);
+}
+
+.today-card-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.today-time {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--green, var(--pt-premium-accent));
+  letter-spacing: -0.02em;
+}
+
+.today-mgr {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted, #64748b);
+  text-align: right;
+  max-width: 52%;
+  line-height: 1.3;
+}
+
+.today-client {
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 2px;
+}
+
+.today-phone {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--green-d, #067048);
+}
+
+.today-products {
+  font-size: 0.78rem;
+  color: #475569;
+  line-height: 1.45;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.today-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.today-total {
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.today-bonus {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5b21b6;
+  background: #f5f3ff;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.today-empty {
+  text-align: center;
+  padding: 28px 16px;
+  color: var(--muted, #64748b);
+  font-weight: 600;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.85) 100%);
+  border-radius: var(--pt-premium-radius);
+  border: 1px solid rgba(5, 150, 105, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+/* Подиум: медаль орнына иконка контейнері */
+.p-medal i {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.p-slot.p1 .p-medal i { color: #e2e8f0; }
+.p-slot.p2 .p-medal i { color: #475569; }
+.p-slot.p3 .p-medal i { color: #fcd34d; }
+
+/* Chromium: бет арасында жұмсақ өтулер (React Router-ға ұқсас), meta view-transition қажет */
+@view-transition {
+  navigation: auto;
+}
+
+html.portal-nav-leave body {
+  opacity: 0.88;
+  transition: opacity 0.1s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+  html.portal-nav-leave body {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* Admin панель — жеңіл фон, карточкалармен үйлесім */
+#appWrap.admin-elite {
+  min-height: 100vh;
+  background: transparent;
+}
+#appWrap.admin-elite .main {
+  background: transparent;
+}
+#appWrap.admin-elite .card {
+  border-radius: var(--rad, 14px);
+  box-shadow: var(--sh-card, 0 12px 40px rgba(15, 23, 42, 0.08));
+}
+#appWrap.admin-elite .mob-card {
+  border-radius: 16px;
+  box-shadow: var(--sh-card, 0 12px 40px rgba(15, 23, 42, 0.08));
+}
+@media (max-width: 900px) {
+  #appWrap.admin-elite .card {
+    border-radius: 18px;
+    border-color: rgba(5, 150, 105, 0.11);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 2px 8px rgba(15, 23, 42, 0.04),
+      0 16px 40px rgba(15, 23, 42, 0.07);
+  }
+  #appWrap.admin-elite .mob-card {
+    border-radius: 18px;
+    border-color: rgba(5, 150, 105, 0.1);
+  }
+}
+@media (min-width: 901px) {
+  #appWrap.admin-elite .page.active {
+    animation: portalShellIn 0.14s ease both;
+  }
+}
+
+/* ——— Pill toggle: тегіс 2D, портал / admin түстерімен ——— */
+:root {
+  --ui-switch-dur: 0.52s;
+  --ui-switch-ease: cubic-bezier(0.45, 0.05, 0.25, 1);
+  --ui-switch-off-bg: #e8ecf1;
+  --ui-switch-off-brd: #c5cdd8;
+  --ui-switch-on-bg: #059669;
+  --ui-switch-on-brd: #047857;
+  --ui-switch-knob-fill: #ffffff;
+  --ui-switch-knob-brd: rgba(15, 23, 42, 0.1);
+}
+.ui-switch-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.ui-switch-field__text {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+}
+.ui-switch-wrap {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+.ui-switch-native {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+}
+button.ui-switch,
+label.ui-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 48px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border-radius: 999px;
+  border: 1.5px solid var(--ui-switch-off-brd);
+  background: var(--ui-switch-off-bg);
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  box-shadow: none;
+  overflow: hidden;
+  line-height: 0;
+  vertical-align: middle;
+  transition:
+    background var(--ui-switch-dur) var(--ui-switch-ease),
+    border-color var(--ui-switch-dur) var(--ui-switch-ease),
+    opacity var(--ui-switch-dur) var(--ui-switch-ease);
+}
+button.ui-switch {
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ui-switch-knob {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: var(--ui-switch-knob-fill);
+  border: 1px solid var(--ui-switch-knob-brd);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  transition: transform var(--ui-switch-dur) var(--ui-switch-ease);
+  pointer-events: none;
+}
+/* Қосулы — бір түсті жасыл (2D) */
+button.ui-switch.on,
+.ui-switch-native:checked + label.ui-switch {
+  background: var(--ui-switch-on-bg);
+  border-color: var(--ui-switch-on-brd);
+}
+button.ui-switch.on .ui-switch-knob,
+.ui-switch-native:checked + label.ui-switch .ui-switch-knob {
+  transform: translateX(20px);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+button.ui-switch:focus-visible,
+.ui-switch-native:focus-visible + label.ui-switch {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+button.ui-switch.on:focus-visible,
+.ui-switch-native:checked:focus-visible + label.ui-switch {
+  outline-color: #047857;
+}
+button.ui-switch:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+/* Синхрондау — тегіс жартылай мөлдірлік пульс (2D) */
+@keyframes ui-switch-pending-on {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.82;
+  }
+}
+@keyframes ui-switch-pending-off {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.78;
+  }
+}
+button.ui-switch.ui-switch--pending {
+  pointer-events: none;
+  cursor: wait;
+}
+button.ui-switch.ui-switch--pending.on {
+  animation: ui-switch-pending-on 0.9s ease-in-out infinite;
+}
+button.ui-switch.ui-switch--pending:not(.on) {
+  animation: ui-switch-pending-off 0.9s ease-in-out infinite;
+}
+button.ui-switch.ui-switch--pending .ui-switch-knob {
+  transition: transform var(--ui-switch-dur) var(--ui-switch-ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-switch-knob,
+  button.ui-switch,
+  label.ui-switch {
+    transition-duration: 0.01ms;
+  }
+  button.ui-switch.ui-switch--pending,
+  button.ui-switch.ui-switch--pending.on,
+  button.ui-switch.ui-switch--pending:not(.on) {
+    animation: none !important;
+  }
+}

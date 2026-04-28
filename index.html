@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="kk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A8754" />
+    <meta name="view-transition" content="same-origin" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Larossa — Портал</title>
+    <meta name="description" content="Larossa порталы: рейтинг, тапсырыс, логистика және кепілдік талоны." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Outfit:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="portal-theme.css" />
+    <link rel="stylesheet" href="portal-ui.css" />
+    <link rel="stylesheet" href="portal-nav.css" />
+    <link rel="stylesheet" href="home-portal.css" />
+  </head>
+  <body class="has-portal-nav portal-elite">
+    <div class="net-offline" id="netOffline">
+      <i class="fas fa-wifi" aria-hidden="true"></i> Интернет жоқ. Қосылымды тексеріңіз.
+    </div>
+    <div class="toast-err" id="toastErr" role="status"></div>
+
+    <nav class="portal-topnav" aria-label="Негізгі беттер">
+      <div class="portal-topnav__brand">
+        <img
+          src="https://i.ibb.co.com/xqrTSq0d/logo2.jpg"
+          alt=""
+          class="portal-topnav__logo"
+          width="44"
+          height="44"
+          fetchpriority="high"
+        />
+        <span class="portal-topnav__company-name" title="">Larossa Company</span>
+      </div>
+      <div class="portal-topnav__link-row">
+        <a href="orders.html" class="portal-topnav__link" title="Жаңа тапсырыс жіберу">
+          <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+          <span>Тауарға тапсырыс</span>
+        </a>
+        <a href="talon.html" class="portal-topnav__link" title="Кепілдік талонын дайындау және сақтау">
+          <i class="fas fa-file-contract" aria-hidden="true"></i>
+          <span>Кепілдік талоны</span>
+        </a>
+        <a href="index.html" class="portal-topnav__link is-active" title="Басты бет — портал">
+          <i class="fas fa-home" aria-hidden="true"></i>
+          <span>Басты бет</span>
+        </a>
+        <a href="logistic.html" class="portal-topnav__link" title="Жеткізу тапсырыстарын қарау">
+          <i class="fas fa-truck" aria-hidden="true"></i>
+          <span>Тауар логистикасы</span>
+        </a>
+        <a href="admin.html" class="portal-topnav__link" title="Админ панел">
+          <i class="fas fa-tablet-alt" aria-hidden="true"></i>
+          <span>Админ панел</span>
+        </a>
+      </div>
+    </nav>
+    <div class="portal-occasion-banner" role="status" aria-label="Наурыз құттықтауы">
+      <span class="portal-occasion-banner__ico" aria-hidden="true"><i class="fas fa-seedling"></i></span>
+      <span class="portal-occasion-banner__txt">Наурыз құтты болсын!</span>
+    </div>
+
+    <div class="shell">
+      <section class="rank-section" aria-label="Менеджерлер рейтингі">
+        <p class="rank-title" id="rankTitleBar" title="">Менеджерлер рейтингі</p>
+        <p class="rank-period" id="rankPeriodBar" aria-live="polite"></p>
+        <div class="podium" id="podium"></div>
+
+        <div class="rank-list" id="rankList" style="display: none"></div>
+
+        <div class="rank-expand-row" id="rankExpandRow" style="display: none">
+          <span class="rank-expand-row__lbl" title="Толық рейтинг тізімін көрсету">Барлық орындар</span>
+          <button
+            type="button"
+            class="ui-switch"
+            id="rankToggle"
+            role="switch"
+            aria-checked="false"
+            aria-label="Толық рейтингті көрсету"
+            title="Барлық орындар тізімін ашу немесе жабу"
+          >
+            <span class="ui-switch-knob"></span>
+          </button>
+        </div>
+
+        <div class="rank-skel" id="rankSkel">Жүктелуде…</div>
+      </section>
+
+      <section class="day-dash" aria-label="Бүгін қорытындысы">
+        <div class="day-dash-inner">
+          <div class="day-dash-card" title="Бүгінгі күнге сәйкес тапсырыстардың жалпы сомасы">
+            <span class="ddb-l">Түсім бүгін</span>
+            <b id="dayRev">—</b>
+          </div>
+          <div class="day-dash-card" title="Бүгін тіркелген тапсырыс саны">
+            <span class="ddb-l">Тапсырыс бүгін</span>
+            <b id="dayCnt">—</b>
+          </div>
+        </div>
+      </section>
+
+      <div class="today-orbit-wrap">
+        <div class="today-orbit-inner">
+          <section class="today-section" aria-label="Бүгінгі тапсырыстар">
+            <p class="today-section-title">Бүгінгі тапсырыстар</p>
+            <p class="today-section-sub" id="todaySub">Көрсетілуде…</p>
+            <div
+              class="today-feed-scroll"
+              id="todayFeedScroll"
+              tabindex="0"
+              role="region"
+              aria-label="Бүгінгі тапсырыстар тізімі"
+              title="Бүгінгі тапсырыстар карточкалары"
+            >
+              <div class="today-feed-marquee" id="todayFeedMarquee">
+                <div class="today-feed" id="todayFeedInner"></div>
+              </div>
+            </div>
+          </section>
+          <div class="portal-session-actions" id="portalSessionActions" hidden>
+            <button type="button" class="portal-logout-btn" id="portalLogoutBtn" title="Порталдан шығу">
+              <i class="fas fa-sign-out-alt" aria-hidden="true"></i>Шығу
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="desktop-only">
+        <details class="more-wrap">
+          <summary title="Қосымша сыртқы сілтемелер">Басқа сілтемелер ↓</summary>
+          <div class="more-links">
+            <a
+              href="https://larossa-parfum.vercel.app/"
+              class="link-card parfum-catalog"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Larossa Parfum каталогы"
+              ><span>Larossa Parfum</span></a
+            >
+            <a
+              href="https://larossa-admin-1c4e.vercel.app/"
+              class="link-card admin-larossa"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Басқа орналастырудағы админ"
+              ><span>Larossa Admin</span></a
+            >
+            <a
+              href="https://larossa-tablet.vercel.app/"
+              class="link-card tablet-info"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Планшет ақпарат беті"
+              ><span>Tablet Info</span></a
+            >
+            <a
+              href="https://tabord.vercel.app"
+              class="link-card img-tab-ord"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ескі планшет тапсырыс"
+              ><span>Tablet Order Old</span></a
+            >
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <nav class="portal-bnav portal-bnav--public" aria-label="Негізгі навигация">
+      <a href="talon.html" class="portal-bnav-item" title="Кепілдік талоны"><i class="fas fa-file-contract"></i><span>Талон</span></a>
+      <a href="orders.html" class="portal-bnav-item" title="Тапсырыс жіберу"><i class="fas fa-clipboard-list"></i><span>Тапсырыс</span></a>
+      <a href="index.html" class="portal-bnav-item portal-bnav-home is-active" title="Басты бет — портал"
+        ><i class="fas fa-home"></i><span>Басты бет</span></a
+      >
+      <a href="logistic.html" class="portal-bnav-item" title="Логистика"><i class="fas fa-truck"></i><span>Логистика</span></a>
+      <a href="admin.html" class="portal-bnav-item portal-bnav-admin" title="Админ панел"><i class="fas fa-tablet-alt"></i><span>Админ панел</span></a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="portal-auth.js"></script>
+    <script src="portal-fast-nav.js"></script>
+    <script src="home.js" defer></script>
+  </body>
+</html>

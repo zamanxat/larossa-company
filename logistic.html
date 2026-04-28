@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0a8754">
+    <meta name="view-transition" content="same-origin">
+    <title>Larossa — Логистика</title>
+    <meta name="description" content="Larossa жеткізу тапсырыстары: мекен-жай, статус және такси." />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="portal-nav.css">
+    <link rel="stylesheet" href="portal-theme.css">
+    <link rel="stylesheet" href="portal-ui.css">
+    <link rel="shortcut icon" href="https://i.ibb.co.com/hFhh091B/logo.jpg" type="image/x-icon">
+    <style>
+        :root {
+            --bg: #f4f7f5;
+            --white: #ffffff;
+            --primary: #0f172a;
+            --accent: #0a8754;
+            --success: #067048;
+            --warning: #d97706;
+            --danger: #ef4444;
+            --card-radius: 20px;
+            --log-pad-x: max(12px, env(safe-area-inset-left, 0px));
+            --log-pad-r: max(12px, env(safe-area-inset-right, 0px));
+            --log-pad-top: max(8px, env(safe-area-inset-top, 0px));
+            --log-line: rgba(27, 67, 50, 0.14);
+            --log-line-soft: #eef2f0;
+            --card-surface: #ffffff;
+            --log-drawer-ease: cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html {
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: var(--log-pad-top) var(--log-pad-r) 8px var(--log-pad-x);
+            color: var(--primary);
+            -webkit-text-size-adjust: 100%;
+            font-family: "Manrope", system-ui, sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+            touch-action: manipulation;
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: -webkit-fill-available;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(18px) saturate(1.15);
+            -webkit-backdrop-filter: blur(18px) saturate(1.15);
+            margin: calc(-1 * var(--log-pad-top)) calc(-1 * var(--log-pad-r)) 10px calc(-1 * var(--log-pad-x));
+            padding: var(--log-pad-top) var(--log-pad-r) 10px var(--log-pad-x);
+            border-bottom: 1px solid var(--log-line-soft);
+            box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .search-box input {
+            width: 100%;
+            min-height: 50px;
+            padding: 12px 48px 12px 46px;
+            border: 1.5px solid var(--log-line);
+            border-radius: 14px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+            background: #fafcfb;
+            color: var(--primary);
+        }
+
+        .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10, 135, 84, 0.18); }
+
+        .search-box .search-ico { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 15px; pointer-events: none; }
+
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #64748b;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            padding: 0;
+            font-family: inherit;
+        }
+        .search-clear:active { background: #e2e8f0; }
+        .search-box.has-text .search-clear { display: flex; }
+
+        .filter-row-label {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin: 0 0 2px 2px;
+        }
+
+        .filter-group { display: flex; flex-direction: column; gap: 10px; }
+        .filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 6px 4px 8px;
+            margin: 0 -2px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+            scroll-padding-inline: 12px;
+        }
+        .filters::-webkit-scrollbar { display: none; }
+        
+        .chip {
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            white-space: nowrap;
+            padding: 10px 18px;
+            min-height: 44px;
+            border-radius: 999px;
+            background: #f8faf9;
+            border: 1px solid var(--log-line);
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            font-family: inherit;
+            line-height: 1.2;
+        }
+        .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+        .chip:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .date-range-picker {
+            display: none;
+            gap: 10px;
+            align-items: center;
+            background: #f8faf9;
+            padding: 12px;
+            border-radius: 14px;
+            margin-top: 4px;
+            border: 1px solid var(--log-line);
+        }
+        .date-range-picker input {
+            border: 1px solid var(--log-line);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 16px;
+            min-height: 48px;
+            flex: 1;
+            min-width: 0;
+            font-family: inherit;
+            background: #fff;
+            color: var(--primary);
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-width: 720px;
+            margin: 0 auto;
+            width: 100%;
+            min-width: 0;
+            padding-left: 2px;
+            padding-right: 2px;
+            padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 84px));
+        }
+        @media (min-width: 700px) {
+            #container {
+                max-width: 900px;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 8px;
+            }
+        }
+        .card {
+            background: var(--card-surface);
+            border-radius: 16px;
+            padding: 0;
+            margin-bottom: 0;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04), 0 16px 48px rgba(15, 23, 42, 0.08);
+            border: 1px solid var(--log-line);
+            animation: slideIn 0.22s ease-out;
+            overflow: hidden;
+        }
+        /* Тізім жолы: басқанда толығырақ ашылады */
+        .log-card__toggle {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            padding: 7px 8px;
+            margin: 0;
+            border: none;
+            border-bottom: 1px solid var(--log-line-soft);
+            background: linear-gradient(180deg, #fcfdfc 0%, #fafcfb 100%);
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.18s ease;
+            border-radius: 15px 15px 0 0;
+        }
+        .log-card__toggle:hover {
+            background: #f4f7f5;
+        }
+        .log-card__toggle:active {
+            background: #eef2f0;
+        }
+        .log-card__toggle:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+            z-index: 1;
+        }
+        .log-card__toggle-text {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+        }
+        .log-card__toggle-main {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 8px;
+            width: 100%;
+        }
+        .log-card__toggle .card-name {
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.3;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            hyphens: auto;
+            color: var(--primary);
+            flex: 1;
+            min-width: 0;
+        }
+        .log-card__toggle-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 10px;
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 700;
+            width: 100%;
+        }
+        .log-card__toggle-meta .card-id { color: var(--accent); font-size: 12px; }
+        .log-card__chev {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            border: 1px solid rgba(10, 135, 84, 0.28);
+            background: rgba(10, 135, 84, 0.08);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: transform 0.3s var(--log-drawer-ease), background 0.2s ease, border-color 0.2s ease;
+        }
+        .log-card[data-open="true"] .log-card__chev {
+            transform: rotate(180deg);
+            background: rgba(10, 135, 84, 0.16);
+        }
+
+        .log-card__phone-wrap {
+            padding: 4px 8px 6px;
+            border-bottom: 1px solid var(--log-line-soft);
+        }
+        .log-card__phone-wrap .card-mini-label {
+            margin: 0 0 3px 1px;
+        }
+        .log-card__phone-wrap .contact-bar {
+            margin-bottom: 0;
+        }
+
+        /* Бір стиль: мәтін ұяшығы (телефон, мекенжай, тауар) */
+        .log-card__value {
+            font-size: 13px;
+            line-height: 1.45;
+            font-weight: 600;
+            color: #334155;
+            padding: 8px 10px;
+            background: #f8faf9;
+            border: 1px solid var(--log-line);
+            border-radius: 10px;
+            word-break: break-word;
+        }
+        .log-card__value.is-empty {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .log-card:not([data-open="true"]) .log-card__addr-wrap .log-card__value {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .log-card[data-open="true"] .log-card__addr-wrap .log-card__value {
+            display: block;
+            -webkit-line-clamp: unset;
+            overflow: visible;
+        }
+
+        .log-card__addr-wrap {
+            padding: 4px 8px 6px;
+            border-bottom: 1px solid var(--log-line-soft);
+        }
+        .log-card__addr-wrap .card-mini-label {
+            margin: 0 0 4px 1px;
+        }
+        .log-card__addr-wrap .loc-actions {
+            margin-top: 6px;
+        }
+
+        .log-card__product-peek {
+            padding: 4px 8px 6px;
+            border-bottom: 1px solid var(--log-line-soft);
+            max-height: 120px;
+            opacity: 1;
+            overflow: hidden;
+            transition: opacity 0.2s ease, max-height 0.28s var(--log-drawer-ease), padding 0.2s ease, margin 0.2s ease, border-width 0.2s ease;
+        }
+        .log-card__product-peek .card-mini-label {
+            margin: 0 0 4px 1px;
+        }
+        .log-card__product-peek .log-card__value--peek {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 0;
+        }
+        .log-card[data-open="true"] .log-card__product-peek {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin: 0;
+            border-bottom-width: 0;
+            pointer-events: none;
+        }
+
+        /* Жабық күйде тез статус ауыстыру */
+        .log-quick-status {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 5px 8px;
+            background: transparent;
+            border-bottom: 1px solid var(--log-line-soft);
+            transition: opacity 0.2s ease, max-height 0.25s var(--log-drawer-ease);
+        }
+        .log-quick-status__lbl {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+        }
+        .log-quick-status__row {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 6px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            background: #f8faf9;
+            border: 1px solid var(--log-line);
+            border-radius: 12px;
+        }
+        .log-quick-status__row::-webkit-scrollbar { display: none; }
+        .log-st-chip {
+            flex: 0 0 auto;
+            padding: 6px 11px;
+            min-height: 36px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            background: #f1f5f9;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: inherit;
+            color: #64748b;
+            cursor: pointer;
+            transition: transform 0.1s, border-color 0.15s, background 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .log-st-chip:active { transform: scale(0.97); }
+        .log-st-chip:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        .log-st-chip.is-active {
+            border-color: rgba(10, 135, 84, 0.45);
+            background: rgba(10, 135, 84, 0.12);
+            color: #067048;
+        }
+        .log-card[data-open="true"] .log-quick-status {
+            display: none;
+        }
+
+        /* Ашылу/жабылу — барлық браузерлерде жұмсақ */
+        .log-card__drawer {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 8px;
+            border-bottom: 1px solid transparent;
+            transition: max-height 0.34s var(--log-drawer-ease), padding-bottom 0.34s var(--log-drawer-ease), border-color 0.2s ease;
+        }
+        .log-card[data-open="true"] .log-card__drawer {
+            max-height: 2200px;
+            padding-bottom: 8px;
+            border-bottom-color: var(--log-line-soft);
+        }
+        .log-card__drawer-inner {
+            padding-top: 2px;
+            opacity: 0.96;
+            transform: translateY(-2px);
+            transition: opacity 0.22s ease 0.04s, transform 0.28s var(--log-drawer-ease) 0.04s;
+        }
+        .log-card[data-open="true"] .log-card__drawer-inner {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .log-card__drawer,
+            .log-card__drawer-inner,
+            .log-card__product-peek,
+            .log-card__chev,
+            .log-toast {
+                transition: none !important;
+            }
+            .log-card[data-open="true"] .log-card__drawer {
+                max-height: none;
+            }
+            .log-card:not([data-open="true"]) .log-card__drawer {
+                max-height: 0;
+            }
+        }
+
+        /* Фильтрлер: телефонда жинақы панель */
+        .log-filter-panel {
+            border: 1px solid var(--log-line);
+            border-radius: 14px;
+            background: #f8faf9;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .log-filter-panel > summary {
+            list-style: none;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .log-filter-panel > summary::-webkit-details-marker { display: none; }
+        .log-filter-panel > summary::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid var(--accent);
+            border-bottom: 2px solid var(--accent);
+            transform: rotate(45deg);
+            margin-top: -4px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+        .log-filter-panel[open] > summary::after {
+            transform: rotate(-135deg);
+            margin-top: 4px;
+        }
+        .log-filter-panel .filter-group {
+            padding: 0 4px 8px;
+        }
+        @media (max-width: 720px) {
+            .log-filter-panel > summary {
+                display: flex;
+                min-height: 48px;
+                align-items: center;
+            }
+            .log-filter-panel:not([open]) .filter-group { display: none; }
+        }
+
+        /* Планшет+ : chip жолдар кеңірек, көлденен скроллсыз */
+        @media (min-width: 721px) {
+            .log-filter-panel .filters {
+                flex-wrap: wrap;
+                overflow-x: visible;
+                scroll-snap-type: none;
+                padding: 2px 0 4px;
+            }
+        }
+
+        /* Үстігі nav сияқты: толық ен емес, жанынан min(1280|1180, 100vw-40) */
+        @media (min-width: 769px) {
+            .header {
+                margin: calc(-1 * var(--log-pad-top)) auto 10px auto;
+                max-width: min(1280px, calc(100vw - 40px));
+                width: 100%;
+                padding: var(--log-pad-top) max(20px, var(--log-pad-r)) 10px max(20px, var(--log-pad-x));
+                border-radius: 20px;
+                border: 1px solid rgba(226, 232, 240, 0.95);
+                box-shadow:
+                    0 4px 24px rgba(15, 23, 42, 0.06),
+                    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+            }
+            #container {
+                max-width: min(1280px, calc(100vw - 40px));
+            }
+        }
+
+        /* Десктоп: уақыт | статус — екі баған, аралық күн толық ен */
+        @media (min-width: 900px) {
+            body.portal-elite .header {
+                max-width: min(1180px, calc(100vw - 40px));
+            }
+            .log-filter-panel {
+                border-radius: 16px;
+                box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 2px 12px rgba(15, 23, 42, 0.05);
+            }
+            .log-filter-panel .filter-group {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                gap: 4px 0;
+                padding: 14px 18px 18px;
+                align-items: start;
+            }
+            .log-filter-panel .filter-group > div:nth-child(1) {
+                grid-column: 1;
+                grid-row: 1;
+                padding-right: 28px;
+            }
+            .log-filter-panel .filter-group > div:nth-child(3) {
+                grid-column: 2;
+                grid-row: 1;
+                padding-left: 28px;
+                border-left: 1px solid var(--log-line-soft);
+            }
+            .log-filter-panel .filter-group > .date-range-picker {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                margin-top: 8px;
+            }
+            .log-filter-panel .filter-row-label {
+                margin-bottom: 4px;
+            }
+            .date-range-picker {
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            .log-filter-panel .chip {
+                padding: 9px 16px;
+            }
+            .log-results-meta {
+                text-align: center;
+                padding: 10px 16px 6px;
+                background: rgba(248, 250, 252, 0.85);
+                border-radius: 12px;
+                border: 1px solid rgba(226, 232, 240, 0.95);
+            }
+            #container {
+                max-width: min(1180px, calc(100vw - 40px));
+                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+                gap: 12px;
+            }
+            .log-empty-state {
+                max-width: 520px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (hover: hover) and (min-width: 721px) {
+            .chip:not(.active):hover {
+                background: #eef2f0;
+                border-color: rgba(10, 135, 84, 0.3);
+                color: #334155;
+            }
+        }
+
+        @media (hover: hover) and (min-width: 900px) {
+            @media (prefers-reduced-motion: no-preference) {
+                .card.log-card {
+                    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+                }
+                .card.log-card:hover {
+                    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.06), 0 20px 48px rgba(15, 23, 42, 0.1);
+                    border-color: rgba(10, 135, 84, 0.22);
+                }
+            }
+        }
+
+        @media (max-width: 520px) {
+            .log-card__toggle {
+                min-height: 48px;
+                padding: 10px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fab {
+                width: 58px;
+                height: 58px;
+                font-size: 19px;
+            }
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-title {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .card-title-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+        .card-name { font-size: 18px; font-weight: 800; line-height: 1.25; word-break: break-word; color: var(--primary); }
+        .card-title-meta { text-align: right; flex-shrink: 0; }
+        .card-id { font-size: 12px; color: var(--accent); font-weight: 800; display: block; letter-spacing: 0.02em; }
+        time.card-date { font-size: 11px; color: #94a3b8; font-weight: 600; display: block; margin-top: 2px; }
+
+        .status-pill {
+            align-self: flex-start;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 9px;
+            border-radius: 999px;
+            letter-spacing: 0.02em;
+        }
+        .status-pill.sp-new { background: #f1f5f9; color: #475569; }
+        .status-pill.sp-proc { background: #fffbeb; color: #b45309; }
+        .status-pill.sp-way { background: #dbeafe; color: #1e40af; }
+        .status-pill.sp-done { background: #dcfce7; color: #166534; }
+        .status-pill.sp-ret { background: #fee2e2; color: #b91c1c; }
+
+        .contact-bar {
+            background: #f8faf9;
+            padding: 10px 12px;
+            min-height: 46px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+            text-decoration: none;
+            border: 1px solid var(--log-line);
+            color: inherit;
+            gap: 8px;
+            transition: transform 0.12s, background 0.12s;
+        }
+        .contact-bar:active { transform: scale(0.985); background: #f1f5f9; }
+
+        .card-mini-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: #94a3b8;
+            margin: 0 0 8px 4px;
+        }
+        .phone-block { margin-bottom: 14px; }
+        .phone-block .contact-bar { margin-bottom: 0; }
+
+        .phone-num { font-size: 15px; font-weight: 700; color: var(--accent); word-break: break-all; line-height: 1.25; }
+        .call-icon {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            background: var(--success);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .info-item { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+        .info-item i { color: var(--danger); font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; margin-top: 2px; }
+        .info-text { font-size: 15px; font-weight: 500; color: #475569; line-height: 1.45; word-break: break-word; }
+
+        /* Карточка ішіндегі біркелкі секциялар */
+        .log-card__block {
+            background: #fafcfb;
+            border: 1px solid var(--log-line);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+        .log-card__drawer-inner > .log-card__block:last-child {
+            margin-bottom: 0;
+        }
+        .log-card__block-hd {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .log-card__block-hd i {
+            color: var(--accent);
+            font-size: 12px;
+            width: 1.15em;
+            text-align: center;
+        }
+        .log-card__body-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .log-card__gift {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--danger);
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.35;
+        }
+        .loc-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-top: 4px;
+        }
+        /* Негізгі әрекет: картаға шығу — бөлек толық батырма */
+        .loc-btn {
+            min-height: 46px;
+            padding: 0 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s;
+            -webkit-tap-highlight-color: transparent;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .loc-btn:active:not(.loc-btn--disabled) { transform: scale(0.985); }
+        .loc-btn i { font-size: 15px; opacity: 0.92; }
+        .loc-btn--gis {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            color: #0f172a;
+            border: 1px solid var(--log-line);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+        }
+        .loc-btn--gis.loc-btn--disabled {
+            opacity: 0.42;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+            background: #f1f5f9;
+            border-color: var(--log-line);
+            color: #94a3b8;
+        }
+        /* Көшіру / такси нөмірі — бір контейнер ішінде сегменттер */
+        .loc-bar {
+            display: flex;
+            align-items: stretch;
+            border-radius: 12px;
+            border: 1px solid var(--log-line);
+            background: #f8faf9;
+            overflow: hidden;
+        }
+        .loc-bar__btn {
+            flex: 1;
+            min-width: 0;
+            min-height: 44px;
+            padding: 0 10px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            color: #475569;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .loc-bar__btn:active {
+            background: #eef2f0;
+        }
+        .loc-bar__btn + .loc-bar__btn {
+            box-shadow: inset 1px 0 0 var(--log-line);
+        }
+        .loc-bar__btn--accent {
+            color: var(--accent);
+        }
+        .loc-bar__btn i {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .btn-action {
+            min-height: 48px;
+            padding: 12px 10px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.25;
+            font-family: inherit;
+        }
+        .btn-2gis { background: #eef2ff; color: #4338ca; }
+        .btn-copy { background: #f1f5f9; color: #475569; }
+        .btn-group .btn-action:only-child { grid-column: 1 / -1; }
+
+        /* Жеткізу блогы: екі select бір қатарда, бір биіктік (горизонтал «жол») */
+        .status-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 8px;
+            margin-top: 2px;
+            align-items: stretch;
+        }
+        select {
+            width: 100%;
+            min-height: 48px;
+            height: 48px;
+            padding: 0 34px 0 12px;
+            border-radius: 12px;
+            border: 1.5px solid var(--log-line);
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.2;
+            color: var(--primary);
+            background-color: #fafcfb;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23475569' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            outline: none;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            box-sizing: border-box;
+        }
+        select:focus-visible { box-shadow: 0 0 0 3px rgba(10, 135, 84, 0.2); border-color: var(--accent); }
+
+        .log-field-label { font-size: 11px; color: #64748b; font-weight: 700; display: block; margin-bottom: 2px; }
+        .log-card__drawer .field-editable { margin-bottom: 8px !important; }
+        .log-input {
+            width: 100%;
+            min-height: 48px;
+            padding: 10px 12px;
+            border: 1.5px solid var(--log-line);
+            border-radius: 12px;
+            font-size: 15px;
+            margin-top: 2px;
+            font-family: inherit;
+            box-sizing: border-box;
+            background: #fafcfb;
+            color: var(--primary);
+        }
+        .log-save-btn {
+            margin-top: 6px;
+            padding: 10px 14px;
+            min-height: 42px;
+            background: linear-gradient(135deg, var(--accent), #067048);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .log-toast {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%) translateY(120%);
+            bottom: calc(var(--portal-nav-pad, 76px) + 14px + env(safe-area-inset-bottom, 0px));
+            z-index: 6000;
+            max-width: min(92vw, 360px);
+            padding: 11px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.35;
+            text-align: center;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, 0.18);
+            border: 1px solid var(--log-line);
+            background: #fff;
+            color: var(--primary);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.32s var(--log-drawer-ease), opacity 0.28s ease;
+        }
+        .log-toast.is-on {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .log-toast.is-err {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+        .log-toast.is-ok {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #047857;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: calc(var(--portal-nav-pad, 76px) + 18px + env(safe-area-inset-bottom, 0px));
+            right: max(16px, env(safe-area-inset-right, 0px));
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(145deg, var(--accent), #067048);
+            color: #fff;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 12px 40px rgba(10, 135, 84, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4900;
+            transition: transform 0.15s, box-shadow 0.15s;
+            font-size: 18px;
+        }
+        .fab:active { transform: scale(0.94); }
+        .net-bar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            background: #b91c1c;
+            color: #fff;
+            text-align: center;
+            padding: 10px 14px;
+            padding-top: max(10px, env(safe-area-inset-top, 0px));
+            font-weight: 700;
+            font-size: 13px;
+        }
+        body.offline .net-bar { display: block; }
+
+        .log-empty-state {
+            text-align: center;
+            padding: 40px 18px;
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .log-empty-state.err { color: #ef4444; font-weight: 600; }
+
+        .log-results-meta {
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            text-align: center;
+            padding: 8px 12px 2px;
+            line-height: 1.35;
+        }
+        .log-results-meta strong { color: var(--primary); font-weight: 800; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card { animation: none !important; }
+        }
+
+        @media (max-width: 360px) {
+            .chip { font-size: 13px; padding: 11px 16px; min-height: 46px; }
+            .card-name { font-size: 16px; }
+        }
+
+        @media (max-height: 520px) and (orientation: landscape) {
+            .header { padding-bottom: 10px; }
+            .search-box input { min-height: 44px; }
+            .filter-group { gap: 6px; }
+            .chip { min-height: 40px; padding: 8px 14px; }
+        }
+
+        @media (min-width: 700px) {
+            #container {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 10px;
+            }
+            .log-card__toggle { padding: 9px 12px; }
+            .log-card__drawer { padding: 0 10px 7px; }
+            .log-card__phone-wrap { padding: 6px 12px 8px; }
+            .log-card__addr-wrap { padding: 6px 12px 8px; }
+            .log-card__product-peek { padding: 6px 12px 8px; }
+            .log-quick-status { padding: 7px 12px; }
+        }
+
+        @media (max-width: 480px) {
+            .status-grid {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                gap: 6px;
+            }
+            .log-card__drawer select {
+                font-size: 13px;
+                padding-left: 10px;
+                padding-right: 30px;
+                background-position: right 10px center;
+            }
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            .loc-btn { min-height: 44px; }
+            .loc-bar__btn { min-height: 44px; font-size: 12px; }
+            .log-card__block { padding: 9px 10px; }
+            .date-range-picker {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .date-range-picker > span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .filter-group { gap: 12px; }
+            .filters {
+                gap: 8px;
+                padding: 4px 0 8px;
+                scroll-padding-inline: 8px;
+            }
+            .chip {
+                min-height: 44px;
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+            .filter-row-label {
+                font-size: 10px;
+                margin-bottom: 3px;
+            }
+            .search-box { margin-bottom: 8px; }
+            .search-box input {
+                min-height: 48px;
+                border-radius: 14px;
+            }
+            .header { padding-bottom: 10px; margin-bottom: 8px; }
+            .log-card__toggle { padding: 7px 8px; }
+            .log-card__drawer { padding: 0 8px 6px; }
+            .log-card__phone-wrap { padding: 4px 8px 6px; }
+            .log-card__addr-wrap { padding: 4px 8px 6px; }
+            .log-card__product-peek { padding: 4px 8px 6px; }
+            .log-quick-status { padding: 5px 8px; }
+            .log-results-meta { font-size: 13px; padding: 4px 8px 0; }
+            .contact-bar {
+                min-height: 46px;
+                padding: 9px 10px;
+            }
+            .call-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+            }
+            .btn-action { min-height: 48px; font-size: 14px; }
+            .info-text { font-size: 15px; }
+            .log-filter-panel > summary { padding: 11px 12px; }
+            .log-card__value { padding: 7px 9px; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .chip { min-height: 48px; }
+            .search-clear {
+                width: 44px;
+                height: 44px;
+                min-width: 44px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .fab { bottom: 28px; }
+        }
+
+        @media (max-width: 420px) {
+            .log-card__toggle-meta {
+                font-size: 12px;
+            }
+            .log-results-meta {
+                font-size: 12px;
+                padding-left: 4px;
+                padding-right: 4px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            :root {
+                --log-pad-x: max(10px, env(safe-area-inset-left, 0px));
+                --log-pad-r: max(10px, env(safe-area-inset-right, 0px));
+            }
+            #container {
+                gap: 7px;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .card { border-radius: 18px; }
+            .log-card__toggle { padding: 8px 10px; }
+            .log-card__drawer { padding: 0 9px 6px; }
+            .log-card__phone-wrap { padding: 5px 10px 8px; }
+            .log-card__addr-wrap,
+            .log-card__product-peek { padding: 5px 10px 8px; }
+            .log-card__block { padding: 9px 10px; }
+        }
+
+        @media (max-width: 360px) {
+            .card-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .card-title-meta {
+                text-align: left;
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body class="has-portal-nav portal-elite">
+    <div class="net-bar" id="netBar"><i class="fas fa-wifi"></i> Интернет жоқ</div>
+    <nav class="portal-topnav" aria-label="Портал беттері">
+        <div class="portal-topnav__brand">
+            <img src="https://i.ibb.co.com/xqrTSq0d/logo2.jpg" alt="" class="portal-topnav__logo" width="44" height="44" decoding="async">
+            <span class="portal-topnav__company-name">Larossa Company</span>
+        </div>
+        <div class="portal-topnav__link-row">
+            <a href="orders.html" class="portal-topnav__link" title="Жаңа тапсырыс жіберу">
+                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                <span>Тауарға тапсырыс</span>
+            </a>
+            <a href="talon.html" class="portal-topnav__link" title="Кепілдік талонын дайындау және сақтау">
+                <i class="fas fa-file-contract" aria-hidden="true"></i>
+                <span>Кепілдік талоны</span>
+            </a>
+            <a href="index.html" class="portal-topnav__link" title="Басты бет — портал">
+                <i class="fas fa-home" aria-hidden="true"></i>
+                <span>Басты бет</span>
+            </a>
+            <a href="logistic.html" class="portal-topnav__link is-active" title="Жеткізу тапсырыстарын қарау">
+                <i class="fas fa-truck" aria-hidden="true"></i>
+                <span>Тауар логистикасы</span>
+            </a>
+            <a href="admin.html" class="portal-topnav__link" title="Админ панел">
+                <i class="fas fa-tablet-alt" aria-hidden="true"></i>
+                <span>Админ панел</span>
+            </a>
+        </div>
+    </nav>
+    <div class="portal-occasion-banner" role="status" aria-label="Наурыз құттықтауы">
+        <span class="portal-occasion-banner__ico" aria-hidden="true"><i class="fas fa-seedling"></i></span>
+        <span class="portal-occasion-banner__txt">Наурыз құтты болсын!</span>
+    </div>
+
+    <div class="header">
+        <div class="search-box" id="searchBoxWrap">
+            <i class="fas fa-search search-ico" aria-hidden="true"></i>
+            <input type="text" id="mainSearch" placeholder="Аты, телефон, тауар, мекенжай…" autocomplete="off" inputmode="search" enterkeyhint="search"
+                oninput="filter()">
+            <button type="button" class="search-clear" id="searchClear" aria-label="Іздеуді тазалау" onclick="clearMainSearch()"><i class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+
+        <details class="log-filter-panel" id="logFilterPanel">
+            <summary>Уақыт және статус</summary>
+            <div class="filter-group">
+            <div>
+                <div class="filter-row-label">Уақыт</div>
+                <div class="filters" id="timeFilters">
+                <button type="button" class="chip active" onclick="applyTimeFilter('Барлығы', this)">Барлығы</button>
+                <button type="button" class="chip" onclick="applyTimeFilter('Бүгін', this)">Бүгін</button>
+                <button type="button" class="chip" onclick="applyTimeFilter('Апта', this)">Апта</button>
+                <button type="button" class="chip" onclick="applyTimeFilter('Ай', this)">Ай</button>
+                <button type="button" class="chip" onclick="applyTimeFilter('Аралық', this)"><i class="fas fa-calendar-alt" aria-hidden="true"></i> Аралық</button>
+                </div>
+            </div>
+
+            <div class="date-range-picker" id="customDatePanel">
+                <input type="date" id="dateStart" onchange="filter()">
+                <span>-</span>
+                <input type="date" id="dateEnd" onchange="filter()">
+            </div>
+
+            <div>
+                <div class="filter-row-label">Статус</div>
+                <div class="filters" id="statusFilters">
+                <button type="button" class="chip active" onclick="applyStatusFilter('all', this)">Барлығы</button>
+                <button type="button" class="chip" onclick="applyStatusFilter('Жаңа', this)">Жаңа</button>
+                <button type="button" class="chip" onclick="applyStatusFilter('Процесте', this)">Процесте</button>
+                <button type="button" class="chip" onclick="applyStatusFilter('Жолда', this)">Жолда</button>
+                <button type="button" class="chip" onclick="applyStatusFilter('Қабылданды', this)">Жетті</button>
+                </div>
+            </div>
+            </div>
+        </details>
+        <p class="log-results-meta" id="logResultsMeta" aria-live="polite"></p>
+    </div>
+
+    <div id="container"></div>
+
+    <div class="log-toast" id="logToast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <button type="button" class="fab" onclick="load()" title="Жаңарту" aria-label="Жаңарту">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+
+    <nav class="portal-bnav portal-bnav--public" aria-label="Негізгі навигация">
+        <a href="talon.html" class="portal-bnav-item" title="Кепілдік талоны"><i class="fas fa-file-contract"></i><span>Талон</span></a>
+        <a href="orders.html" class="portal-bnav-item" title="Тапсырыс"><i class="fas fa-clipboard-list"></i><span>Тапсырыс</span></a>
+        <a href="index.html" class="portal-bnav-item portal-bnav-home" title="Басты бет"><i class="fas fa-home"></i><span>Басты бет</span></a>
+        <a href="logistic.html" class="portal-bnav-item is-active" title="Логистика"><i class="fas fa-truck"></i><span>Логистика</span></a>
+        <a href="admin.html" class="portal-bnav-item portal-bnav-admin" title="Админ панел"><i class="fas fa-tablet-alt"></i><span>Админ панел</span></a>
+    </nav>
+
+    <script>
+        const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
+        const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk'; 
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+        let store = [];
+        let deliveryTypes = ['Курьер','Такси','Поезд','Почта'];
+        let currentStatus = 'all';
+        let currentTimeScope = 'Барлығы';
+        var logExpandedIds = new Set();
+        var logToastTimer = null;
+
+        function showLogToast(msg, kind) {
+            var el = document.getElementById('logToast');
+            if (!el || !msg) return;
+            el.classList.remove('is-err', 'is-ok', 'is-on');
+            el.textContent = msg;
+            if (kind === 'err') el.classList.add('is-err');
+            else if (kind === 'ok') el.classList.add('is-ok');
+            clearTimeout(logToastTimer);
+            void el.offsetWidth;
+            el.classList.add('is-on');
+            logToastTimer = setTimeout(function () {
+                el.classList.remove('is-on');
+            }, kind === 'err' ? 4500 : 2200);
+        }
+
+        function syncLogToggleAria(tb, isOpen) {
+            if (!tb) return;
+            tb.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            tb.setAttribute('aria-label', isOpen ? 'Жию' : 'Толығырақ ашу');
+        }
+
+        function syncLogFilterPanel() {
+            var d = document.getElementById('logFilterPanel');
+            if (!d) return;
+            d.open = window.matchMedia('(min-width: 721px)').matches;
+        }
+        window.addEventListener('resize', syncLogFilterPanel);
+
+        function toggleLogCard(btn, ev) {
+            if (ev) ev.preventDefault();
+            var card = btn.closest('.log-card');
+            if (!card) return;
+            var id = String(card.getAttribute('data-order-id') || '');
+            var opening = card.getAttribute('data-open') !== 'true';
+            if (opening && typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) {
+                document.querySelectorAll('.log-card[data-open="true"]').forEach(function (c) {
+                    if (c === card) return;
+                    c.setAttribute('data-open', 'false');
+                    var ot = c.querySelector('.log-card__toggle');
+                    syncLogToggleAria(ot, false);
+                    logExpandedIds.delete(String(c.getAttribute('data-order-id') || ''));
+                });
+            }
+            card.setAttribute('data-open', opening ? 'true' : 'false');
+            syncLogToggleAria(btn, opening);
+            if (opening) {
+                logExpandedIds.add(id);
+                if (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) {
+                    requestAnimationFrame(function () {
+                        card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    });
+                }
+            } else {
+                logExpandedIds.delete(id);
+            }
+        }
+
+        function logisticQuickStatusBtn(btn, ev) {
+            if (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+            }
+            var id = btn.getAttribute('data-oid');
+            var st = btn.getAttribute('data-st');
+            if (id == null || st == null) return;
+            update(id, 'status', st);
+        }
+
+        function logisticsStatusClass(s) {
+            switch (s) {
+                case 'Процесте': return 'sp-proc';
+                case 'Жолда': return 'sp-way';
+                case 'Қабылданды': return 'sp-done';
+                case 'Қайтарылды': return 'sp-ret';
+                default: return 'sp-new';
+            }
+        }
+
+        function syncSearchClear() {
+            var inp = document.getElementById('mainSearch');
+            var box = document.getElementById('searchBoxWrap');
+            if (inp && box) box.classList.toggle('has-text', !!inp.value.trim());
+        }
+
+        function clearMainSearch() {
+            var inp = document.getElementById('mainSearch');
+            if (inp) inp.value = '';
+            syncSearchClear();
+            filter();
+        }
+
+        function updateLogResultsMeta(n, mode) {
+            var el = document.getElementById('logResultsMeta');
+            if (!el) return;
+            if (mode === 'loading') {
+                el.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Есептеу…';
+                return;
+            }
+            if (mode === 'error') {
+                el.textContent = '';
+                return;
+            }
+            el.innerHTML = 'Табылды: <strong>' + n + '</strong> тапсырыс';
+        }
+
+        function setNet(v) { document.body.classList.toggle('offline', v); }
+        window.addEventListener('online', () => setNet(false));
+        window.addEventListener('offline', () => setNet(true));
+        setNet(!navigator.onLine);
+
+        async function load() {
+            updateLogResultsMeta(0, 'loading');
+            document.getElementById('container').innerHTML = '<div class="log-empty-state"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Жүктелуде…</div>';
+            if (!navigator.onLine) {
+                updateLogResultsMeta(0, 'error');
+                document.getElementById('container').innerHTML = '<div class="log-empty-state err">Интернет қосылмаған. Қосылымды тексеріп, төмендегі батырманы басыңыз.</div>';
+                return;
+            }
+            try {
+                const [ordersRes, delRes] = await Promise.all([
+                    supabaseClient.from('orders').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('delivery_types').select('name,hide_in_order_form').order('sort_order').then(r => r && r.data && r.data.length ? r.data.filter(d => !d.hide_in_order_form).map(d => d.name) : null).catch(() => null)
+                ]);
+                if (delRes && delRes.length) deliveryTypes = delRes;
+                const { data, error } = ordersRes || {};
+                if (!error && data) {
+                    store = (data || []).map(o => ({
+                        ...o,
+                        status: (o.status === null || o.status === "" || o.status === "null") ? "Жаңа" : o.status
+                    }));
+                    filter();
+                } else {
+                    updateLogResultsMeta(0, 'error');
+                    document.getElementById('container').innerHTML = '<div class="log-empty-state err">Дерек жүктелмеді. Интернетті тексеріп қайта көріңіз.</div>';
+                }
+            } catch (e) {
+                updateLogResultsMeta(0, 'error');
+                document.getElementById('container').innerHTML = '<div class="log-empty-state err">Желі қатесі. Интернет қосылғанын тексеріңіз.</div>';
+            }
+        }
+
+        function applyStatusFilter(status, el) {
+            currentStatus = status;
+            document.querySelectorAll('#statusFilters .chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            filter();
+        }
+
+        function applyTimeFilter(scope, el) {
+            currentTimeScope = scope;
+            document.querySelectorAll('#timeFilters .chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('customDatePanel').style.display = (scope === 'Аралық') ? 'flex' : 'none';
+            filter();
+        }
+
+        function filter() {
+            const val = document.getElementById('mainSearch').value.toLowerCase().trim();
+            // Іздеу жолағындағы нөмірден барлық таңбаларды алып тастап, тек сандарды қалдыру (мысалы: 8 (777) 123 -> 8777123)
+            const cleanSearchVal = val.replace(/\D/g, ''); 
+
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const dayOfWeek = now.getDay();
+            const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            const startOfWeek = new Date(startOfToday);
+            startOfWeek.setDate(startOfToday.getDate() - diffToMonday);
+
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+            const filtered = store.filter(o => {
+                const orderDate = new Date(o.created_at);
+                
+                // --- СМАРТ ІЗДЕУ ЛОГИКАСЫ ---
+                // Клиент нөмірін де тазалап аламыз (тек сандар)
+                const cleanPhone = (o.client_phone || '').replace(/\D/g, '');
+                
+                const searchMatch = !val || (
+                    (o.client_name?.toLowerCase().includes(val)) || 
+                    (o.address?.toLowerCase().includes(val)) ||
+                    (o.product?.toLowerCase().includes(val)) ||
+                    (o.gift?.toLowerCase().includes(val)) ||
+                    // Егер тазаланған іздеу мәні нөмірдің ішінде болса
+                    (cleanPhone.includes(cleanSearchVal) && cleanSearchVal !== '') ||
+                    // Немесе жай ғана текст ретінде де іздей береді
+                    (o.client_phone?.includes(val))
+                );
+                
+                // --- УАҚЫТ ЖӘНЕ СТАТУС ---
+                const statusMatch = (currentStatus === 'all') || (o.status === currentStatus);
+                
+                let timeMatch = true;
+                if (currentTimeScope === 'Бүгін') timeMatch = orderDate >= startOfToday;
+                else if (currentTimeScope === 'Апта') timeMatch = orderDate >= startOfWeek;
+                else if (currentTimeScope === 'Ай') timeMatch = orderDate >= startOfMonth;
+                else if (currentTimeScope === 'Аралық') {
+                    const s = document.getElementById('dateStart').value;
+                    const e = document.getElementById('dateEnd').value;
+                    if (s) timeMatch = timeMatch && (orderDate >= new Date(s));
+                    if (e) {
+                        const endLimit = new Date(e);
+                        endLimit.setHours(23, 59, 59);
+                        timeMatch = timeMatch && (orderDate <= endLimit);
+                    }
+                }
+
+                return searchMatch && statusMatch && timeMatch;
+            });
+            syncSearchClear();
+            render(filtered);
+        }
+
+        function render(list) {
+            const container = document.getElementById('container');
+            updateLogResultsMeta(list.length);
+            if (list.length === 0) {
+                container.innerHTML = '<div class="log-empty-state"><i class="fas fa-search" aria-hidden="true"></i> Шартқа сай тапсырыс жоқ</div>';
+                return;
+            }
+
+            var stQuick = [
+                ['Жаңа', 'Жаңа'],
+                ['Процесте', 'Процесте'],
+                ['Жолда', 'Жолда'],
+                ['Қабылданды', 'Жетті'],
+                ['Қайтарылды', 'Қайтарылды']
+            ];
+            container.innerHTML = list.map(o => {
+                const addrRaw = (o.address || '').trim();
+                const hasAddr = !!addrRaw;
+                const addrDisplay = hasAddr ? (o.address || '') : 'Мекенжай көрсетілмеген';
+                const gisHref = 'https://2gis.kz/search/' + encodeURIComponent(addrRaw || ' ');
+                const taxiEsc = o.delivery_contact ? String(o.delivery_contact).replace(/"/g, '&quot;') : '';
+                const peekRaw = (o.product || 'Тауар көрсетілмеген').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const peek = peekRaw.length > 140 ? peekRaw.slice(0, 137) + '…' : peekRaw;
+                const chips = stQuick.map(function (row) {
+                    var v = row[0], label = row[1];
+                    var act = (o.status || 'Жаңа') === v ? ' is-active' : '';
+                    return '<button type="button" class="log-st-chip' + act + '" data-oid="' + o.id + '" data-st="' + v.replace(/"/g, '&quot;') + '" onclick="logisticQuickStatusBtn(this, event)">' + label.replace(/</g, '&lt;') + '</button>';
+                }).join('');
+                return `
+                <div class="card log-card" data-order-id="${o.id}" data-open="false">
+                    <button type="button" class="log-card__toggle" aria-expanded="false" aria-label="Толығырақ ашу" onclick="toggleLogCard(this, event)">
+                        <div class="log-card__toggle-text">
+                            <div class="log-card__toggle-main">
+                                <span class="card-name">${(o.client_name || 'Аты жоқ').replace(/</g, '&lt;')}</span>
+                                <span class="status-pill ${logisticsStatusClass(o.status)}">${(o.status || 'Жаңа').replace(/</g, '&lt;')}</span>
+                            </div>
+                            <div class="log-card__toggle-meta">
+                                <span class="card-id">#${o.id.toString().slice(-4)}</span>
+                                <time class="card-date" datetime="${String(o.created_at || '').replace(/"/g, '&quot;')}">${new Date(o.created_at).toLocaleDateString('kk-KZ')}</time>
+                            </div>
+                        </div>
+                        <span class="log-card__chev" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
+                    </button>
+                    <div class="log-card__phone-wrap">
+                        <span class="card-mini-label">Телефон</span>
+                        <a href="${(o.client_phone || '') ? 'tel:' + String(o.client_phone).replace(/\s/g, '') : '#'}" class="contact-bar"${!(o.client_phone || '') ? ' style="pointer-events:none;opacity:.72"' : ''}>
+                            <span class="phone-num">${o.client_phone || '—'}</span>
+                            <div class="call-icon"><i class="fas fa-phone" aria-hidden="true"></i></div>
+                        </a>
+                    </div>
+                    <div class="log-card__addr-wrap">
+                        <span class="card-mini-label">Мекенжай</span>
+                        <div class="log-card__value${hasAddr ? '' : ' is-empty'}" id="addr_${o.id}">${addrDisplay}</div>
+                        <div class="loc-actions">
+                            ${hasAddr
+                                ? `<a href="${gisHref}" target="_blank" rel="noopener noreferrer" class="loc-btn loc-btn--gis"><i class="fas fa-directions" aria-hidden="true"></i><span>2GIS</span></a>`
+                                : `<span class="loc-btn loc-btn--gis loc-btn--disabled" title="Алдымен мекенжай енгізілсін"><i class="fas fa-directions" aria-hidden="true"></i><span>2GIS</span></span>`}
+                            <div class="loc-bar">
+                                <button type="button" class="loc-bar__btn" onclick="copy('addr_${o.id}', this)"><i class="fas fa-copy" aria-hidden="true"></i><span>Көшіру</span></button>
+                                ${o.delivery_contact ? `<button type="button" class="loc-bar__btn loc-bar__btn--accent" data-copy="${taxiEsc}" onclick="copyText(this.getAttribute('data-copy'), this)"><i class="fas fa-taxi" aria-hidden="true"></i><span>Такси</span></button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="log-quick-status">
+                        <span class="log-quick-status__lbl">Статусты ауыстыру</span>
+                        <div class="log-quick-status__row">${chips}</div>
+                    </div>
+                    <div class="log-card__product-peek">
+                        <span class="card-mini-label">Тауар</span>
+                        <div class="log-card__value log-card__value--peek">${peek}</div>
+                    </div>
+                    <div class="log-card__drawer">
+                    <div class="log-card__drawer-inner">
+                    <div class="log-card__block">
+                        <div class="log-card__block-hd"><i class="fas fa-box-open" aria-hidden="true"></i> Тауар</div>
+                        <div class="log-card__body-text">${(o.product || '—').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                        ${o.gift ? `<div class="log-card__gift"><i class="fas fa-gift" aria-hidden="true"></i><span>${String(o.gift).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span></div>` : ''}
+                    </div>
+                    <div class="log-card__block">
+                        <div class="log-card__block-hd"><i class="fas fa-truck-loading" aria-hidden="true"></i> Жеткізу</div>
+                    <div class="field-editable">
+                        <label class="log-field-label" for="logdc_${o.id}">Жеткізуші номері / трек</label>
+                        <input type="text" id="logdc_${o.id}" class="log-delivery-input log-input" data-order-id="${o.id}" data-original="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" value="${(o.delivery_contact||'').replace(/"/g,'&quot;')}" placeholder="Такси немесе трек номері"
+                               oninput="logRowDirty(this)" autocomplete="off">
+                    </div>
+                    <div class="field-editable">
+                        <label class="log-field-label" for="logtx_${o.id}">Такси бағасы (₸)</label>
+                        <input type="number" id="logtx_${o.id}" class="log-taxi-input log-input" data-order-id="${o.id}" data-original="${Number(o.taxi_price||0)}" value="${Number(o.taxi_price||0)}" min="0" step="100" placeholder="0"
+                               oninput="logRowDirty(this)" inputmode="numeric">
+                    </div>
+                    <div class="field-editable">
+                        <label class="log-field-label" for="lognt_${o.id}">Ескертпе</label>
+                        <input type="text" id="lognt_${o.id}" class="log-note-input log-input" data-order-id="${o.id}" data-original="${(o.logistics_note||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" value="${(o.logistics_note||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" placeholder="Қысқа жазба"
+                               oninput="logRowDirty(this)" autocomplete="off">
+                        <button type="button" class="log-save-btn" style="display:none" onclick="logSaveRow(this)" data-order-id="${o.id}"><i class="fas fa-save" aria-hidden="true"></i> Сақтау</button>
+                    </div>
+                    <div class="status-grid" style="margin-top:10px">
+                        <select onchange="update('${o.id}', 'delivery_type', this.value)">
+                            ${deliveryTypes.map(x => `<option value="${x.replace(/"/g,'&quot;')}" ${o.delivery_type === x ? 'selected' : ''}>${x.replace(/</g,'&lt;')}</option>`).join('')}
+                        </select>
+                        <select onchange="update('${o.id}', 'status', this.value)" 
+                                style="background: ${o.status==='Қабылданды'?'#dcfce7':o.status==='Жолда'?'#dbeafe':o.status==='Процесте'?'#fffbeb':'white'};
+                                       color: ${o.status==='Қабылданды'?'#166534':o.status==='Жолда'?'#1e40af':o.status==='Процесте'?'#b45309':'#0f172a'}">
+                            <option value="Жаңа" ${o.status === 'Жаңа' ? 'selected' : ''}>Жаңа</option>
+                            <option value="Процесте" ${o.status === 'Процесте' ? 'selected' : ''}>Процесте</option>
+                            <option value="Жолда" ${o.status === 'Жолда' ? 'selected' : ''}>Жолда</option>
+                            <option value="Қабылданды" ${o.status === 'Қабылданды' ? 'selected' : ''}>Жетті</option>
+                            <option value="Қайтарылды" ${o.status === 'Қайтарылды' ? 'selected' : ''}>Қайтарылды</option>
+                        </select>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+            logExpandedIds.forEach(function (eid) {
+                var card = container.querySelector('.log-card[data-order-id="' + eid + '"]');
+                if (card) card.setAttribute('data-open', 'true');
+            });
+            container.querySelectorAll('.log-card').forEach(function (c) {
+                var tb = c.querySelector('.log-card__toggle');
+                syncLogToggleAria(tb, c.getAttribute('data-open') === 'true');
+            });
+        }
+
+        async function update(id, field, val) {
+            const { error } = await supabaseClient.from('orders').update({ [field]: val }).eq('id', id);
+            if (error) {
+                showLogToast('Сақталмады. Интернетті тексеріңіз.', 'err');
+                return;
+            }
+            const item = store.find(o => o.id == id);
+            if (item) {
+                item[field] = val;
+                filter();
+            }
+        }
+        function logRowDirty(inp) {
+            const card = inp.closest('.card');
+            if (!card) return;
+            const contactInp = card.querySelector('.log-delivery-input');
+            const taxiInp = card.querySelector('.log-taxi-input');
+            const noteInp = card.querySelector('.log-note-input');
+            const origC = (contactInp && contactInp.getAttribute('data-original')) || '';
+            const origT = (taxiInp && taxiInp.getAttribute('data-original')) || '';
+            const origN = (noteInp && noteInp.getAttribute('data-original')) || '';
+            const taxiVal = taxiInp ? String(parseFloat(taxiInp.value) || 0) : '';
+            const dirty = (contactInp && contactInp.value !== origC) || (taxiInp && taxiVal !== origT) || (noteInp && noteInp.value !== origN);
+            const saveBtn = card.querySelector('.log-save-btn');
+            if (saveBtn) saveBtn.style.display = dirty ? 'flex' : 'none';
+        }
+        async function logSaveRow(btn) {
+            const id = btn.getAttribute('data-order-id');
+            const card = btn.closest('.card');
+            const contactInp = card.querySelector('.log-delivery-input');
+            const taxiInp = card.querySelector('.log-taxi-input');
+            const noteInp = card.querySelector('.log-note-input');
+            const contactVal = contactInp ? contactInp.value : '';
+            const taxiVal = taxiInp ? (parseFloat(taxiInp.value) || 0) : 0;
+            const noteVal = noteInp ? noteInp.value : '';
+            const { error } = await supabaseClient.from('orders').update({ delivery_contact: contactVal, taxi_price: taxiVal, logistics_note: noteVal }).eq('id', id);
+            if (error) {
+                showLogToast('Сақталмады. Қайта басыңыз.', 'err');
+                return;
+            }
+            const item = store.find(o => o.id == id);
+            if (item) {
+                item.delivery_contact = contactVal;
+                item.taxi_price = taxiVal;
+                item.logistics_note = noteVal;
+            }
+            if (contactInp) contactInp.setAttribute('data-original', contactVal);
+            if (taxiInp) taxiInp.setAttribute('data-original', String(taxiVal));
+            if (noteInp) noteInp.setAttribute('data-original', noteVal);
+            btn.style.display = 'none';
+            showLogToast('Сақталды', 'ok');
+        }
+
+        function copy(elementId, btn) {
+            const el = document.getElementById(elementId);
+            if (!el || !btn) return;
+            var raw = el.classList.contains('is-empty') ? '' : (el.innerText || '');
+            navigator.clipboard.writeText(raw);
+            var key = 'data-default-html';
+            if (!btn.getAttribute(key)) btn.setAttribute(key, btn.innerHTML);
+            btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i><span>Көшірілді</span>';
+            setTimeout(function () { btn.innerHTML = btn.getAttribute(key); }, 1500);
+        }
+
+        function copyText(text, btn) {
+            if (!text || !btn) return;
+            navigator.clipboard.writeText(text);
+            var key = 'data-default-html';
+            if (!btn.getAttribute(key)) btn.setAttribute(key, btn.innerHTML);
+            btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i><span>Көшірілді</span>';
+            setTimeout(function () { btn.innerHTML = btn.getAttribute(key); }, 1500);
+        }
+
+        (function syncCompanyName(){
+          supabaseClient.from('site_display').select('company_name').eq('id',1).single().then(function(r){ if(r&&r.data&&r.data.company_name){ var n=r.data.company_name; document.querySelectorAll('.portal-topnav__company-name').forEach(function(x){ x.textContent=n; }); } }).catch(function(){});
+        })();
+        syncLogFilterPanel();
+        load();
+        syncSearchClear();
+    </script>
+    <script src="portal-auth.js"></script>
+    <script src="portal-fast-nav.js"></script>
+</body>
+</html>

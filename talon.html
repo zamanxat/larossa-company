@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="kk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a8754" />
+    <meta name="view-transition" content="same-origin" />
+    <title>Larossa — Кепілдік талоны</title>
+    <meta name="description" content="Larossa кепілдік талонын дайындау, сақтау және жүктеу." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="portal-nav.css" />
+    <link rel="stylesheet" href="portal-theme.css" />
+    <link rel="stylesheet" href="portal-ui.css" />
+    <link rel="preload" href="certificate.png" as="image" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+      :root {
+        --primary: #0f172a;
+        --accent: #0a8754;
+        --success: #067048;
+        --accent-soft: rgba(10, 135, 84, 0.12);
+        --pdf-color: #fb923c;
+        --info: #7c3aed;
+        --line: rgba(27, 67, 50, 0.14);
+        --card-radius: clamp(18px, 4vw, 24px);
+      }
+
+      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      body {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-width: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        min-height: -webkit-fill-available;
+        padding: max(14px, env(safe-area-inset-top, 0px)) max(14px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+        font-family: "Manrope", system-ui, sans-serif;
+        color: var(--primary);
+        touch-action: manipulation;
+        background: linear-gradient(165deg, #e8f4ef 0%, #f4f7f6 40%, #eef6ff 100%);
+        background-attachment: fixed;
+      }
+      @media (min-width: 769px) {
+        body.has-portal-nav { padding-bottom: 20px !important; }
+      }
+
+      .container {
+        position: relative;
+        background: linear-gradient(180deg, #fff 0%, #fbfcfc 100%);
+        width: 100%;
+        max-width: 420px;
+        padding: 0;
+        border-radius: var(--card-radius);
+        border: 1px solid rgba(10, 135, 84, 0.12);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.9) inset,
+          0 2px 8px rgba(15, 23, 42, 0.05),
+          0 28px 64px rgba(15, 23, 42, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        overflow: hidden;
+      }
+      .talon-accent {
+        height: 4px;
+        flex-shrink: 0;
+        background: linear-gradient(90deg, var(--success) 0%, var(--accent) 42%, #34d399 100%);
+        opacity: 0.96;
+      }
+      .talon-inner {
+        padding: 26px clamp(18px, 4vw, 26px) 28px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        flex: 1;
+        min-width: 0;
+      }
+      /* Негізгі max-width-тен кейін: nav енімен бірдей (orders.html сияқты) */
+      @media (min-width: 769px) {
+        .container {
+          max-width: min(1280px, calc(100vw - 40px));
+        }
+      }
+      .talon-content {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+      h2 {
+        text-align: center;
+        margin: 0 0 22px;
+        font-family: "Outfit", "Manrope", system-ui, sans-serif;
+        font-size: clamp(1.2rem, 4.2vw, 1.4rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--primary);
+        line-height: 1.2;
+      }
+      .form-group { margin-bottom: 16px; }
+      label {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        font-weight: 800;
+      }
+      input[type="text"], input[type="date"] {
+        width: 100%;
+        padding: 15px 16px;
+        min-height: 52px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 16px;
+        font-size: 16px;
+        outline: none;
+        transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: inherit;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) inset;
+      }
+      input[type="text"]::placeholder { color: #94a3b8; font-weight: 500; }
+      input[type="text"]:hover, input[type="date"]:hover { background: #fff; border-color: #cbd5e1; }
+      input[type="text"]:focus, input[type="date"]:focus {
+        border-color: var(--accent);
+        background: #fff;
+        box-shadow: 0 0 0 4px var(--accent-soft), 0 1px 2px rgba(15, 23, 42, 0.06) inset;
+      }
+      input:disabled { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+
+      .toggle-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 14px 16px;
+        border-radius: 16px;
+        margin-bottom: 16px;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) inset;
+      }
+      .toggle-box .ui-switch-field__text { font-size: 14px; font-weight: 600; color: #334155; line-height: 1.35; }
+
+      .btn-stack { display: flex; flex-direction: column; gap: 12px; }
+      button {
+        width: 100%;
+        padding: 16px 18px;
+        min-height: 54px;
+        border: none;
+        border-radius: 16px;
+        font-size: 15px;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      }
+      button:active:not(:disabled) { transform: scale(0.987); }
+
+      #generateBtn {
+        background: linear-gradient(180deg, #0daf72 0%, var(--accent) 38%, var(--success) 100%);
+        color: #fff;
+        box-shadow: 0 4px 6px rgba(10, 135, 84, 0.15), 0 12px 28px rgba(10, 135, 84, 0.3);
+      }
+      #generateBtn:hover:not(:disabled) { filter: brightness(1.04); }
+      #generateBtn:disabled {
+        background: #e2e8f0;
+        color: #94a3b8;
+        box-shadow: none;
+        cursor: not-allowed;
+        transform: none;
+      }
+      
+      #saveToSheetBtn { background: linear-gradient(180deg, #8b5cf6, #6d28d9); color: #fff; display: none; box-shadow: 0 8px 24px rgba(109, 40, 217, 0.25); }
+      #downloadPngBtn { background: linear-gradient(180deg, #0daf72 0%, var(--accent) 100%); color: #fff; display: none; box-shadow: 0 8px 24px rgba(10, 135, 84, 0.22); }
+      #downloadPdfBtn { background: linear-gradient(180deg, var(--pdf-color), #ea580c); color: #fff; display: none; box-shadow: 0 8px 24px rgba(234, 88, 12, 0.22); }
+
+      #statusMsg { text-align: center; margin-top: 16px; font-size: 13px; font-weight: 600; min-height: 22px; color: #64748b; line-height: 1.45; }
+      canvas {
+        display: none;
+        width: 100%;
+        max-width: calc(100% - 32px);
+        height: auto;
+        margin: 8px auto 26px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+        align-self: center;
+        box-sizing: border-box;
+      }
+      /* Телефон: форма элементтері ортада (кіру карточкасымен үйлесімді) */
+      @media (max-width: 768px) {
+        .talon-content {
+          text-align: center;
+        }
+        .form-group {
+          text-align: center;
+        }
+        .form-group label {
+          text-align: center;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="date"] {
+          text-align: center;
+        }
+        .toggle-box {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          text-align: left;
+        }
+        .toggle-box .ui-switch-field__text {
+          flex: 1;
+          min-width: 0;
+          text-align: left;
+          padding-right: 6px;
+        }
+        .toggle-box .ui-switch-wrap {
+          flex-shrink: 0;
+        }
+        #statusMsg {
+          text-align: center;
+        }
+      }
+      @media (max-width: 420px) {
+        .talon-inner {
+          padding: 22px clamp(14px, 4vw, 22px) 24px;
+        }
+        h2 { margin-bottom: 18px; }
+        button { padding: 14px 16px; min-height: 52px; font-size: 14px; }
+      }
+      @media (max-width: 360px) {
+        .toggle-box { gap: 10px; }
+        .toggle-box .ui-switch-field__text { font-size: 13px; }
+      }
+
+      /* Кең экран: nav пен бірдей ен; ішкі форма .talon-content арқылы тар қалады */
+      @media (min-width: 900px) {
+        .container {
+          max-width: min(1180px, calc(100vw - 40px));
+          box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.9) inset,
+            0 2px 8px rgba(15, 23, 42, 0.05),
+            0 32px 72px rgba(15, 23, 42, 0.1);
+          align-items: center;
+        }
+        .talon-inner {
+          padding: 32px 40px 36px;
+          width: 100%;
+          max-width: 520px;
+          margin: 0 auto;
+        }
+        .talon-content {
+          max-width: 100%;
+          width: 100%;
+        }
+        .talon-content,
+        .form-group,
+        .form-group label {
+          text-align: left;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="date"] {
+          text-align: left;
+        }
+        .toggle-box {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+        canvas {
+          max-width: min(100% - 48px, 920px);
+          margin: 12px auto 32px;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-portal-nav portal-elite">
+    <nav class="portal-topnav" aria-label="Портал беттері">
+      <div class="portal-topnav__brand">
+        <img src="https://i.ibb.co.com/xqrTSq0d/logo2.jpg" alt="Larossa" class="portal-topnav__logo" width="44" height="44" decoding="async" fetchpriority="high" />
+        <span class="portal-topnav__company-name">Larossa Company</span>
+      </div>
+      <div class="portal-topnav__link-row">
+        <a href="orders.html" class="portal-topnav__link" title="Жаңа тапсырыс жіберу">
+          <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+          <span>Тауарға тапсырыс</span>
+        </a>
+        <a href="talon.html" class="portal-topnav__link is-active" title="Кепілдік талонын дайындау және сақтау">
+          <i class="fas fa-file-contract" aria-hidden="true"></i>
+          <span>Кепілдік талоны</span>
+        </a>
+        <a href="index.html" class="portal-topnav__link" title="Басты бет — портал">
+          <i class="fas fa-home" aria-hidden="true"></i>
+          <span>Басты бет</span>
+        </a>
+        <a href="logistic.html" class="portal-topnav__link" title="Жеткізу тапсырыстарын қарау">
+          <i class="fas fa-truck" aria-hidden="true"></i>
+          <span>Тауар логистикасы</span>
+        </a>
+        <a href="admin.html" class="portal-topnav__link" title="Админ панел">
+          <i class="fas fa-tablet-alt" aria-hidden="true"></i>
+          <span>Админ панел</span>
+        </a>
+      </div>
+    </nav>
+    <div class="portal-occasion-banner" role="status" aria-label="Наурыз құттықтауы">
+      <span class="portal-occasion-banner__ico" aria-hidden="true"><i class="fas fa-seedling"></i></span>
+      <span class="portal-occasion-banner__txt">Наурыз құтты болсын!</span>
+    </div>
+    <div class="container">
+      <div class="talon-accent" aria-hidden="true"></div>
+      <div class="talon-inner">
+        <div class="talon-content">
+          <h2>Кепілдік талоны</h2>
+
+          <div class="form-group">
+            <label for="clientName">Клиенттің аты-жөні</label>
+            <input id="clientName" name="clientName" type="text" autocomplete="name" placeholder="Мысалы: Әбдірахман Нұрсұлтан" />
+          </div>
+
+          <div class="toggle-box ui-switch-field">
+            <span class="ui-switch-field__text">Өткен күнді таңдау</span>
+            <div class="ui-switch-wrap">
+              <input type="checkbox" id="enableDate" class="ui-switch-native" />
+              <label class="ui-switch" for="enableDate"><span class="ui-switch-knob"></span></label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="customDate">Сатылған күні</label>
+            <input id="customDate" name="saleDate" type="date" disabled />
+          </div>
+
+          <div class="btn-stack">
+            <button type="button" id="generateBtn" disabled title="Клиент атымен талон суретін дайындау">Жүктелуде...</button>
+            <button type="button" id="saveToSheetBtn" title="Талонды базаға жазу">Базаға сақтау</button>
+            <button type="button" id="downloadPngBtn" title="PNG файл ретінде жүктеу">Сурет ретінде (PNG)</button>
+            <button type="button" id="downloadPdfBtn" title="PDF құжат ретінде жүктеу">Құжат ретінде (PDF)</button>
+          </div>
+
+          <p id="statusMsg"></p>
+        </div>
+      </div>
+      <canvas id="canvas" width="1200" height="800"></canvas>
+    </div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="portal-auth.js"></script>
+    <script>
+      var canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const bg = new Image();
+      if (window.location.protocol !== "file:") bg.crossOrigin = "anonymous";
+      bg.src = "certificate.png";
+
+      const SB_URL = 'https://jnuokhhqojlurvadcduv.supabase.co';
+      const SB_KEY = 'sb_publishable_3l9NjY0Qadv3dJ9x3-t19w_8mKniZBk';
+      const supabaseClient = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+      var siteCompanyName = 'Larossa компаниясы';
+      if (supabaseClient) {
+        supabaseClient.from('site_display').select('company_name').eq('id', 1).single().then(function(r) {
+          if (r && r.data && r.data.company_name) { siteCompanyName = r.data.company_name + ' компаниясы'; }
+          var nm = r && r.data && r.data.company_name ? r.data.company_name : 'Larossa';
+          document.querySelectorAll('.portal-topnav__company-name').forEach(function (x) { x.textContent = nm; });
+        }).catch(function() {});
+      }
+
+      const generateBtn = document.getElementById("generateBtn");
+      const saveToSheetBtn = document.getElementById("saveToSheetBtn");
+      const downloadPngBtn = document.getElementById("downloadPngBtn");
+      const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+      const statusMsg = document.getElementById("statusMsg");
+      const enableDateCb = document.getElementById("enableDate");
+      const customDateInput = document.getElementById("customDate");
+
+      let currentData = null;
+
+      function enableGenerateBtn() {
+        if (!generateBtn) return;
+        generateBtn.disabled = false;
+        generateBtn.textContent = "Талонды дайындау";
+      }
+      bg.onload = enableGenerateBtn;
+      bg.onerror = function() {
+        enableGenerateBtn();
+        if (statusMsg) {
+          statusMsg.textContent = "Шаблон суреті жүктелмеді. Сайтты http(s) серверден ашыңыз (file:// емес).";
+          statusMsg.style.color = "#c2410c";
+        }
+      };
+      document.addEventListener("DOMContentLoaded", function() { setTimeout(enableGenerateBtn, 600); });
+      setTimeout(enableGenerateBtn, 1200);
+
+      enableDateCb.onchange = () => {
+        customDateInput.disabled = !enableDateCb.checked;
+        if (!enableDateCb.checked) customDateInput.value = "";
+      };
+
+      function formatDate(date) {
+        return String(date.getDate()).padStart(2, "0") + "." + String(date.getMonth() + 1).padStart(2, "0") + "." + date.getFullYear();
+      }
+
+      function generateCertificate() {
+        const name = document.getElementById("clientName").value.trim();
+        if (!name) {
+          statusMsg.textContent = "Клиенттің атын енгізіңіз.";
+          statusMsg.style.color = "#dc2626";
+          return;
+        }
+
+        const article = "LR" + Math.floor(100000 + Math.random() * 900000);
+        let startDate = enableDateCb.checked && customDateInput.value ? new Date(customDateInput.value) : new Date();
+        let expiry = new Date(startDate);
+        expiry.setFullYear(startDate.getFullYear() + 1);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!bg.complete || !bg.naturalWidth) {
+          statusMsg.textContent = "Талон үшін шаблон суреті жүктелген болуы керек. Сайтты серверден ашып қайта көріңіз.";
+          statusMsg.style.color = "#c2410c";
+          return;
+        }
+        ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#000000";
+        ctx.font = "400 26px Play";
+        ctx.fillText(name, 424, 353);
+        ctx.font = "400 24px Play";
+        ctx.fillText(siteCompanyName, 385, 390);
+        ctx.fillText(article, 349, 426);
+        ctx.fillText("Төле би 189A", 364, 461);
+        ctx.fillText(formatDate(expiry) + " ж", 260, 628);
+
+        const saleDate = enableDateCb.checked && customDateInput.value ? customDateInput.value : new Date().toISOString().slice(0, 10);
+        currentData = { client: name, article: article, customDate: customDateInput.value || null, saleDate, expiryDate: formatDate(expiry) };
+
+        statusMsg.textContent = "Талон дайын. Төменде қараңыз немесе жүктеңіз.";
+        statusMsg.style.color = "#0369a1";
+
+        canvas.style.display = "block";
+        saveToSheetBtn.style.display = "block";
+        downloadPngBtn.style.display = "block";
+        downloadPdfBtn.style.display = "block";
+        saveToSheetBtn.disabled = false;
+        saveToSheetBtn.textContent = "Базаға сақтау";
+      }
+
+      async function saveToSheets() {
+        if (!currentData) return;
+        saveToSheetBtn.disabled = true;
+        saveToSheetBtn.textContent = "Сақталуда...";
+        const url = "https://script.google.com/macros/s/AKfycbw00YL7eeTjY1SVnfbq-_Oe19XFlDAroLO8pTWkcUc2giWOaTmUn-NwKjfGwrikQTnF/exec";
+        try {
+          await fetch(url, { method: "POST", mode: "no-cors", body: JSON.stringify(currentData) });
+          if (supabaseClient) {
+            const { error } = await supabaseClient.from('warranty_talons').insert({
+              client_name: currentData.client,
+              article: currentData.article,
+              sale_date: currentData.saleDate || null,
+              expiry_date: currentData.expiryDate || null,
+              created_at: new Date().toISOString()
+            });
+            if (error) console.warn('Supabase:', error.message);
+          }
+          statusMsg.textContent = "Сақталды: Google таблицаға жіберілді" + (supabaseClient ? " және дерекқорға жазылды." : ".");
+          statusMsg.style.color = "#166534";
+          saveToSheetBtn.textContent = "Сақталды";
+        } catch (e) {
+          statusMsg.textContent = "Қате: " + (e.message || "сақталмады");
+          statusMsg.style.color = "#dc2626";
+          saveToSheetBtn.disabled = false;
+          saveToSheetBtn.textContent = "Базаға сақтау";
+        }
+      }
+
+      // PNG жүктеу
+      downloadPngBtn.onclick = () => {
+        try {
+          const fileNamePart = currentData.client.replace(/\s+/g, '_');
+          const link = document.createElement("a");
+          link.download = `Certificate_${fileNamePart}.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+          statusMsg.textContent = "PNG жүктелді.";
+          statusMsg.style.color = "green";
+        } catch (e) {
+          statusMsg.textContent = "Сурет қате: " + (e.message || "The operation is insecure.");
+          statusMsg.style.color = "#dc2626";
+        }
+      };
+
+      // PDF жүктеу (try-catch: "The operation is insecure" болмас үшін сайтты http(s) серверден ашыңыз)
+      downloadPdfBtn.onclick = () => {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+          statusMsg.textContent = "PDF кітапханасы әлі жүктелмеді. Бір сәт күтіп қайта көріңіз.";
+          statusMsg.style.color = "red";
+          return;
+        }
+        try {
+          const jsPDF = window.jspdf.jsPDF;
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
+          pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+          const fileNamePart = currentData.client.replace(/\s+/g, '_');
+          pdf.save(`Certificate_${fileNamePart}.pdf`);
+          statusMsg.textContent = "PDF жүктелді.";
+          statusMsg.style.color = "green";
+        } catch (e) {
+          const errMsg = (e && e.message) ? e.message : "Қате";
+          if (errMsg.indexOf("insecure") !== -1) {
+            statusMsg.textContent = "PDF қате: Қауіпсіздік шектеуі. Сайтты интернет серверден ашыңыз (localhost немесе домен), сонда PDF сақталады.";
+            statusMsg.style.color = "#dc2626";
+          } else {
+            statusMsg.textContent = "PDF қате: " + errMsg;
+            statusMsg.style.color = "#dc2626";
+          }
+        }
+      };
+
+      generateBtn.onclick = generateCertificate;
+      saveToSheetBtn.onclick = saveToSheets;
+    </script>
+    <nav class="portal-bnav portal-bnav--public" aria-label="Негізгі навигация">
+      <a href="talon.html" class="portal-bnav-item is-active" title="Кепілдік талоны"><i class="fas fa-file-contract"></i><span>Талон</span></a>
+      <a href="orders.html" class="portal-bnav-item" title="Тапсырыс"><i class="fas fa-clipboard-list"></i><span>Тапсырыс</span></a>
+      <a href="index.html" class="portal-bnav-item portal-bnav-home" title="Басты бет"><i class="fas fa-home"></i><span>Басты бет</span></a>
+      <a href="logistic.html" class="portal-bnav-item" title="Логистика"><i class="fas fa-truck"></i><span>Логистика</span></a>
+      <a href="admin.html" class="portal-bnav-item portal-bnav-admin" title="Админ панел"><i class="fas fa-tablet-alt"></i><span>Админ панел</span></a>
+    </nav>
+    <script src="portal-fast-nav.js"></script>
+  </body>
+</html>

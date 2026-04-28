@@ -1,0 +1,228 @@
+/* Larossa — ортақ төменгі навбар: Талон · Тапсырыс · Басты (орталық) · Логистика · Admin */
+:root {
+  --portal-accent: #059669;
+  --portal-accent-rgb: 5, 150, 105;
+  /* Орталық «Басты бет» тігінен шығып тұрғандықтан + белсенді нүкте үсті — қиылып кетпесін */
+  --portal-nav-pad: 84px;
+  --portal-nav-safe: env(safe-area-inset-bottom, 0px);
+}
+
+.portal-bnav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5000;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.07);
+  overflow: visible;
+  padding: 14px 4px calc(10px + var(--portal-nav-safe));
+  grid-template-columns: 1fr 1fr auto 1fr 1fr;
+  gap: 2px;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .portal-bnav--public {
+    display: grid;
+  }
+  body.has-portal-nav {
+    padding-bottom: calc(var(--portal-nav-pad) + var(--portal-nav-safe)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .portal-bnav--admin {
+    display: grid;
+  }
+  #appWrap.has-portal-nav .main {
+    padding-bottom: calc(var(--portal-nav-pad) + var(--portal-nav-safe) + 12px) !important;
+  }
+  /* Админ кіру: overlay төменгі орын қалдырады (портал нав z-index төмен де көрінеді) */
+  body.has-portal-nav:not(.lrs-in-app) #authWrap {
+    bottom: calc(var(--portal-nav-pad) + var(--portal-nav-safe));
+  }
+}
+
+/* admin.html: кіруден кейін ішкі .bnav қолданылады — портал төменгі navbar қосарланбасын */
+body.lrs-in-app .portal-bnav {
+  display: none !important;
+}
+
+.portal-bnav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+  max-width: 72px;
+  padding: 6px 2px 2px;
+  text-decoration: none;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  transition: color 0.08s, transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.portal-bnav-item i {
+  font-size: 19px;
+  display: block;
+  transition: transform 0.08s, color 0.08s;
+  color: #94a3b8;
+}
+
+.portal-bnav-item:active {
+  transform: scale(0.93);
+}
+
+.portal-bnav-item.is-active {
+  color: var(--portal-accent);
+}
+
+.portal-bnav-item.is-active i {
+  color: var(--portal-accent);
+  transform: scale(1.1);
+}
+
+.portal-bnav-item.is-active::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--portal-accent);
+  box-shadow: 0 0 0 2px rgba(var(--portal-accent-rgb), 0.2);
+}
+
+.portal-bnav-home {
+  width: 64px !important;
+  max-width: 64px !important;
+  height: 64px;
+  min-height: 64px;
+  padding: 0 !important;
+  margin-bottom: 8px;
+  justify-content: center;
+  gap: 1px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #ffffff 0%, #ecfdf5 55%, #d1fae5 100%);
+  border: 3px solid var(--portal-accent);
+  box-shadow:
+    0 12px 32px rgba(var(--portal-accent-rgb), 0.3),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+  color: var(--portal-accent);
+  transform: translateY(0);
+  margin-bottom: 4px;
+}
+
+.portal-bnav-home i {
+  font-size: 27px !important;
+  color: var(--portal-accent) !important;
+  margin: 0;
+}
+
+.portal-bnav-home span {
+  font-size: 8px !important;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  max-width: 56px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-bnav-home.is-active {
+  background: linear-gradient(160deg, #0a8754 0%, #067048 100%);
+  color: #fff;
+  border-color: #065f46;
+  box-shadow:
+    0 14px 36px rgba(var(--portal-accent-rgb), 0.5),
+    0 0 0 4px rgba(var(--portal-accent-rgb), 0.18);
+}
+
+.portal-bnav-home.is-active i {
+  color: #fff !important;
+  transform: scale(1.06) !important;
+}
+
+.portal-bnav-home::after {
+  display: none !important;
+}
+
+.portal-bnav-home.is-active span {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Толық атау «Админ панел» — екі жолға сыйғызу */
+.portal-bnav-admin {
+  max-width: 78px !important;
+}
+.portal-bnav-admin span {
+  font-size: 8px;
+  line-height: 1.12;
+  white-space: normal;
+  max-width: 100%;
+  hyphens: none;
+}
+
+@media (max-width: 380px) {
+  .portal-bnav {
+    gap: 0;
+    padding-left: max(2px, env(safe-area-inset-left, 0px));
+    padding-right: max(2px, env(safe-area-inset-right, 0px));
+  }
+  .portal-bnav-item {
+    max-width: none;
+    padding: 5px 1px 2px;
+    font-size: 9px;
+  }
+  .portal-bnav-item i {
+    font-size: 17px;
+  }
+  .portal-bnav-home {
+    width: 56px !important;
+    max-width: 56px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    margin-bottom: 2px;
+  }
+  .portal-bnav-home i {
+    font-size: 22px !important;
+  }
+  .portal-bnav-home span {
+    font-size: 7px !important;
+    max-width: 52px;
+  }
+  .portal-bnav-admin {
+    max-width: none !important;
+    padding: 5px 0 2px;
+  }
+  .portal-bnav-admin span {
+    font-size: 7.5px;
+    letter-spacing: -0.03em;
+  }
+}
+
+@media (max-width: 320px) {
+  .portal-bnav-item span {
+    letter-spacing: -0.04em;
+  }
+}
